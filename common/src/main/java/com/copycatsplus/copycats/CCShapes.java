@@ -78,8 +78,18 @@ public class CCShapes {
     public static final VoxelShaper HALF_LAYER_TOP_12PX = shape(0, 4, 0, 16, 16, 8).forHorizontal(Direction.NORTH);
     public static final VoxelShaper HALF_LAYER_TOP_14PX = shape(0, 2, 0, 16, 16, 8).forHorizontal(Direction.NORTH);
     public static final VoxelShaper HALF_LAYER_TOP_16PX = shape(0, 0, 0, 16, 16, 8).forHorizontal(Direction.NORTH);
-    public static final VoxelShaper VERTICAL_STAIR = shape(0, 0, 8, 16, 16, 16)
+    public static final VoxelShaper VERTICAL_STAIR_STRAIGHT = shape(0, 0, 8, 16, 16, 16)
             .add(8, 0, 0, 16, 16, 8).forDirectional(Direction.NORTH);
+    public static final VoxelShaper VERTICAL_STAIR_STRAIGHT_FLIP = shape(0, 0, 0, 8, 16, 8)
+            .add(8, 0, 0, 16, 16, 16).forDirectional(Direction.NORTH);
+    public static final VoxelShaper VERTICAL_STAIR_OUTER_LEFT = shape(8, 0, 0, 16, 16, 16)
+            .add(0, 0, 8, 8, 8, 16).forDirectional(Direction.NORTH);
+    public static final VoxelShaper VERTICAL_STAIR_OUTER_LEFT_FLIP = shape(0, 8, 8, 8, 16, 16)
+            .add(8, 0, 0, 16, 16, 16).forDirectional(Direction.NORTH);
+    public static final VoxelShaper VERTICAL_STAIR_OUTER_RIGHT = shape(0, 0, 0, 8, 8, 8)
+            .add(8, 0, 0, 16, 16, 16).forDirectional(Direction.NORTH);
+    public static final VoxelShaper VERTICAL_STAIR_OUTER_RIGHT_FLIP = shape(0, 8, 0, 8, 16, 8)
+            .add(8, 0, 0, 16, 16, 16).forDirectional(Direction.NORTH);
     private static Builder shape(VoxelShape shape) {
         return new Builder(shape);
     }
