@@ -173,6 +173,8 @@ public class CCStandardRecipes extends CopycatsRecipeProvider {
 
     GeneratedRecipe COPYCAT_GHOST_BLOCK = copycat(CCBlocks.COPYCAT_GHOST_BLOCK, 1);
 
+    GeneratedRecipe COPYCAT_LADDER = copycat(CCBlocks.COPYCAT_LADDER, 6);
+
 
     String currentFolder = "";
     Marker enterFolder(String folder) {

@@ -23,6 +23,7 @@ public class CCBlockEntityTypes {
                             CCBlocks.COPYCAT_BOARD,
                             CCBlocks.COPYCAT_BYTE,
                             CCBlocks.COPYCAT_GHOST_BLOCK,
+                            CCBlocks.COPYCAT_LADDER,
                             CCBlocks.COPYCAT_LAYER,
                             CCBlocks.COPYCAT_HALF_LAYER,
                             CCBlocks.COPYCAT_SLICE,
