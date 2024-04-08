@@ -52,6 +52,10 @@ All the copycats you've ever wanted, combined into a single mod!
 - Copycat Wooden/Stone Button
 - Copycat Wooden/Stone Pressure Plate
 - Copycat Light/Heavy Weighted Pressure Plate
+- Copycat Ladder
+  - A ladder block that can be made to look like any block and can be placed without needing a supporting block behind it.
+- Copycat Ghost Block
+  - A full sized block with no collision, meaning it can be walked/fallen through.
 
 ## Download
 

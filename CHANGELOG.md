@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.2.7 - 2024-04-08
+
+### Added
+
+- Copycat Ladder - A ladder that can be made to look like any block and can be placed without needing a block behind it
+- Copycat Ghost Block - A full size block that has no collision meaning it can be walked/fallen through
+
 ## 1.2.6 - 2024-03-30
 
 ### Changed
