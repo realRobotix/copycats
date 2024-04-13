@@ -1,8 +1,12 @@
 package com.copycatsplus.copycats;
 
+import com.copycatsplus.copycats.content.copycat.base.multi.MultiStateCopycatBlockEntity;
 import com.simibubi.create.content.decoration.copycat.CopycatBlockEntity;
 import com.simibubi.create.foundation.data.CreateRegistrate;
+import com.tterrag.registrate.builders.BlockEntityBuilder;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
+import dev.architectury.injectables.annotations.ExpectPlatform;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class CCBlockEntityTypes {
     private static final CopycatRegistrate REGISTRATE = Copycats.getRegistrate();
@@ -36,6 +40,15 @@ public class CCBlockEntityTypes {
                             CCBlocks.COPYCAT_HEAVY_WEIGHTED_PRESSURE_PLATE
                     )
                     .register();
+
+    public static final BlockEntityEntry<? extends MultiStateCopycatBlockEntity> MULTI_STATE_COPYCAT_BLOCK_ENTITY =
+            REGISTRATE.blockEntity("multistate_copycat", getPlatformMultiState())
+                    .register();
+
+    @ExpectPlatform
+    public static BlockEntityBuilder.BlockEntityFactory<? extends MultiStateCopycatBlockEntity> getPlatformMultiState() {
+        throw new AssertionError("This shouldn't appear");
+    }
 
 
     public static void register() {
