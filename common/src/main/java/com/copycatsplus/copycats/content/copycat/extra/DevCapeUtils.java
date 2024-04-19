@@ -16,13 +16,11 @@ import java.util.concurrent.CompletableFuture;
 
 public enum DevCapeUtils {
     INSTANCE;
-
-    public static final Map<UUID, Boolean> usageStatusServerside = new HashMap<>();
     public static final Map<UUID, Boolean> usageStatusClientside = new HashMap<>();
 
     private final Set<UUID> registeredDevs = new HashSet<>();
 
-    private static final String url = "https://raw.githubusercontent.com/Layers-of-Railways/data/main/dev_capes.json";
+    private static final String url = "https://github.com/copycats-plus/copycats/blob/21571baedeeaa1d6ae72424045c6b696bc42953c/common/src/main/resources/data/copycats/devs.json";
 
     private boolean initialized = false;
 
