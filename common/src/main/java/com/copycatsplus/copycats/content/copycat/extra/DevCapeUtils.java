@@ -20,7 +20,7 @@ public enum DevCapeUtils {
 
     private final Set<UUID> registeredDevs = new HashSet<>();
 
-    private static final String url = "https://github.com/copycats-plus/copycats/blob/21571baedeeaa1d6ae72424045c6b696bc42953c/common/src/main/resources/data/copycats/devs.json";
+    private static final String url = "https://raw.githubusercontent.com/copycats-plus/copycats/21571baedeeaa1d6ae72424045c6b696bc42953c/common/src/main/resources/data/copycats/devs.json";
 
     private boolean initialized = false;
 
