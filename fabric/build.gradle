@@ -34,16 +34,16 @@ configurations {
 }
 
 dependencies {
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-    modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    modApi "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
 
-    modImplementation("com.simibubi.create:create-fabric-${rootProject.minecraft_version}:${rootProject.create_fabric_version}")
+    modImplementation("com.simibubi.create:create-fabric-${minecraft_version}:${create_fabric_version}")
     // because create fabric is a bit broken I think
-    modImplementation("net.minecraftforge:forgeconfigapiport-fabric:3.2.4")
+    modImplementation("net.minecraftforge:forgeconfigapiport-fabric:${config_port_version}")
 
-    modLocalRuntime("mezz.jei:jei-${minecraft_version}-fabric:${rootProject.jei_fabric_version}")
+    modLocalRuntime("mezz.jei:jei-${minecraft_version}-fabric:${jei_fabric_version}")
 
-    annotationProcessor(implementation(include("io.github.llamalad7:mixinextras-fabric:${rootProject.mixin_extras_version}")))
+    annotationProcessor(implementation(include("io.github.llamalad7:mixinextras-fabric:${mixin_extras_version}")))
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
@@ -94,7 +94,7 @@ components.java {
 publishing {
     publications {
         mavenFabric(MavenPublication) {
-            artifactId = rootProject.archives_base_name + "-" + project.name
+            artifactId = archives_base_name + "-" + project.name
             from components.java
         }
     }

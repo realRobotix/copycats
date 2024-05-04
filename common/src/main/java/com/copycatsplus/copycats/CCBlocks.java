@@ -21,10 +21,15 @@ import com.copycatsplus.copycats.content.copycat.fence.WrappedFenceBlock;
 import com.copycatsplus.copycats.content.copycat.fence_gate.CopycatFenceGateBlock;
 import com.copycatsplus.copycats.content.copycat.fence_gate.CopycatFenceGateModel;
 import com.copycatsplus.copycats.content.copycat.fence_gate.WrappedFenceGateBlock;
+import com.copycatsplus.copycats.content.copycat.ghost_block.CopycatGhostBlock;
+import com.copycatsplus.copycats.content.copycat.ghost_block.CopycatGhostBlockModel;
 import com.copycatsplus.copycats.content.copycat.half_layer.CopycatHalfLayerBlock;
 import com.copycatsplus.copycats.content.copycat.half_layer.CopycatHalfLayerModel;
 import com.copycatsplus.copycats.content.copycat.half_panel.CopycatHalfPanelBlock;
 import com.copycatsplus.copycats.content.copycat.half_panel.CopycatHalfPanelModel;
+import com.copycatsplus.copycats.content.copycat.ladder.CopycatLadderBlock;
+import com.copycatsplus.copycats.content.copycat.ladder.CopycatLadderModel;
+import com.copycatsplus.copycats.content.copycat.ladder.WrappedLadderBlock;
 import com.copycatsplus.copycats.content.copycat.layer.CopycatLayerBlock;
 import com.copycatsplus.copycats.content.copycat.layer.CopycatLayerModel;
 import com.copycatsplus.copycats.content.copycat.pressure_plate.*;
@@ -191,6 +196,17 @@ public class CCBlocks {
                     .blockstate((c, p) -> getWrappedBlockState(c, p, "wrapped_copycat_fence_gate"))
                     .register();
 
+    public static final BlockEntry<CopycatGhostBlock> COPYCAT_GHOST_BLOCK =
+            REGISTRATE.block("copycat_ghost_block", CopycatGhostBlock::new)
+                    .transform(BuilderTransformers.copycat())
+                    .properties(p -> p.isValidSpawn((state, level, pos, entity) -> false)
+                            .noCollission())
+                    .transform(FeatureToggle.register())
+                    .onRegister(CreateRegistrate.blockModel(() -> model -> SimpleCopycatPart.create(model, new CopycatGhostBlockModel())))
+                    .item()
+                    .transform(customItemModel("copycat_base", "ghost_block"))
+                    .register();
+
     public static final BlockEntry<CopycatHalfLayerBlock> COPYCAT_HALF_LAYER =
             REGISTRATE.block("copycat_half_layer", CopycatHalfLayerBlock::new)
                     .transform(BuilderTransformers.copycat())
@@ -211,6 +227,25 @@ public class CCBlocks {
                     .onRegister(CreateRegistrate.blockModel(() -> model -> SimpleCopycatPart.create(model, new CopycatHalfPanelModel())))
                     .item()
                     .transform(customItemModel("copycat_base", "half_panel"))
+                    .register();
+
+    public static final BlockEntry<WrappedLadderBlock> WRAPPED_COPYCAT_LADDER =
+            REGISTRATE.block("wrapped_copycat_ladder", WrappedLadderBlock::new)
+                    .initialProperties(() -> Blocks.LADDER)
+                    .onRegister(b -> CopycatLadderBlock.ladder = b)
+                    .tag(BlockTags.CLIMBABLE)
+                    .blockstate((c, p) -> getWrappedBlockState(c, p, "wrapped_copycat_ladder"))
+                    .register();
+
+    public static final BlockEntry<CopycatLadderBlock> COPYCAT_LADDER =
+            REGISTRATE.block("copycat_ladder", CopycatLadderBlock::new)
+                    .transform(BuilderTransformers.copycat())
+                    .properties(p -> p.isValidSpawn((state, level, pos, entity) -> false))
+                    .tag(BlockTags.CLIMBABLE)
+                    .transform(FeatureToggle.register())
+                    .onRegister(CreateRegistrate.blockModel(() -> model -> SimpleCopycatPart.create(model, new CopycatLadderModel())))
+                    .item()
+                    .transform(customItemModel("copycat_base", "ladder"))
                     .register();
 
     public static final BlockEntry<CopycatLayerBlock> COPYCAT_LAYER =
