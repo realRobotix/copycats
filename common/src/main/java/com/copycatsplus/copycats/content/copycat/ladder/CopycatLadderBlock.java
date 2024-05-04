@@ -173,7 +173,7 @@ public class CopycatLadderBlock extends CopycatBlock implements ICopycatWithWrap
             if (!state.canSurvive(world, newPos))
                 return PlacementOffset.fail();
 
-            if (newState.canBeReplaced())
+            if (newState.getMaterial().isReplaceable())
                 return PlacementOffset.success(newPos, bState -> bState.setValue(FACING, state.getValue(FACING)));
             return PlacementOffset.fail();
         }
