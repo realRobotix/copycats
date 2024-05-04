@@ -170,6 +170,10 @@ public class CCStandardRecipes extends CopycatsRecipeProvider {
 
     GeneratedRecipe COPYCAT_HEAVY_WEIGHTED_PRESSURE_PLATE = copycat(CCBlocks.COPYCAT_HEAVY_WEIGHTED_PRESSURE_PLATE, 2);
 
+    GeneratedRecipe COPYCAT_GHOST_BLOCK = copycat(CCBlocks.COPYCAT_GHOST_BLOCK, 1);
+
+    GeneratedRecipe COPYCAT_LADDER = copycat(CCBlocks.COPYCAT_LADDER, 6);
+
 
     String currentFolder = "";
 
