@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(DSConfig.Common.class)
+@Mixin(DSConfig.Server.class)
 @Pseudo
 public class DSConfigCommonMixin {
 

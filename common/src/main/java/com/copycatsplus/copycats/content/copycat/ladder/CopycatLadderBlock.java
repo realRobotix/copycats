@@ -65,9 +65,14 @@ public class CopycatLadderBlock extends CopycatBlock implements ICopycatWithWrap
         return stateForPlacement.setValue(FACING, pContext.getHorizontalDirection().getOpposite());
     }
 
-    @Override
     public boolean canConnectTexturesToward(BlockAndTintGetter blockAndTintGetter, BlockPos blockPos, BlockPos blockPos1, BlockState blockState) {
         return false;
+    }
+
+    @Nullable
+    @Override
+    public BlockState getConnectiveMaterial(BlockAndTintGetter reader, BlockState otherState, Direction face, BlockPos fromPos, BlockPos toPos) {
+        return (canConnectTexturesToward(reader, fromPos, toPos, reader.getBlockState(fromPos)) ? getMaterial(reader, toPos) : null);
     }
 
     @Override
