@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "copycats",
+  "id": "${mod_id}",
   "version": "${version}",
 
   "name": "${mod_name}",
@@ -9,7 +9,7 @@
   "contact": {},
 
   "license": "${mod_license}",
-  "icon": "copycats_icon.png",
+  "icon": "${mod_icon}",
 
   "environment": "*",
   "entrypoints": {
@@ -21,15 +21,15 @@
     "fabric-datagen": ["com.copycatsplus.copycats.datagen.fabric.CCDatagenImpl"],
     "jei_mod_plugin": [
       "com.copycatsplus.copycats.compat.CopycatsJEI"
-      ]
+    ]
   },
   "mixins": [
     "copycats-fabric.mixins.json",
     "copycats-common.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.15.7",
-    "minecraft": ">=1.20.1",
+    "fabricloader": "${fabric_loader_range}",
+    "minecraft": "${minecraft_fabric_range}",
     "create": "${create_fabric_range}"
   }
 }

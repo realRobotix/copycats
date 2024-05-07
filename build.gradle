@@ -1,7 +1,52 @@
 plugins {
     id "architectury-plugin" version "3.4-SNAPSHOT"
     id "dev.architectury.loom" version "1.5.+" apply false
+    id "systems.manifold.manifold-gradle-plugin" version "0.0.2-alpha"
 }
+
+/**
+ * Creates the list of preprocessors to use.
+ *
+ * @param mcVers array of all MC versions
+ * @param mcIndex array index of the currently active MC version
+ */
+def writeBuildGradlePredefine(List<String> mcVers, int mcIndex)
+{
+    // Build the list of preprocessors to use
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("# DON'T TOUCH THIS FILE, This is handled by the build script\n");
+
+
+    for (int i = 0; i < mcVers.size(); i++)
+    {
+        String verStr = mcVers[i].replace(".", "_");
+        sb.append("MC_" + verStr + "=" + i.toString() + "\n");
+
+        if (mcIndex == i)
+            sb.append("MC_VER=" + i.toString() + "\n");
+    }
+
+
+    // Check if this is a development build
+    if (mod_version.toLowerCase().contains("dev"))
+    {
+        // WARNING: only use this for logging, we don't want to have confusion
+        // when a method doesn't work correctly in the release build.
+        sb.append("DEV_BUILD=\n");
+    }
+
+    new File(projectDir, "build.properties").text = sb.toString()
+}
+
+
+// Transfers the values set in settings.gradle to the rest of the project
+project.gradle.ext.getProperties().each { prop ->
+    rootProject.ext.set(prop.key, prop.value)
+//    println "Added prop [key:" + prop.key + ", value:" + prop.value + "]"
+}
+// Sets up manifold stuff
+writeBuildGradlePredefine(rootProject.mcVers, rootProject.mcIndex)
 
 architectury {
     minecraft = rootProject.minecraft_version
@@ -9,9 +54,14 @@ architectury {
 
 subprojects {
     apply plugin: "dev.architectury.loom"
+    apply plugin: "systems.manifold.manifold-gradle-plugin"
 
     loom {
         silentMojangMappingsLicense()
+    }
+
+    manifold {
+        manifoldVersion = rootProject.manifold_version
     }
 
     dependencies {
@@ -20,6 +70,7 @@ subprojects {
             officialMojangMappings()
             parchment("org.parchmentmc.data:parchment-${rootProject.minecraft_version}:${rootProject.parchment_version}@zip")
         }
+        annotationProcessor("systems.manifold:manifold-preprocessor:${rootProject.manifold_version}")
     }
 }
 
@@ -28,12 +79,16 @@ allprojects {
     apply plugin: "architectury-plugin"
     apply plugin: "maven-publish"
 
-
     archivesBaseName = rootProject.archives_base_name
     version = project.name + "." + minecraft_version + "-" + mod_version
     group = rootProject.maven_group
 
     repositories {
+        jcenter()
+        maven {
+            name = 'Sonatype'
+            url = 'https://oss.sonatype.org/content/repositories/snapshots/'
+        }
         maven {
             name = 'ParchmentMC'
             url = 'https://maven.parchmentmc.org'
@@ -83,11 +138,23 @@ allprojects {
             url = "https://jitpack.io/"
             content { includeGroupAndSubgroups("com.github") }
         }
+        exclusiveContent {
+            forRepository {
+                maven {
+                    name = "Modrinth"
+                    url = "https://api.modrinth.com/maven"
+                }
+            }
+            filter {
+                includeGroup "maven.modrinth"
+            }
+        }
     }
 
     tasks.withType(JavaCompile) {
         options.encoding = "UTF-8"
         options.release.set(17)
+        options.compilerArgs += ["-Xplugin:Manifold"]
     }
 
     tasks.named('processResources', ProcessResources).configure {
@@ -99,16 +166,27 @@ allprojects {
 
         // set up properties for filling into metadata
         var replaceProperties = [
-                version               : version.replace("forge.", "").replace("fabric.", ""),
-                minecraft_version     : minecraft_version,
-                fabric_api_version    : fabric_api_version,
-                fabric_loader_version : fabric_loader_version,
-                create_forge_range    : create_forge_range,
-                create_fabric_range   : create_fabric_range,
-                mod_license           : mod_license,
-                mod_authors           : mod_authors,
-                mod_name              : mod_name,
-                mod_description       : mod_description
+                mod_id                 : archives_base_name,
+                version                : version.replace("forge.", "").replace("fabric.", ""),
+                minecraft_version      : minecraft_version,
+                minecraft_fabric_range : minecraft_fabric_range,
+                minecraft_forge_range  : minecraft_forge_range,
+                fabric_api_version     : fabric_api_version,
+                fabric_loader_version  : fabric_loader_version,
+                fabric_loader_range    : fabric_loader_range,
+                forge_version          : forge_version,
+                forge_range            : forge_range,
+                create_forge_range     : create_forge_range,
+                create_fabric_range    : create_fabric_range,
+                mod_license            : mod_license,
+                mod_authors            : mod_authors,
+                mod_name               : mod_name,
+                mod_description        : mod_description,
+                mod_icon               : mod_icon,
+                mod_credits            : mod_credits,
+                mod_issue_url          : mod_issue_url,
+                mod_update_url         : mod_update_url,
+                mod_homepage_url       : mod_homepage_url
         ]
 
         inputs.properties replaceProperties
@@ -121,4 +199,8 @@ allprojects {
     java {
         withSourcesJar()
     }
+}
+
+wrapper {
+    gradleVersion = "8.4"
 }
