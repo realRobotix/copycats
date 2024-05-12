@@ -1,6 +1,6 @@
 package com.copycatsplus.copycats.content.copycat.base.multi.forge;
 
-import com.copycatsplus.copycats.content.copycat.base.multi.MultiStateCopycatBlockEntity;
+import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;

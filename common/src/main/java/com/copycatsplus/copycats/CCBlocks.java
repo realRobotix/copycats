@@ -453,7 +453,7 @@ public class CCBlocks {
             REGISTRATE.block("copycat_test_block", CopycatTestBlock::new)
                     .transform(CCBuilderTransformers.multiCopycat())
                     .transform(FeatureToggle.register())
-                    .onRegister(CreateRegistrate.blockModel(() -> model -> SimpleCopycatPart.create(model, new CopycatBlockModel())))
+                    .onRegister(CreateRegistrate.blockModel(() -> model -> SimpleCopycatPart.create(model, new CopycatSlabModel())))
                     .item()
                     .transform(customItemModel("copycat_base", "test_block"))
                     .register();

@@ -8,6 +8,12 @@ loom {
     }
 
     runs {
+        client {
+            vmArg "-XX:+AllowEnhancedClassRedefinition"
+        }
+        server {
+            vmArg "-XX:+AllowEnhancedClassRedefinition"
+        }
         data {
             data()
             name "Data Generation"

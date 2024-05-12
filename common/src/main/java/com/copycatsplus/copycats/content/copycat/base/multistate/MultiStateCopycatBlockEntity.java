@@ -1,4 +1,4 @@
-package com.copycatsplus.copycats.content.copycat.base.multi;
+package com.copycatsplus.copycats.content.copycat.base.multistate;
 
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.utility.Iterate;
@@ -26,11 +26,11 @@ public abstract class MultiStateCopycatBlockEntity extends SmartBlockEntity {
         return materialItemStorage;
     }
 
-    public void setMaterial(String key, BlockState blockState, ItemStack itemInHand) {
+    public void setMaterial(String property, BlockState blockState, ItemStack itemInHand) {
         BlockState wrapperState = getBlockState();
 
         BlockState finalMaterial = blockState;
-        if (getMaterialItemStorage().getAllMaterials().stream().noneMatch(mat -> mat.is(finalMaterial.getBlock())))
+        if (getMaterialItemStorage().getMaterialItem(property) != null && !getMaterialItemStorage().getMaterialItem(property).material().is(finalMaterial.getBlock()))
             for (Direction side : Iterate.directions) {
                 BlockPos neighbour = worldPosition.relative(side);
                 BlockState neighbourState = level.getBlockState(neighbour);
@@ -45,7 +45,7 @@ public abstract class MultiStateCopycatBlockEntity extends SmartBlockEntity {
                 break;
             }
 
-        getMaterialItemStorage().storeMaterialItem(key, new MaterialItemStorage.MaterialItem(blockState, itemInHand));
+        getMaterialItemStorage().storeMaterialItem(property, new MaterialItemStorage.MaterialItem(blockState, itemInHand));
         if (!level.isClientSide()) {
             notifyUpdate();
             return;

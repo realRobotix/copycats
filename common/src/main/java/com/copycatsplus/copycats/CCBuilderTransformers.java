@@ -1,6 +1,6 @@
 package com.copycatsplus.copycats;
 
-import com.copycatsplus.copycats.content.copycat.base.multi.MultiStateCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
 import com.tterrag.registrate.builders.BlockBuilder;
 import com.tterrag.registrate.util.nullness.NonNullUnaryOperator;
 import dev.architectury.injectables.annotations.ExpectPlatform;

@@ -1,12 +1,10 @@
 package com.copycatsplus.copycats;
 
-import com.copycatsplus.copycats.content.copycat.base.multi.MultiStateCopycatBlockEntity;
+import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlockEntity;
 import com.simibubi.create.content.decoration.copycat.CopycatBlockEntity;
-import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.tterrag.registrate.builders.BlockEntityBuilder;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
 import dev.architectury.injectables.annotations.ExpectPlatform;
-import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class CCBlockEntityTypes {
     private static final CopycatRegistrate REGISTRATE = Copycats.getRegistrate();

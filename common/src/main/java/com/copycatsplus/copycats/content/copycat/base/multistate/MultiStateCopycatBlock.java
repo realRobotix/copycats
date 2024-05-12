@@ -1,4 +1,4 @@
-package com.copycatsplus.copycats.content.copycat.base.multi;
+package com.copycatsplus.copycats.content.copycat.base.multistate;
 
 import com.copycatsplus.copycats.CCBlockEntityTypes;
 import com.simibubi.create.AllTags;
@@ -24,8 +24,10 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
@@ -62,48 +64,55 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
         });
     }
 
+    public abstract String getPropertyForInteraction(BlockState state, BlockPos hitLocation, BlockPos blockPos);
+
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand,
-                                 BlockHitResult pHit) {
-
-        if (pPlayer == null)
-            return InteractionResult.PASS;
-
-        Direction face = pHit.getDirection();
-        ItemStack itemInHand = pPlayer.getItemInHand(pHand);
-        BlockState materialIn = getAcceptedBlockState(pLevel, pPos, itemInHand, face);
+    public @NotNull InteractionResult use(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
+        ItemStack itemInHand = player.getItemInHand(hand);
+        Direction face = hit.getDirection();
+        BlockState materialIn = getAcceptedBlockState(level, pos, itemInHand, face);
 
         if (materialIn != null)
-            materialIn = prepareMaterial(pLevel, pPos, pState, pPlayer, pHand, pHit, materialIn);
+            materialIn = prepareMaterial(level, pos, state, player, hand, hit, materialIn);
         if (materialIn == null)
             return InteractionResult.PASS;
 
         BlockState material = materialIn;
-        return onBlockEntityUse(pLevel, pPos, ufte -> {
-            if (ufte.getMaterialItemStorage().getAllMaterials().stream().anyMatch(mat -> mat.is(material.getBlock()))) {
-/*                if (!ufte.cycleMaterial())
-                    return InteractionResult.PASS;*/
+        return storeMaterial(material, state, level, pos, player, hand, hit, itemInHand);
+    }
+
+    public InteractionResult storeMaterial(@NotNull BlockState material, @NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit, @NotNull ItemStack itemInHand) {
+        return onBlockEntityUse(level, pos, ufte -> {
+            Vec3 hitVec = hit.getLocation();
+            // Relativize the hit vector around the player position
+            hitVec = hitVec.add(-pos.getX(), -pos.getY(), -pos.getZ());
+            hitVec = hitVec.scale(maxMaterials());
+            BlockPos location = new BlockPos((int) hitVec.x(), (int) hitVec.y(), (int) hitVec.z());
+            String property = getPropertyForInteraction(state, location, pos);
+            if (ufte.getMaterialItemStorage().getMaterialItem(property) != null && ufte.getMaterialItemStorage().getMaterialItem(property).material().is(material.getBlock())) {
+                if (!ufte.getMaterialItemStorage().getMaterialItem(property).cycleMaterial())
+                    return InteractionResult.PASS;
                 ufte.getLevel()
                         .playSound(null, ufte.getBlockPos(), SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, .75f,
                                 .95f);
                 return InteractionResult.SUCCESS;
             }
-            if (ufte.getMaterialItemStorage().hasCustomMaterial())
+            if (ufte.getMaterialItemStorage().hasCustomMaterial(property))
                 return InteractionResult.PASS;
-            if (pLevel.isClientSide())
+            if (level.isClientSide())
                 return InteractionResult.SUCCESS;
 
-            ufte.setMaterial("full", material, itemInHand);
+            ufte.setMaterial(property, material, itemInHand);
             ufte.getLevel()
                     .playSound(null, ufte.getBlockPos(), material.getSoundType()
                             .getPlaceSound(), SoundSource.BLOCKS, 1, .75f);
 
-            if (pPlayer.isCreative())
+            if (player.isCreative())
                 return InteractionResult.SUCCESS;
 
             itemInHand.shrink(1);
             if (itemInHand.isEmpty())
-                pPlayer.setItemInHand(pHand, ItemStack.EMPTY);
+                player.setItemInHand(hand, ItemStack.EMPTY);
             return InteractionResult.SUCCESS;
         });
     }

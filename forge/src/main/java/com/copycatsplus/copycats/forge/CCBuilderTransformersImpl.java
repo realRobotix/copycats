@@ -1,6 +1,6 @@
 package com.copycatsplus.copycats.forge;
 
-import com.copycatsplus.copycats.content.copycat.base.multi.MultiStateCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
 import com.simibubi.create.content.decoration.copycat.CopycatBlock;
 import com.simibubi.create.foundation.data.SharedProperties;
 import com.simibubi.create.foundation.data.TagGen;
