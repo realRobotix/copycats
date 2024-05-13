@@ -10,6 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -48,8 +49,8 @@ public class MaterialItemStorage {
         return storage.values().stream().map(MaterialItem::material).collect(Collectors.toSet());
     }
 
-    public Set<ItemStack> getAllConsumedItems() {
-        return storage.values().stream().map(MaterialItem::consumedItem).collect(Collectors.toSet());
+    public List<ItemStack> getAllConsumedItems() {
+        return storage.values().stream().map(MaterialItem::consumedItem).collect(Collectors.toList());
     }
 
     public Map<String, BlockState> getMaterialMap() {
