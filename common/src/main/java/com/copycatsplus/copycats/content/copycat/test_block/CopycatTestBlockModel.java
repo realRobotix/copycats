@@ -1,6 +1,7 @@
 package com.copycatsplus.copycats.content.copycat.test_block;
 
 import com.copycatsplus.copycats.content.copycat.base.model.QuadHelper;
+import com.copycatsplus.copycats.content.copycat.base.model.QuadHelper.CopycatRenderContext;
 import com.copycatsplus.copycats.content.copycat.base.model.multistate.SimpleMultiStateCopycatPart;
 import com.copycatsplus.copycats.content.copycat.slab.CopycatSlabBlock;
 import com.simibubi.create.foundation.utility.Iterate;
@@ -17,7 +18,7 @@ import static net.minecraft.core.Direction.*;
 
 public class CopycatTestBlockModel implements SimpleMultiStateCopycatPart {
     @Override
-    public void emitCopycatQuads(String key, BlockState state, QuadHelper.CopycatRenderContext context, BlockState material) {
+    public void emitCopycatQuads(String key, BlockState state, CopycatRenderContext context, BlockState material) {
         if (Objects.equals(key, SlabType.TOP.getSerializedName()) && state.getValue(CopycatSlabBlock.SLAB_TYPE) == SlabType.BOTTOM)
             return;
         if (Objects.equals(key, SlabType.BOTTOM.getSerializedName()) && state.getValue(CopycatSlabBlock.SLAB_TYPE) == SlabType.TOP)
@@ -32,7 +33,7 @@ public class CopycatTestBlockModel implements SimpleMultiStateCopycatPart {
         }
     }
 
-    private void assemblePiece(Direction facing, QuadHelper.CopycatRenderContext context, boolean front, boolean topSlab, boolean isDouble) {
+    private void assemblePiece(Direction facing, CopycatRenderContext context, boolean front, boolean topSlab, boolean isDouble) {
         Vec3 normal = Vec3.atLowerCornerOf(facing.getNormal());
         Vec3 normalScaled12 = normal.scale(12 / 16f);
         Vec3 normalScaledN8 = topSlab ? normal.scale((front ? 0 : -8) / 16f) : normal.scale((front ? 8 : 0) / 16f);

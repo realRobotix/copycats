@@ -1,19 +1,18 @@
 package com.copycatsplus.copycats.content.copycat.base.multistate;
 
+import com.copycatsplus.copycats.utility.ItemUtils;
 import com.copycatsplus.copycats.utility.NBTUtils;
-import com.simibubi.create.content.redstone.RoseQuartzLampBlock;
+import com.simibubi.create.AllBlocks;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class MaterialItemStorage {
@@ -21,20 +20,23 @@ public class MaterialItemStorage {
     private Map<String, MaterialItem> storage;
     private int maxStorage;
 
-    private MaterialItemStorage(int maxStorage) {
+    private MaterialItemStorage(int maxStorage, Set<String> properties) {
         storage = new HashMap<>(maxStorage);
         this.maxStorage = maxStorage;
+        for (String property : properties) {
+            storage.put(property, new MaterialItem(AllBlocks.COPYCAT_BASE.getDefaultState(), ItemStack.EMPTY));
+        }
     }
 
-    public static MaterialItemStorage create(int maxStorage) {
-        return new MaterialItemStorage(maxStorage);
+    public static MaterialItemStorage create(int maxStorage, Set<String> properties) {
+        return new MaterialItemStorage(maxStorage, properties);
     }
 
     public void storeMaterialItem(String property, MaterialItem materialItem) {
         storage.put(property, materialItem);
     }
 
-    public @Nullable MaterialItem getMaterialItem(String property) {
+    public MaterialItem getMaterialItem(String property) {
         return storage.get(property);
     }
 
@@ -55,7 +57,7 @@ public class MaterialItemStorage {
     }
 
     public boolean hasCustomMaterial(String property) {
-        return storage.get(property) != null;
+        return storage.get(property).material() != AllBlocks.COPYCAT_BASE.getDefaultState();
     }
 
     public CompoundTag serialize() {
@@ -70,10 +72,15 @@ public class MaterialItemStorage {
         return root;
     }
 
-    public void deserialize(CompoundTag tag) {
+    public boolean deserialize(CompoundTag tag) {
+        AtomicBoolean anyUpdated = new AtomicBoolean(false);
         tag.getAllKeys().forEach(key -> {
-            storage.put(key, MaterialItem.deserialize(tag.getCompound(key)));
+            MaterialItem newVersion = MaterialItem.deserialize(tag.getCompound(key));
+             if (newVersion.material() != storage.put(key, newVersion).material() && !anyUpdated.get()) {
+                 anyUpdated.set(true);
+             };
         });
+        return anyUpdated.get();
     }
 
     public static class MaterialItem {
@@ -86,28 +93,8 @@ public class MaterialItemStorage {
             this.consumedItem = consumedItem;
         }
 
-        public boolean cycleMaterial() {
-            if (material.hasProperty(TrapDoorBlock.HALF) && material.getOptionalValue(TrapDoorBlock.OPEN)
-                    .orElse(false))
-                setMaterial(material.cycle(TrapDoorBlock.HALF));
-            else if (material.hasProperty(BlockStateProperties.FACING))
-                setMaterial(material.cycle(BlockStateProperties.FACING));
-            else if (material.hasProperty(BlockStateProperties.HORIZONTAL_FACING))
-                setMaterial(material.setValue(BlockStateProperties.HORIZONTAL_FACING,
-                        material.getValue(BlockStateProperties.HORIZONTAL_FACING)
-                                .getClockWise()));
-            else if (material.hasProperty(BlockStateProperties.AXIS))
-                setMaterial(material.cycle(BlockStateProperties.AXIS));
-            else if (material.hasProperty(BlockStateProperties.HORIZONTAL_AXIS))
-                setMaterial(material.cycle(BlockStateProperties.HORIZONTAL_AXIS));
-            else if (material.hasProperty(BlockStateProperties.LIT))
-                setMaterial(material.cycle(BlockStateProperties.LIT));
-            else if (material.hasProperty(RoseQuartzLampBlock.POWERING))
-                setMaterial(material.cycle(RoseQuartzLampBlock.POWERING));
-            else
-                return false;
-
-            return true;
+        public void setConsumedItem(ItemStack stack) {
+            consumedItem = ItemUtils.copyStackWithSize(stack, 1);
         }
 
         public CompoundTag serialize() {
@@ -141,10 +128,6 @@ public class MaterialItemStorage {
 
         public void setMaterial(BlockState material) {
             this.material = material;
-        }
-
-        public void setConsumedItem(ItemStack stack) {
-            this.consumedItem = stack;
         }
     }
 

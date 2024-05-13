@@ -1,20 +1,25 @@
 package com.copycatsplus.copycats.content.copycat.base.multistate;
 
 import com.copycatsplus.copycats.CCBlockEntityTypes;
+import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
+import com.simibubi.create.foundation.utility.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -31,6 +36,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.Set;
 
 import static net.minecraft.core.Direction.Axis;
 
@@ -41,6 +47,8 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
 
     public abstract int maxMaterials();
 
+    public abstract Set<String> storageProperties();
+
     @Override
     public InteractionResult onSneakWrenched(BlockState state, UseOnContext context) {
         onWrenched(state, context);
@@ -50,8 +58,9 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
     @Override
     public InteractionResult onWrenched(BlockState state, UseOnContext context) {
         return onBlockEntityUse(context.getLevel(), context.getClickedPos(), ufte -> {
-/*            ItemStack consumedItem = ufte.getConsumedItem();
-            if (!ufte.hasCustomMaterial())
+            String property = getProperty(state, context.getClickedPos(), context.getClickLocation());
+            ItemStack consumedItem = ufte.getMaterialItemStorage().getMaterialItem(property).consumedItem();
+            if (!ufte.getMaterialItemStorage().hasCustomMaterial(property))
                 return InteractionResult.PASS;
             Player player = context.getPlayer();
             if (!player.isCreative())
@@ -59,16 +68,19 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
                         .placeItemBackInInventory(consumedItem);
             context.getLevel()
                     .levelEvent(2001, context.getClickedPos(), Block.getId(ufte.getBlockState()));
-            ufte.setMaterial(AllBlocks.COPYCAT_BASE.getDefaultState());
-            ufte.setConsumedItem(ItemStack.EMPTY);*/
+            ufte.setMaterial(property, AllBlocks.COPYCAT_BASE.getDefaultState());
+            ufte.setConsumedItem(property, ItemStack.EMPTY);
             return InteractionResult.SUCCESS;
         });
     }
 
-    public abstract String getPropertyForInteraction(BlockState state, BlockPos hitLocation, BlockPos blockPos);
+    public abstract String getPropertyFromInteraction(BlockState state, BlockPos hitLocation, BlockPos blockPos);
 
     @Override
     public @NotNull InteractionResult use(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
+        if (player == null || !player.mayBuild() && !player.isSpectator())
+            return InteractionResult.PASS;
+
         ItemStack itemInHand = player.getItemInHand(hand);
         Direction face = hit.getDirection();
         BlockState materialIn = getAcceptedBlockState(level, pos, itemInHand, face);
@@ -79,34 +91,28 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
             return InteractionResult.PASS;
 
         BlockState material = materialIn;
-        return storeMaterial(material, state, level, pos, player, hand, hit, itemInHand);
-    }
-
-    public InteractionResult storeMaterial(@NotNull BlockState material, @NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit, @NotNull ItemStack itemInHand) {
         return onBlockEntityUse(level, pos, ufte -> {
-            Vec3 hitVec = hit.getLocation();
-            // Relativize the hit vector around the player position
-            hitVec = hitVec.add(-pos.getX(), -pos.getY(), -pos.getZ());
-            hitVec = hitVec.scale(maxMaterials());
-            BlockPos location = new BlockPos((int) hitVec.x(), (int) hitVec.y(), (int) hitVec.z());
-            String property = getPropertyForInteraction(state, location, pos);
-            if (ufte.getMaterialItemStorage().getMaterialItem(property) != null && ufte.getMaterialItemStorage().getMaterialItem(property).material().is(material.getBlock())) {
-                if (!ufte.getMaterialItemStorage().getMaterialItem(property).cycleMaterial())
+            String property = getProperty(state, pos, hit);
+            if (ufte.getMaterialItemStorage().getMaterialItem(property).material().is(material.getBlock())) {
+                if (!ufte.cycleMaterial(property))
                     return InteractionResult.PASS;
                 ufte.getLevel()
                         .playSound(null, ufte.getBlockPos(), SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, .75f,
                                 .95f);
                 return InteractionResult.SUCCESS;
             }
-            if (ufte.getMaterialItemStorage().hasCustomMaterial(property))
+            if (ufte.getMaterialItemStorage().hasCustomMaterial(property)
+                    && !ufte.getMaterialItemStorage().getMaterialItem(property).material().is(AllBlocks.COPYCAT_BASE.get()))
                 return InteractionResult.PASS;
-
-            // TODO: in Create's implementation this line should be below the isClientSide check.
-            // Need to investigate why it doesn't work here
-            ufte.setMaterial(property, material, itemInHand);
 
             if (level.isClientSide())
                 return InteractionResult.SUCCESS;
+
+            ufte.setMaterial(property, material);
+            ufte.setConsumedItem(property, itemInHand);
+            // TODO: in Create's implementation this line should be below the isClientSide check.
+            // Need to investigate why it doesn't work here
+
 
             ufte.getLevel()
                     .playSound(null, ufte.getBlockPos(), material.getSoundType()
@@ -120,6 +126,48 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
                 player.setItemInHand(hand, ItemStack.EMPTY);
             return InteractionResult.SUCCESS;
         });
+    }
+
+    @Override
+    public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, LivingEntity pPlacer, ItemStack pStack) {
+        //TODO: Not sure how to retrieve the property here as im unsure what to put as the context for the clipcontext.
+        //Otherwise its all good to go
+/*        if (pPlacer == null)
+            return;
+        ItemStack offhandItem = pPlacer.getItemInHand(InteractionHand.OFF_HAND);
+        BlockState appliedState =
+                getAcceptedBlockState(pLevel, pPos, offhandItem, Direction.orderedByNearest(pPlacer)[0]);
+
+        if (appliedState == null)
+            return;
+        Vec3i vecPos = new Vec3i(pPos.getX(), pPos.getY(), pPos.getZ());
+        String property = getProperty(pState, pPos, pLevel.clip(new ClipContext(VecHelper.getCenterOf(vecPos), new Vec3(vecPos.getX(), vecPos.getY(), vecPos.getZ()), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, pPlacer)));
+        withBlockEntityDo(pLevel, pPos, ufte -> {
+            if (ufte.getMaterialItemStorage().hasCustomMaterial(property))
+                return;
+
+            ufte.setMaterial(property, appliedState);
+            ufte.setConsumedItem(property, offhandItem);
+
+            if (pPlacer instanceof Player player && player.isCreative())
+                return;
+            offhandItem.shrink(1);
+            if (offhandItem.isEmpty())
+                pPlacer.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
+        });*/
+    }
+
+    private String getProperty(@NotNull BlockState state, @NotNull BlockPos pos, @NotNull BlockHitResult hit) {
+        Vec3 hitVec = hit.getLocation();
+        return getProperty(state, pos, hitVec);
+    }
+
+    private String getProperty(@NotNull BlockState state, @NotNull BlockPos pos, @NotNull Vec3 hitVec) {
+        // Relativize the hit vector around the player position
+        hitVec = hitVec.add(-pos.getX(), -pos.getY(), -pos.getZ());
+        hitVec = hitVec.scale(maxMaterials());
+        BlockPos location = new BlockPos((int) hitVec.x(), (int) hitVec.y(), (int) hitVec.z());
+        return getPropertyFromInteraction(state, location, pos);
     }
 
     //Copied from CopycatBlock

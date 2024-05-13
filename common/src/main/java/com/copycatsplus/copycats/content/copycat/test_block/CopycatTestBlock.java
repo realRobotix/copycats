@@ -13,6 +13,8 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.SlabType;
 
+import java.util.Set;
+
 public class CopycatTestBlock extends MultiStateCopycatBlock {
 
     public static final EnumProperty<SlabType> SLAB_TYPE = BlockStateProperties.SLAB_TYPE;
@@ -82,7 +84,12 @@ public class CopycatTestBlock extends MultiStateCopycatBlock {
     }
 
     @Override
-    public String getPropertyForInteraction(BlockState state, BlockPos hitLocation, BlockPos blockPos) {
+    public Set<String> storageProperties() {
+        return Set.of(SlabType.TOP.getSerializedName(), SlabType.BOTTOM.getSerializedName());
+    }
+
+    @Override
+    public String getPropertyFromInteraction(BlockState state, BlockPos hitLocation, BlockPos blockPos) {
         if (state.getValue(SLAB_TYPE) == SlabType.DOUBLE) {
             return switch (state.getValue(AXIS)) {
                 case X -> {
