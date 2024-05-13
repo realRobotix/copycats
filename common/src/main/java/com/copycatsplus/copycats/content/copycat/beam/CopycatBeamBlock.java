@@ -166,16 +166,21 @@ public class CopycatBeamBlock extends CTWaterloggedCopycatBlock {
     public @NotNull BlockState rotate(@NotNull BlockState state, Rotation rot) {
         switch (rot) {
             case COUNTERCLOCKWISE_90, CLOCKWISE_90 -> {
-                return switch (state.getValue(AXIS)) {
-                    case X -> state.setValue(AXIS, Axis.Z);
-                    case Z -> state.setValue(AXIS, Axis.X);
-                    default -> state;
-                };
+                return getBlockState(state);
             }
             default -> {
                 return state;
             }
         }
+    }
+
+    @NotNull
+    private static BlockState getBlockState(@NotNull BlockState state) {
+        return switch (state.getValue(AXIS)) {
+            case X -> state.setValue(AXIS, Axis.Z);
+            case Z -> state.setValue(AXIS, Axis.X);
+            default -> state;
+        };
     }
 
     @MethodsReturnNonnullByDefault
