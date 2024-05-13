@@ -1,15 +1,22 @@
 package com.copycatsplus.copycats.content.copycat.base.multistate;
 
+import com.simibubi.create.content.contraptions.ITransformableBlockEntity;
+import com.simibubi.create.content.contraptions.StructureTransform;
+import com.simibubi.create.content.schematics.requirement.ISpecialBlockEntityItemRequirement;
+import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
-import com.simibubi.create.foundation.utility.Iterate;
+import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import com.simibubi.create.foundation.utility.IPartialSafeNBT;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-public abstract class MultiStateCopycatBlockEntity extends SmartBlockEntity {
+import java.util.List;
+
+public abstract class MultiStateCopycatBlockEntity extends SmartBlockEntity
+        implements ISpecialBlockEntityItemRequirement, ITransformableBlockEntity, IPartialSafeNBT {
 
     private final MaterialItemStorage materialItemStorage;
 
@@ -26,31 +33,28 @@ public abstract class MultiStateCopycatBlockEntity extends SmartBlockEntity {
         return materialItemStorage;
     }
 
-    public void setMaterial(String property, BlockState blockState, ItemStack itemInHand) {
+    public void setMaterial(String property, BlockState blockState) {
         BlockState wrapperState = getBlockState();
 
-        BlockState finalMaterial = blockState;
-        if (getMaterialItemStorage().getMaterialItem(property) != null && !getMaterialItemStorage().getMaterialItem(property).material().is(finalMaterial.getBlock()))
-            for (Direction side : Iterate.directions) {
-                BlockPos neighbour = worldPosition.relative(side);
-                BlockState neighbourState = level.getBlockState(neighbour);
-                if (neighbourState != wrapperState)
-                    continue;
-                if (!(level.getBlockEntity(neighbour) instanceof MultiStateCopycatBlockEntity cbe))
-                    continue;
-/*                BlockState otherMaterial = cbe.getMaterial();
-                if (!otherMaterial.is(blockState.getBlock()))
-                    continue;
-                blockState = otherMaterial;*/
-                break;
-            }
+        // TODO: optional logic to copy state from neighboring copycats of the same material
 
-        getMaterialItemStorage().storeMaterialItem(property, new MaterialItemStorage.MaterialItem(blockState, itemInHand));
+        getMaterialItemStorage().setMaterial(property, blockState);
         if (!level.isClientSide()) {
             notifyUpdate();
             return;
         }
         redraw();
+    }
+
+    public boolean cycleMaterial(String property) {
+        boolean success = getMaterialItemStorage().getMaterialItem(property).cycleMaterial();
+        if (!success) return false;
+        if (!level.isClientSide()) {
+            notifyUpdate();
+            return true;
+        }
+        redraw();
+        return true;
     }
 
     private void redraw() {
@@ -62,6 +66,27 @@ public abstract class MultiStateCopycatBlockEntity extends SmartBlockEntity {
                     .getLightEngine()
                     .checkBlock(worldPosition);
         }
+    }
+
+    @Override
+    public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
+    }
+
+    @Override
+    public ItemRequirement getRequiredItems(BlockState state) {
+        List<ItemStack> stacks = getMaterialItemStorage().getAllConsumedItems();
+        if (stacks.isEmpty())
+            return ItemRequirement.NONE;
+        return new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, stacks);
+    }
+
+    @Override
+    public void transform(StructureTransform transform) {
+        // TODO: probably need additional logic
+        for (String key : getMaterialItemStorage().getAllProperties()) {
+            getMaterialItemStorage().setMaterial(key, transform.apply(getMaterialItemStorage().getMaterial(key)));
+        }
+        notifyUpdate();
     }
 
     public abstract void requestModelUpdate();
@@ -84,6 +109,8 @@ public abstract class MultiStateCopycatBlockEntity extends SmartBlockEntity {
     protected void read(CompoundTag tag, boolean clientPacket) {
         super.read(tag, clientPacket);
 
-        materialItemStorage.deserialize(tag.getCompound("material_data"));
+        boolean needRedraw = materialItemStorage.deserialize(tag.getCompound("material_data"));
+        if (clientPacket && needRedraw)
+            redraw();
     }
 }

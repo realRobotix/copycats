@@ -1,6 +1,7 @@
 package com.copycatsplus.copycats.content.copycat.base.multistate;
 
 import com.copycatsplus.copycats.utility.NBTUtils;
+import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.redstone.RoseQuartzLampBlock;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -12,14 +13,15 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class MaterialItemStorage {
 
-    private Map<String, MaterialItem> storage;
-    private int maxStorage;
+    private final Map<String, MaterialItem> storage;
+    private final int maxStorage;
 
     private MaterialItemStorage(int maxStorage) {
         storage = new HashMap<>(maxStorage);
@@ -30,10 +32,6 @@ public class MaterialItemStorage {
         return new MaterialItemStorage(maxStorage);
     }
 
-    public void storeMaterialItem(String property, MaterialItem materialItem) {
-        storage.put(property, materialItem);
-    }
-
     public @Nullable MaterialItem getMaterialItem(String property) {
         return storage.get(property);
     }
@@ -42,12 +40,8 @@ public class MaterialItemStorage {
         return storage.keySet();
     }
 
-    public Set<BlockState> getAllMaterials() {
-        return storage.values().stream().map(MaterialItem::material).collect(Collectors.toSet());
-    }
-
-    public Set<ItemStack> getAllConsumedItems() {
-        return storage.values().stream().map(MaterialItem::consumedItem).collect(Collectors.toSet());
+    public List<ItemStack> getAllConsumedItems() {
+        return storage.values().stream().map(MaterialItem::consumedItem).collect(Collectors.toList());
     }
 
     public Map<String, BlockState> getMaterialMap() {
@@ -56,6 +50,28 @@ public class MaterialItemStorage {
 
     public boolean hasCustomMaterial(String property) {
         return storage.get(property) != null;
+    }
+
+    public BlockState getMaterial(String property) {
+        return storage.get(property).material;
+    }
+
+    public void setMaterial(String property, BlockState material) {
+        MaterialItem materialItem = storage.get(property);
+        if (materialItem == null) {
+            storage.put(property, new MaterialItem(material, ItemStack.EMPTY));
+        } else {
+            materialItem.setMaterial(material);
+        }
+    }
+
+    public void setConsumedItem(String property, ItemStack stack) {
+        MaterialItem materialItem = storage.get(property);
+        if (materialItem == null) {
+            storage.put(property, new MaterialItem(AllBlocks.COPYCAT_BASE.getDefaultState(), stack));
+        } else {
+            materialItem.setConsumedItem(stack);
+        }
     }
 
     public CompoundTag serialize() {
@@ -70,10 +86,19 @@ public class MaterialItemStorage {
         return root;
     }
 
-    public void deserialize(CompoundTag tag) {
-        tag.getAllKeys().forEach(key -> {
-            storage.put(key, MaterialItem.deserialize(tag.getCompound(key)));
-        });
+    public boolean deserialize(CompoundTag tag) {
+        boolean needRedraw = false;
+        Map<String, MaterialItem> newStorage = new HashMap<>();
+        for (String key : tag.getAllKeys()) {
+            MaterialItem materialItem = MaterialItem.deserialize(tag.getCompound(key));
+            MaterialItem prevItem = storage.get(key);
+            if (prevItem != null && prevItem.material != materialItem.material)
+                needRedraw = true;
+            newStorage.put(key, materialItem);
+        }
+        storage.clear();
+        storage.putAll(newStorage);
+        return needRedraw;
     }
 
     public static class MaterialItem {

@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -12,6 +13,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.SlabType;
+import net.minecraft.world.phys.Vec3;
 
 public class CopycatTestBlock extends MultiStateCopycatBlock {
 
@@ -82,25 +84,30 @@ public class CopycatTestBlock extends MultiStateCopycatBlock {
     }
 
     @Override
-    public String getPropertyForInteraction(BlockState state, BlockPos hitLocation, BlockPos blockPos) {
+    public String getPropertyForInteraction(BlockState state, UseOnContext context) {
         if (state.getValue(SLAB_TYPE) == SlabType.DOUBLE) {
+            Vec3 hitLocation = new Vec3(
+                    context.getClickLocation().x - context.getClickedPos().getX(),
+                    context.getClickLocation().y - context.getClickedPos().getY(),
+                    context.getClickLocation().z - context.getClickedPos().getZ()
+            );
             return switch (state.getValue(AXIS)) {
                 case X -> {
-                    if (hitLocation.getX() == 1) {
+                    if (hitLocation.x() >= 0.5) {
                         yield (SlabType.TOP.getSerializedName());
                     } else {
                         yield SlabType.BOTTOM.getSerializedName();
                     }
                 }
                 case Y -> {
-                    if (hitLocation.getY() == 1) {
+                    if (hitLocation.y() >= 0.5) {
                         yield SlabType.TOP.getSerializedName();
                     } else {
                         yield SlabType.BOTTOM.getSerializedName();
                     }
                 }
                 case Z -> {
-                    if (hitLocation.getZ() == 1) {
+                    if (hitLocation.z() >= 0.5) {
                         yield SlabType.TOP.getSerializedName();
                     } else {
                         yield SlabType.BOTTOM.getSerializedName();

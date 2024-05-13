@@ -1,6 +1,7 @@
 package com.copycatsplus.copycats.content.copycat.base.multistate;
 
 import com.copycatsplus.copycats.CCBlockEntityTypes;
+import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
@@ -15,8 +16,10 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -25,7 +28,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
@@ -35,11 +37,18 @@ import javax.annotation.Nullable;
 import static net.minecraft.core.Direction.Axis;
 
 public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiStateCopycatBlockEntity>, IWrenchable {
+
     public MultiStateCopycatBlock(Properties properties) {
         super(properties);
     }
 
     public abstract int maxMaterials();
+
+    @Nullable
+    @Override
+    public <S extends BlockEntity> BlockEntityTicker<S> getTicker(Level p_153212_, BlockState p_153213_, BlockEntityType<S> p_153214_) {
+        return null;
+    }
 
     @Override
     public InteractionResult onSneakWrenched(BlockState state, UseOnContext context) {
@@ -47,30 +56,31 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
         return IWrenchable.super.onSneakWrenched(state, context);
     }
 
+    public abstract String getPropertyForInteraction(BlockState state, UseOnContext context);
+
     @Override
     public InteractionResult onWrenched(BlockState state, UseOnContext context) {
         return onBlockEntityUse(context.getLevel(), context.getClickedPos(), ufte -> {
-/*            ItemStack consumedItem = ufte.getConsumedItem();
-            if (!ufte.hasCustomMaterial())
-                return InteractionResult.PASS;
+            String property = getPropertyForInteraction(state, context);
+            MaterialItemStorage.MaterialItem materialItem = ufte.getMaterialItemStorage().getMaterialItem(property);
+            if (materialItem == null) return InteractionResult.PASS;
+            ItemStack consumedItem = materialItem.consumedItem();
             Player player = context.getPlayer();
             if (!player.isCreative())
                 player.getInventory()
                         .placeItemBackInInventory(consumedItem);
             context.getLevel()
                     .levelEvent(2001, context.getClickedPos(), Block.getId(ufte.getBlockState()));
-            ufte.setMaterial(AllBlocks.COPYCAT_BASE.getDefaultState());
-            ufte.setConsumedItem(ItemStack.EMPTY);*/
+            ufte.setMaterial(property, AllBlocks.COPYCAT_BASE.getDefaultState());
+            ufte.getMaterialItemStorage().setConsumedItem(property, ItemStack.EMPTY);
             return InteractionResult.SUCCESS;
         });
     }
 
-    public abstract String getPropertyForInteraction(BlockState state, BlockPos hitLocation, BlockPos blockPos);
-
     @Override
     public @NotNull InteractionResult use(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
-        ItemStack itemInHand = player.getItemInHand(hand);
         Direction face = hit.getDirection();
+        ItemStack itemInHand = player.getItemInHand(hand);
         BlockState materialIn = getAcceptedBlockState(level, pos, itemInHand, face);
 
         if (materialIn != null)
@@ -79,19 +89,11 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
             return InteractionResult.PASS;
 
         BlockState material = materialIn;
-        return storeMaterial(material, state, level, pos, player, hand, hit, itemInHand);
-    }
-
-    public InteractionResult storeMaterial(@NotNull BlockState material, @NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit, @NotNull ItemStack itemInHand) {
         return onBlockEntityUse(level, pos, ufte -> {
-            Vec3 hitVec = hit.getLocation();
-            // Relativize the hit vector around the player position
-            hitVec = hitVec.add(-pos.getX(), -pos.getY(), -pos.getZ());
-            hitVec = hitVec.scale(maxMaterials());
-            BlockPos location = new BlockPos((int) hitVec.x(), (int) hitVec.y(), (int) hitVec.z());
-            String property = getPropertyForInteraction(state, location, pos);
-            if (ufte.getMaterialItemStorage().getMaterialItem(property) != null && ufte.getMaterialItemStorage().getMaterialItem(property).material().is(material.getBlock())) {
-                if (!ufte.getMaterialItemStorage().getMaterialItem(property).cycleMaterial())
+            String property = getPropertyForInteraction(state, new UseOnContext(player, hand, hit));
+            MaterialItemStorage.MaterialItem materialItem = ufte.getMaterialItemStorage().getMaterialItem(property);
+            if (materialItem != null && materialItem.material().is(material.getBlock())) {
+                if (!ufte.cycleMaterial(property))
                     return InteractionResult.PASS;
                 ufte.getLevel()
                         .playSound(null, ufte.getBlockPos(), SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, .75f,
@@ -101,12 +103,13 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
             if (ufte.getMaterialItemStorage().hasCustomMaterial(property))
                 return InteractionResult.PASS;
 
-            // TODO: in Create's implementation this line should be below the isClientSide check.
-            // Need to investigate why it doesn't work here
-            ufte.setMaterial(property, material, itemInHand);
+            // TODO: these two lines should be below isClientSide check. Find out why they can't be
+            ufte.setMaterial(property, material);
+            ufte.getMaterialItemStorage().setConsumedItem(property, itemInHand);
 
             if (level.isClientSide())
                 return InteractionResult.SUCCESS;
+
 
             ufte.getLevel()
                     .playSound(null, ufte.getBlockPos(), material.getSoundType()
@@ -192,6 +195,13 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
     }
 
     @Override
+    public void playerWillDestroy(Level pLevel, BlockPos pPos, BlockState pState, Player pPlayer) {
+        super.playerWillDestroy(pLevel, pPos, pState, pPlayer);
+        if (pPlayer.isCreative())
+            withBlockEntityDo(pLevel, pPos, ufte -> ufte.getMaterialItemStorage().getAllProperties().forEach(key -> ufte.getMaterialItemStorage().setConsumedItem(key, ItemStack.EMPTY)));
+    }
+
+    @Override
     public Class<MultiStateCopycatBlockEntity> getBlockEntityClass() {
         return MultiStateCopycatBlockEntity.class;
     }
@@ -201,14 +211,19 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
         return CCBlockEntityTypes.MULTI_STATE_COPYCAT_BLOCK_ENTITY.get();
     }
 
-    @Nullable
-    @Override
-    public <S extends BlockEntity> BlockEntityTicker<S> getTicker(Level p_153212_, BlockState p_153213_, BlockEntityType<S> p_153214_) {
-        return null;
+    public boolean isIgnoredConnectivitySide(BlockAndTintGetter reader, BlockState state, Direction face,
+                                             BlockPos fromPos, BlockPos toPos) {
+        return false;
     }
 
     public abstract boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos,
                                                      BlockState state);
+
+    public static BlockState getMaterial(BlockGetter reader, BlockPos targetPos, String property) {
+        if (reader.getBlockEntity(targetPos) instanceof MultiStateCopycatBlockEntity cbe)
+            return cbe.getMaterialItemStorage().getMaterial(property);
+        return Blocks.AIR.defaultBlockState();
+    }
 
     public boolean canFaceBeOccluded(BlockState state, Direction face) {
         return false;
@@ -217,4 +232,6 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
     public boolean shouldFaceAlwaysRender(BlockState state, Direction face) {
         return false;
     }
+
+    // TODO: implement all other block overrides
 }
