@@ -1,16 +1,11 @@
 package com.copycatsplus.copycats.content.copycat.base.multistate;
 
-import com.copycatsplus.copycats.Copycats;
-import com.simibubi.create.content.redstone.RoseQuartzLampBlock;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.utility.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -24,9 +19,9 @@ public abstract class MultiStateCopycatBlockEntity extends SmartBlockEntity {
     public MultiStateCopycatBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
         if (getBlockState().getBlock() instanceof MultiStateCopycatBlock mscb) {
-            materialItemStorage = MaterialItemStorage.create(mscb.maxMaterials(), mscb.storageProperties());
+            materialItemStorage = MaterialItemStorage.create(mscb.maxMaterials());
         } else {
-            materialItemStorage = MaterialItemStorage.create(1, Set.of("block"));
+            materialItemStorage = MaterialItemStorage.create(1);
         }
     }
 
@@ -59,7 +54,7 @@ public abstract class MultiStateCopycatBlockEntity extends SmartBlockEntity {
         return materialItemStorage;
     }
 
-    public void setMaterial(String property, BlockState blockState) {
+    public void setMaterial(String property, BlockState blockState, ItemStack itemInHand) {
         BlockState wrapperState = getBlockState();
 
         BlockState finalMaterial = blockState;
@@ -103,6 +98,27 @@ public abstract class MultiStateCopycatBlockEntity extends SmartBlockEntity {
                     .getLightEngine()
                     .checkBlock(worldPosition);
         }
+    }
+
+    @Override
+    public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
+    }
+
+    @Override
+    public ItemRequirement getRequiredItems(BlockState state) {
+        List<ItemStack> stacks = getMaterialItemStorage().getAllConsumedItems();
+        if (stacks.isEmpty())
+            return ItemRequirement.NONE;
+        return new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, stacks);
+    }
+
+    @Override
+    public void transform(StructureTransform transform) {
+        // TODO: probably need additional logic
+        for (String key : getMaterialItemStorage().getAllProperties()) {
+            getMaterialItemStorage().setMaterial(key, transform.apply(getMaterialItemStorage().getMaterial(key)));
+        }
+        notifyUpdate();
     }
 
     public abstract void requestModelUpdate();
