@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class MaterialItemStorage {
 
-    private static Map<String, MaterialItem> storage;
+    private Map<String, MaterialItem> storage;
     private int maxStorage;
 
     private MaterialItemStorage(int maxStorage) {
@@ -48,6 +48,10 @@ public class MaterialItemStorage {
 
     public Set<ItemStack> getAllConsumedItems() {
         return storage.values().stream().map(MaterialItem::consumedItem).collect(Collectors.toSet());
+    }
+
+    public Map<String, BlockState> getMaterialMap() {
+        return storage.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, s -> s.getValue().material));
     }
 
     public boolean hasCustomMaterial(String property) {

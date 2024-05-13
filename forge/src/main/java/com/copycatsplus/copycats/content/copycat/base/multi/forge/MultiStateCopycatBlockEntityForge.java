@@ -1,10 +1,13 @@
 package com.copycatsplus.copycats.content.copycat.base.multi.forge;
 
+import com.copycatsplus.copycats.content.copycat.base.model.multistate.forge.MultiStateCopycatModel;
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.model.data.ModelData;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -21,5 +24,12 @@ public class MultiStateCopycatBlockEntityForge extends MultiStateCopycatBlockEnt
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
 
+    }
+
+    @Override
+    public @NotNull ModelData getModelData() {
+         return ModelData.builder()
+                .with(MultiStateCopycatModel.MATERIALS_PROPERTY, getMaterialItemStorage().getMaterialMap())
+                .build();
     }
 }

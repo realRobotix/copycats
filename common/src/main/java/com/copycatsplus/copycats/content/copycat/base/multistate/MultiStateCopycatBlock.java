@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -99,10 +100,14 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
             }
             if (ufte.getMaterialItemStorage().hasCustomMaterial(property))
                 return InteractionResult.PASS;
+
+            // TODO: in Create's implementation this line should be below the isClientSide check.
+            // Need to investigate why it doesn't work here
+            ufte.setMaterial(property, material, itemInHand);
+
             if (level.isClientSide())
                 return InteractionResult.SUCCESS;
 
-            ufte.setMaterial(property, material, itemInHand);
             ufte.getLevel()
                     .playSound(null, ufte.getBlockPos(), material.getSoundType()
                             .getPlaceSound(), SoundSource.BLOCKS, 1, .75f);
@@ -200,5 +205,16 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
     @Override
     public <S extends BlockEntity> BlockEntityTicker<S> getTicker(Level p_153212_, BlockState p_153213_, BlockEntityType<S> p_153214_) {
         return null;
+    }
+
+    public abstract boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos,
+                                                     BlockState state);
+
+    public boolean canFaceBeOccluded(BlockState state, Direction face) {
+        return false;
+    }
+
+    public boolean shouldFaceAlwaysRender(BlockState state, Direction face) {
+        return false;
     }
 }

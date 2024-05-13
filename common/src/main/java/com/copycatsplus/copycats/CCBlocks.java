@@ -3,6 +3,7 @@ package com.copycatsplus.copycats;
 import com.copycatsplus.copycats.config.FeatureToggle;
 import com.copycatsplus.copycats.content.copycat.base.model.SimpleCopycatPart;
 import com.copycatsplus.copycats.content.copycat.base.model.ToggleableCopycatModel;
+import com.copycatsplus.copycats.content.copycat.base.model.multistate.SimpleMultiStateCopycatPart;
 import com.copycatsplus.copycats.content.copycat.beam.CopycatBeamBlock;
 import com.copycatsplus.copycats.content.copycat.beam.CopycatBeamModel;
 import com.copycatsplus.copycats.content.copycat.block.CopycatBlockBlock;
@@ -42,6 +43,7 @@ import com.copycatsplus.copycats.content.copycat.stairs.CopycatStairsEnhancedMod
 import com.copycatsplus.copycats.content.copycat.stairs.CopycatStairsModel;
 import com.copycatsplus.copycats.content.copycat.stairs.WrappedStairsBlock;
 import com.copycatsplus.copycats.content.copycat.test_block.CopycatTestBlock;
+import com.copycatsplus.copycats.content.copycat.test_block.CopycatTestBlockModel;
 import com.copycatsplus.copycats.content.copycat.trapdoor.CopycatTrapdoorBlock;
 import com.copycatsplus.copycats.content.copycat.trapdoor.CopycatTrapdoorModel;
 import com.copycatsplus.copycats.content.copycat.trapdoor.WrappedTrapdoorBlock;
@@ -453,7 +455,7 @@ public class CCBlocks {
             REGISTRATE.block("copycat_test_block", CopycatTestBlock::new)
                     .transform(CCBuilderTransformers.multiCopycat())
                     .transform(FeatureToggle.register())
-                    .onRegister(CreateRegistrate.blockModel(() -> model -> SimpleCopycatPart.create(model, new CopycatSlabModel())))
+                    .onRegister(CreateRegistrate.blockModel(() -> model -> SimpleMultiStateCopycatPart.create(model, new CopycatTestBlockModel())))
                     .item()
                     .transform(customItemModel("copycat_base", "test_block"))
                     .register();

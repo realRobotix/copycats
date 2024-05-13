@@ -1,4 +1,4 @@
-package com.copycatsplus.copycats.content.copycat.base.model.forge.multistate;
+package com.copycatsplus.copycats.content.copycat.base.model.multistate.forge;
 
 import com.copycatsplus.copycats.content.copycat.base.model.multistate.SimpleMultiStateCopycatPart;
 import net.minecraft.client.resources.model.BakedModel;

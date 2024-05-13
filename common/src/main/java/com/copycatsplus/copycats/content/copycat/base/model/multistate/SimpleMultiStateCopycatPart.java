@@ -1,15 +1,12 @@
 package com.copycatsplus.copycats.content.copycat.base.model.multistate;
 
-import com.copycatsplus.copycats.content.copycat.base.model.QuadHelper.CopycatRenderContext;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
-import java.util.Map;
-
-import static com.copycatsplus.copycats.content.copycat.base.model.multistate.MultiStateQuadHelper.*;
+import static com.copycatsplus.copycats.content.copycat.base.model.QuadHelper.*;
 
 public interface SimpleMultiStateCopycatPart {
 
@@ -21,7 +18,7 @@ public interface SimpleMultiStateCopycatPart {
     }
 
 
-    default void emitCopycatQuads(BlockState state, CopycatRenderContext context, Map<String, BlockState> propertyMaterials) {
+    default void emitCopycatQuads(String key, BlockState state, CopycatRenderContext context, BlockState material) {
         throw new AssertionError("If this is appearing then a model isn't implemented correctly");
     }
 

@@ -1,7 +1,6 @@
-package com.copycatsplus.copycats.content.copycat.base.model.forge.multistate;
+package com.copycatsplus.copycats.content.copycat.base.model.multistate.forge;
 
 import com.copycatsplus.copycats.content.copycat.base.model.QuadHelper;
-import com.copycatsplus.copycats.content.copycat.base.model.multistate.MultiStateQuadHelper;
 import com.copycatsplus.copycats.content.copycat.base.model.multistate.SimpleMultiStateCopycatPart;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -13,7 +12,6 @@ import net.minecraftforge.client.model.data.ModelData;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class SimpleMultiStateCopycatModel extends MultiStateCopycatModel {
 
@@ -24,16 +22,12 @@ public class SimpleMultiStateCopycatModel extends MultiStateCopycatModel {
     }
 
     @Override
-    protected List<BakedQuad> getCroppedQuads(BlockState state, Direction side, RandomSource rand, Map<String, BlockState> propertyMaterials, ModelData wrappedData, RenderType renderType) {
+    protected List<BakedQuad> getCroppedQuads(String key, BlockState state, Direction side, RandomSource rand, BlockState material, ModelData wrappedData, RenderType renderType) {
         List<BakedQuad> quads = new ArrayList<>();
-        List<List<BakedQuad>> templateQuads = new ArrayList<>();
-        for (Map.Entry<String, BlockState> pM : propertyMaterials.entrySet()) {
-            BakedModel model = getModelOf(pM.getValue());
-            templateQuads.add(model.getQuads(pM.getValue(), side, rand, wrappedData, renderType));
-        }
-        MultiStateQuadHelper.CopycatRenderContext<List<BakedQuad>, List<BakedQuad>> context = new MultiStateQuadHelper.CopycatRenderContext<>(templateQuads, quads);
+        List<BakedQuad> templateQuads = getModelOf(material).getQuads(material, side, rand, wrappedData, renderType);
+        QuadHelper.CopycatRenderContext<List<BakedQuad>, List<BakedQuad>> context = new QuadHelper.CopycatRenderContext<>(templateQuads, quads);
 
-        part.emitCopycatQuads(state, context, propertyMaterials);
+        part.emitCopycatQuads(key, state, context, material);
 
         return quads;
     }

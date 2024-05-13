@@ -1,8 +1,6 @@
-package com.copycatsplus.copycats.content.copycat.base.model.forge.multistate;
+package com.copycatsplus.copycats.content.copycat.base.model.multistate.forge;
 
-import com.simibubi.create.AllBlocks;
-import com.simibubi.create.content.decoration.copycat.CopycatBlock;
-import com.simibubi.create.content.decoration.copycat.CopycatModel;
+import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
 import com.simibubi.create.content.decoration.copycat.FilteredBlockAndTintGetter;
 import com.simibubi.create.foundation.model.BakedModelWrapperWithData;
 import com.simibubi.create.foundation.utility.Iterate;
@@ -21,17 +19,17 @@ import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class MultiStateCopycatModel extends BakedModelWrapperWithData {
 
     public static final ModelProperty<Map<String, BlockState>> MATERIALS_PROPERTY = new ModelProperty<>();
-    private static final ModelProperty<OcclusionData> OCCLUSION_PROPERTY = new ModelProperty<>();
-    private static final ModelProperty<ModelData> WRAPPED_DATA_PROPERTY = new ModelProperty<>();
+    private static final ModelProperty<Map<String, OcclusionData>> OCCLUSION_PROPERTY = new ModelProperty<>();
+    private static final ModelProperty<Map<String, ModelData>> WRAPPED_DATA_PROPERTY = new ModelProperty<>();
 
     public MultiStateCopycatModel(BakedModel originalModel) {
         super(originalModel);
@@ -46,23 +44,29 @@ public abstract class MultiStateCopycatModel extends BakedModelWrapperWithData {
 
         builder.with(MATERIALS_PROPERTY, material);
 
-        if (!(state.getBlock() instanceof CopycatBlock copycatBlock))
+        if (!(state.getBlock() instanceof MultiStateCopycatBlock copycatBlock))
             return builder;
 
-        OcclusionData occlusionData = new OcclusionData();
-        gatherOcclusionData(world, pos, state, material.values().stream().findFirst().get(), occlusionData, copycatBlock);
-        builder.with(OCCLUSION_PROPERTY, occlusionData);
+        Map<String, OcclusionData> occlusionMap = material.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, s -> {
+            OcclusionData occlusionData = new OcclusionData();
+            gatherOcclusionData(world, pos, state, s.getValue(), occlusionData, copycatBlock);
+            return occlusionData;
+        }));
+        builder.with(OCCLUSION_PROPERTY, occlusionMap);
 
 
-        ModelData wrappedData = getModelOf(material.values().stream().findFirst().get()).getModelData(
-                new FilteredBlockAndTintGetter(world,
-                        targetPos -> copycatBlock.canConnectTexturesToward(world, pos, targetPos, state)),
-                pos, material.values().stream().findFirst().get(), ModelData.EMPTY);
-        return builder.with(WRAPPED_DATA_PROPERTY, wrappedData);
+        FilteredBlockAndTintGetter filteredWorld = new FilteredBlockAndTintGetter(world,
+                targetPos -> copycatBlock.canConnectTexturesToward(world, pos, targetPos, state));
+        Map<String, ModelData> wrappedDataMap = material.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, s -> {
+            return getModelOf(s.getValue()).getModelData(
+                    filteredWorld,
+                    pos, s.getValue(), ModelData.EMPTY);
+        }));
+        return builder.with(WRAPPED_DATA_PROPERTY, wrappedDataMap);
     }
 
     private void gatherOcclusionData(BlockAndTintGetter world, BlockPos pos, BlockState state, BlockState material,
-                                     OcclusionData occlusionData, CopycatBlock copycatBlock) {
+                                     OcclusionData occlusionData, MultiStateCopycatBlock copycatBlock) {
         BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
         for (Direction face : Iterate.directions) {
 
@@ -87,7 +91,7 @@ public abstract class MultiStateCopycatModel extends BakedModelWrapperWithData {
     public List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource rand, ModelData data, RenderType renderType) {
 
         // Rubidium: see below
-        if (side != null && state.getBlock() instanceof CopycatBlock ccb && ccb.shouldFaceAlwaysRender(state, side))
+        if (side != null && state.getBlock() instanceof MultiStateCopycatBlock ccb && ccb.shouldFaceAlwaysRender(state, side))
             return Collections.emptyList();
 
         @NotNull Map<String, BlockState> materials = getMaterials(data);
@@ -95,36 +99,42 @@ public abstract class MultiStateCopycatModel extends BakedModelWrapperWithData {
         if (materials.isEmpty())
             return super.getQuads(state, side, rand, data, renderType);
 
-        OcclusionData occlusionData = data.get(OCCLUSION_PROPERTY);
-        if (occlusionData != null && occlusionData.isOccluded(side))
+        Map<String, OcclusionData> occlusionData = getOcclusion(data);
+        if (occlusionData.values().stream().allMatch(d -> d.isOccluded(side)))
             return super.getQuads(state, side, rand, data, renderType);
 
-        ModelData wrappedData = data.get(WRAPPED_DATA_PROPERTY);
-        if (wrappedData == null)
-            wrappedData = ModelData.EMPTY;
-        for (BlockState material : materials.values()) {
+        List<BakedQuad> croppedQuads = new LinkedList<>();
+        Map<String, ModelData> wrappedData = getWrappedData(data);
+        for (Map.Entry<String, BlockState> entry : materials.entrySet()) {
+            BlockState material = entry.getValue();
+            ModelData dataForMaterial = wrappedData.get(entry.getKey());
+
             if (renderType != null && !Minecraft.getInstance()
                     .getBlockRenderer()
                     .getBlockModel(material)
-                    .getRenderTypes(material, rand, wrappedData)
+                    .getRenderTypes(material, rand, dataForMaterial)
                     .contains(renderType))
-                return super.getQuads(state, side, rand, data, renderType);
+                continue;
+
+            croppedQuads.addAll(getCroppedQuads(entry.getKey(), state, side, rand, material, dataForMaterial, renderType));
         }
 
-        List<BakedQuad> croppedQuads = getCroppedQuads(state, side, rand, materials, wrappedData, renderType);
-
-        // Rubidium: render side!=null versions of the base material during side==null,
-        // to avoid getting culled away
-        if (side == null && state.getBlock() instanceof CopycatBlock ccb)
-            for (Direction nonOcclusionSide : Iterate.directions)
-                if (ccb.shouldFaceAlwaysRender(state, nonOcclusionSide))
-                    croppedQuads.addAll(getCroppedQuads(state, nonOcclusionSide, rand, materials, wrappedData, renderType));
+        for (Map.Entry<String, BlockState> entry : materials.entrySet()) {
+            BlockState material = entry.getValue();
+            ModelData dataForMaterial = wrappedData.get(entry.getKey());
+            // Rubidium: render side!=null versions of the base material during side==null,
+            // to avoid getting culled away
+            if (side == null && state.getBlock() instanceof MultiStateCopycatBlock ccb)
+                for (Direction nonOcclusionSide : Iterate.directions)
+                    if (ccb.shouldFaceAlwaysRender(state, nonOcclusionSide))
+                        croppedQuads.addAll(getCroppedQuads(entry.getKey(), state, nonOcclusionSide, rand, material, dataForMaterial, renderType));
+        }
 
         return croppedQuads;
     }
 
-    protected abstract List<BakedQuad> getCroppedQuads(BlockState state, Direction side, RandomSource rand,
-                                                       Map<String, BlockState> propertyMaterials, ModelData wrappedData, RenderType renderType);
+    protected abstract List<BakedQuad> getCroppedQuads(String key, BlockState state, Direction side, RandomSource rand,
+                                                       BlockState material, ModelData wrappedData, RenderType renderType);
 
     @Override
     public @NotNull TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
@@ -133,16 +143,24 @@ public abstract class MultiStateCopycatModel extends BakedModelWrapperWithData {
         if (material.isEmpty())
             return super.getParticleIcon(data);
 
-        ModelData wrappedData = data.get(WRAPPED_DATA_PROPERTY);
-        if (wrappedData == null)
-            wrappedData = ModelData.EMPTY;
+        Map.Entry<String, BlockState> key = material.entrySet().stream().findFirst().get();
 
-        return getModelOf(material.entrySet().stream().findFirst().get().getValue()).getParticleIcon(wrappedData);
+        return getModelOf(key.getValue()).getParticleIcon(getWrappedData(data).get(key.getKey()));
     }
 
     public static @NotNull Map<String, BlockState> getMaterials(ModelData data) {
         Map<String, BlockState> materials = data == null ? null : data.get(MATERIALS_PROPERTY);
         return materials == null ? Map.of() : materials;
+    }
+
+    public static @NotNull Map<String, OcclusionData> getOcclusion(ModelData data) {
+        Map<String, OcclusionData> occlusions = data == null ? null : data.get(OCCLUSION_PROPERTY);
+        return occlusions == null ? Map.of() : occlusions;
+    }
+
+    public static @NotNull Map<String, ModelData> getWrappedData(ModelData data) {
+        Map<String, ModelData> wrappedData = data == null ? null : data.get(WRAPPED_DATA_PROPERTY);
+        return wrappedData == null ? Map.of() : wrappedData;
     }
 
     public static BakedModel getModelOf(BlockState state) {
