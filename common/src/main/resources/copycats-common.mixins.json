@@ -33,7 +33,6 @@
     "copycat.trapdoor.RedStoneWireBlockMixin",
     "copycat.wall.TrackPaverMixin",
     "copycat.wall.WallBlockMixin",
-    "datafixer.MixinNbtUtils",
     "feature_toggle.CreativeModeTabsAccessor"
   ],
   "client": [],
