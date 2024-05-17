@@ -1,4 +1,4 @@
-package com.copycatsplus.copycats.content.copycat.base.multi.forge;
+package com.copycatsplus.copycats.content.copycat.base.multistate.forge;
 
 import com.copycatsplus.copycats.content.copycat.base.model.multistate.forge.MultiStateCopycatModel;
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlockEntity;

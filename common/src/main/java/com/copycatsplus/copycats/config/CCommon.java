@@ -1,7 +1,5 @@
 package com.copycatsplus.copycats.config;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.fml.config.ModConfig;
 
 public class CCommon extends SyncConfigBase {
@@ -17,6 +15,8 @@ public class CCommon extends SyncConfigBase {
         return "common";
     }
 
+    public final ConfigBool disableDataFixers = b(false, "disableDataFixers", Comments.dataFixers);
+
     public final CFeatures toggle = nested(0, CFeatures::new, Comments.toggle);
 
     public void register() {
@@ -24,5 +24,7 @@ public class CCommon extends SyncConfigBase {
 
     private static class Comments {
         static String toggle = "Enable/disable features. Values on server override clients";
+
+        static String dataFixers = "Enables/Disables the data fixers. (Currently the only fixer is the one that converts all copycats to the new block_entity that supports multiple materials";
     }
 }

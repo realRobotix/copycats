@@ -5,21 +5,28 @@ import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
+import dev.architectury.injectables.annotations.ExpectPlatform;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.BlockAndTintGetter;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -33,8 +40,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static net.minecraft.core.Direction.Axis;
 
@@ -108,9 +116,6 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
 
             ufte.setMaterial(property, material);
             ufte.setConsumedItem(property, itemInHand);
-            // TODO: in Create's implementation this line should be below the isClientSide check.
-            // Need to investigate why it doesn't work here
-
 
             ufte.getLevel()
                     .playSound(null, ufte.getBlockPos(), material.getSoundType()
@@ -155,12 +160,12 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
         });*/
     }
 
-    private String getProperty(@NotNull BlockState state, @NotNull BlockPos pos, @NotNull BlockHitResult hit) {
+    public String getProperty(@NotNull BlockState state, @NotNull BlockPos pos, @NotNull BlockHitResult hit) {
         Vec3 hitVec = hit.getLocation();
         return getProperty(state, pos, hitVec);
     }
 
-    private String getProperty(@NotNull BlockState state, @NotNull BlockPos pos, @NotNull Vec3 hitVec) {
+    protected String getProperty(@NotNull BlockState state, @NotNull BlockPos pos, @NotNull Vec3 hitVec) {
         // Relativize the hit vector around the player position
         hitVec = hitVec.add(-pos.getX(), -pos.getY(), -pos.getZ());
         hitVec = hitVec.scale(maxMaterials());
@@ -260,6 +265,8 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
         return null;
     }
 
+
+
     public abstract boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos,
                                                      BlockState state);
 
@@ -268,6 +275,82 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
     }
 
     public boolean shouldFaceAlwaysRender(BlockState state, Direction face) {
+        return false;
+    }
+
+    // Wrapped properties
+    //Copied From CopycatBlock and of course edited to work
+
+    @Override
+    public void fallOn(Level pLevel, BlockState pState, BlockPos pPos, Entity pEntity, float p_152430_) {
+        String property = getProperty(pState, pPos, new BlockHitResult(Vec3.atCenterOf(pPos), Direction.UP, pPos, true));
+        AtomicReference<BlockState> material = new AtomicReference<>(AllBlocks.COPYCAT_BASE.getDefaultState());
+        withBlockEntityDo(pLevel, pPos, mscbe -> material.set(mscbe.getMaterialItemStorage().getMaterialItem(property).material()));
+        material.get().getBlock()
+                .fallOn(pLevel, material.get(), pPos, pEntity, p_152430_);
+    }
+
+    @Override
+    public float getDestroyProgress(BlockState pState, Player pPlayer, BlockGetter pLevel, BlockPos pPos) {
+        String property = getProperty(pState, pPos, new BlockHitResult(Vec3.atCenterOf(pPos), Direction.UP, pPos, true));
+        AtomicReference<BlockState> material = new AtomicReference<>(AllBlocks.COPYCAT_BASE.getDefaultState());
+        withBlockEntityDo(pLevel, pPos, mscbe -> material.set(mscbe.getMaterialItemStorage().getMaterialItem(property).material()));
+        return material.get().getDestroyProgress(pPlayer, pLevel, pPos);
+    }
+
+    public SoundType getSoundType(BlockState state, LevelReader level, BlockPos pos, Entity entity) {
+        AtomicReference<BlockState> blockState = new AtomicReference<>(AllBlocks.COPYCAT_BASE.getDefaultState());
+        withBlockEntityDo(level, pos, mscbe -> blockState.set(mscbe.getMaterialItemStorage().getAllMaterials().stream().findFirst().get()));
+        return blockState.get().getSoundType();
+    }
+
+    public float getFriction(BlockState state, LevelReader level, BlockPos pos, Entity entity) {
+        AtomicReference<BlockState> blockState = new AtomicReference<>(AllBlocks.COPYCAT_BASE.getDefaultState());
+        withBlockEntityDo(level, pos, mscbe -> blockState.set(mscbe.getMaterialItemStorage().getAllMaterials().stream().findFirst().get()));
+        return blockState.get().getBlock().getFriction();
+    }
+
+    public int getLightEmission(BlockState state, BlockGetter level, BlockPos pos) {
+        AtomicInteger light = new AtomicInteger(0);
+        withBlockEntityDo(level, pos, mscbe -> mscbe.getMaterialItemStorage().getAllMaterials().forEach(bs -> light.addAndGet(bs.getLightEmission())));
+        return Math.min(light.get(), 15);
+    }
+
+    public float getExplosionResistance(BlockState state, BlockGetter level, BlockPos pos, Explosion explosion) {
+        AtomicReference<Float> explosionResistance = new AtomicReference<>(0.0f);
+        withBlockEntityDo(level, pos, mscbe -> mscbe.getMaterialItemStorage().getAllMaterials().forEach(bs -> explosionResistance.set(explosionResistance.get() + bs.getBlock().getExplosionResistance())));
+        return explosionResistance.get();
+    }
+
+    public boolean addLandingEffects(BlockState state1, ServerLevel level, BlockPos pos, BlockState state2, LivingEntity entity, int numberOfParticles) {
+        return multiPlatformLandingEffects(state1, level, pos, state2, entity, numberOfParticles);
+    }
+
+    @ExpectPlatform
+    public static boolean multiPlatformLandingEffects(BlockState state1, ServerLevel level, BlockPos pos, BlockState state2, LivingEntity entity, int numberOfParticles) {
+        throw new AssertionError("This should never appear");
+    }
+
+    public boolean addRunningEffects(BlockState state, Level level, BlockPos pos, Entity entity) {
+        return multiPlatformRunningEffects(state, level, pos, entity);
+    }
+
+    @ExpectPlatform
+    public static boolean multiPlatformRunningEffects(BlockState state, Level level, BlockPos pos, Entity entity) {
+        throw new AssertionError("This should never appear");
+    }
+
+    public float getEnchantPowerBonus(BlockState state, LevelReader level, BlockPos pos) {
+        return multiPlatformEnchantPowerBonus(state, level, pos);
+    }
+
+    @ExpectPlatform
+    public static float multiPlatformEnchantPowerBonus(BlockState state, LevelReader level, BlockPos pos) {
+        throw new AssertionError("This should never appear!");
+    }
+
+    public boolean isValidSpawn(BlockState state, BlockGetter level, BlockPos pos, SpawnPlacements.Type type,
+                                EntityType<?> entityType) {
         return false;
     }
 }

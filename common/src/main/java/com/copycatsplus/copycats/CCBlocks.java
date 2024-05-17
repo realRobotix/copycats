@@ -34,6 +34,7 @@ import com.copycatsplus.copycats.content.copycat.ladder.WrappedLadderBlock;
 import com.copycatsplus.copycats.content.copycat.layer.CopycatLayerBlock;
 import com.copycatsplus.copycats.content.copycat.layer.CopycatLayerModel;
 import com.copycatsplus.copycats.content.copycat.pressure_plate.*;
+import com.copycatsplus.copycats.content.copycat.slab.CopycatMultiSlabModel;
 import com.copycatsplus.copycats.content.copycat.slab.CopycatSlabBlock;
 import com.copycatsplus.copycats.content.copycat.slab.CopycatSlabModel;
 import com.copycatsplus.copycats.content.copycat.slice.CopycatSliceBlock;
@@ -351,11 +352,11 @@ public class CCBlocks {
 
     public static final BlockEntry<CopycatSlabBlock> COPYCAT_SLAB =
             REGISTRATE.block("copycat_slab", CopycatSlabBlock::new)
-                    .transform(BuilderTransformers.copycat())
+                    .transform(CCBuilderTransformers.multiCopycat())
                     .tag(BlockTags.SLABS)
                     .transform(FeatureToggle.register())
                     .loot((lt, block) -> lt.add(block, lt.createSlabItemTable(block)))
-                    .onRegister(blockModel(() -> model -> SimpleCopycatPart.create(model, new CopycatSlabModel())))
+                    .onRegister(blockModel(() -> model -> SimpleMultiStateCopycatPart.create(model, new CopycatMultiSlabModel())))
                     .item()
                     .tag(CCTags.Items.COPYCAT_SLAB.tag)
                     .transform(customItemModel("copycat_base", "slab"))

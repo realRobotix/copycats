@@ -13,7 +13,7 @@ public class CCBlockEntityTypes {
             REGISTRATE.blockEntity("copycat", CopycatBlockEntity::new)
                     .validBlocks(
                             CCBlocks.COPYCAT_BLOCK,
-                            CCBlocks.COPYCAT_SLAB,
+/*                            CCBlocks.COPYCAT_SLAB,*/
                             CCBlocks.COPYCAT_BEAM,
                             CCBlocks.COPYCAT_VERTICAL_STEP,
                             CCBlocks.COPYCAT_HALF_PANEL,
@@ -41,6 +41,7 @@ public class CCBlockEntityTypes {
 
     public static final BlockEntityEntry<? extends MultiStateCopycatBlockEntity> MULTI_STATE_COPYCAT_BLOCK_ENTITY =
             REGISTRATE.blockEntity("multistate_copycat", getPlatformMultiState())
+                    .validBlocks(CCBlocks.COPYCAT_SLAB)
                     .register();
 
     @ExpectPlatform

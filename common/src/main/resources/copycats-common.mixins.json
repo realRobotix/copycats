@@ -5,6 +5,7 @@
   "plugin": "com.copycatsplus.copycats.mixin.MixinPlugin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "MixinNbtUtils",
     "compat.additionalplacements.ConfigCommonMixin",
     "compat.additionalplacements.PlacementBlockMixin",
     "compat.diagonalfences.FenceBlockMixin",
@@ -32,6 +33,7 @@
     "copycat.trapdoor.RedStoneWireBlockMixin",
     "copycat.wall.TrackPaverMixin",
     "copycat.wall.WallBlockMixin",
+    "datafixer.MixinNbtUtils",
     "feature_toggle.CreativeModeTabsAccessor"
   ],
   "client": [],

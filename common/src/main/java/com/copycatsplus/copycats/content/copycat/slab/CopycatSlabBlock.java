@@ -4,6 +4,7 @@ import com.copycatsplus.copycats.CCBlocks;
 import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.content.copycat.base.CTWaterloggedCopycatBlock;
 import com.copycatsplus.copycats.content.copycat.base.ICopycatWithWrappedBlock;
+import com.copycatsplus.copycats.content.copycat.base.multistate.CTWaterloggedMultiStateCopycatBlock;
 import com.simibubi.create.content.decoration.copycat.CopycatBlock;
 import com.simibubi.create.foundation.placement.IPlacementHelper;
 import com.simibubi.create.foundation.placement.PlacementHelpers;
@@ -38,11 +39,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import static com.simibubi.create.foundation.block.ProperWaterloggedBlock.WATERLOGGED;
 
-public class CopycatSlabBlock extends CTWaterloggedCopycatBlock implements ICopycatWithWrappedBlock<Block> {
+public class CopycatSlabBlock extends CTWaterloggedMultiStateCopycatBlock implements ICopycatWithWrappedBlock<Block> {
 
     public static final EnumProperty<Axis> AXIS = BlockStateProperties.AXIS;
     public static final EnumProperty<SlabType> SLAB_TYPE = BlockStateProperties.SLAB_TYPE;
@@ -54,6 +56,47 @@ public class CopycatSlabBlock extends CTWaterloggedCopycatBlock implements ICopy
         registerDefaultState(defaultBlockState()
                 .setValue(AXIS, Axis.Y)
                 .setValue(SLAB_TYPE, SlabType.BOTTOM));
+    }
+
+    @Override
+    public int maxMaterials() {
+        return 2;
+    }
+
+    @Override
+    public Set<String> storageProperties() {
+        return Set.of(SlabType.BOTTOM.getSerializedName(), SlabType.TOP.getSerializedName());
+    }
+
+    @Override
+    public String getPropertyFromInteraction(BlockState state, BlockPos hitLocation, BlockPos blockPos) {
+        if (state.getValue(SLAB_TYPE) == SlabType.DOUBLE) {
+            return switch (state.getValue(AXIS)) {
+                case X -> {
+                    if (hitLocation.getX() == 1) {
+                        yield (SlabType.TOP.getSerializedName());
+                    } else {
+                        yield SlabType.BOTTOM.getSerializedName();
+                    }
+                }
+                case Y -> {
+                    if (hitLocation.getY() == 1) {
+                        yield SlabType.TOP.getSerializedName();
+                    } else {
+                        yield SlabType.BOTTOM.getSerializedName();
+                    }
+                }
+                case Z -> {
+                    if (hitLocation.getZ() == 1) {
+                        yield SlabType.TOP.getSerializedName();
+                    } else {
+                        yield SlabType.BOTTOM.getSerializedName();
+                    }
+                }
+            };
+        } else {
+            return state.getValue(SLAB_TYPE).getSerializedName();
+        }
     }
 
     @Override
@@ -78,7 +121,7 @@ public class CopycatSlabBlock extends CTWaterloggedCopycatBlock implements ICopy
         return super.use(state, world, pos, player, hand, ray);
     }
 
-    @Override
+
     public boolean isIgnoredConnectivitySide(BlockAndTintGetter reader, BlockState state, Direction face,
                                              BlockPos fromPos, BlockPos toPos) {
         Axis axis = state.getValue(AXIS);
