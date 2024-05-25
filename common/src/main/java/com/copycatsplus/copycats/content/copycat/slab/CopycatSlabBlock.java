@@ -2,7 +2,6 @@ package com.copycatsplus.copycats.content.copycat.slab;
 
 import com.copycatsplus.copycats.CCBlocks;
 import com.copycatsplus.copycats.CCShapes;
-import com.copycatsplus.copycats.content.copycat.base.CTWaterloggedCopycatBlock;
 import com.copycatsplus.copycats.content.copycat.base.ICopycatWithWrappedBlock;
 import com.copycatsplus.copycats.content.copycat.base.multistate.CTWaterloggedMultiStateCopycatBlock;
 import com.simibubi.create.content.decoration.copycat.CopycatBlock;
@@ -25,7 +24,6 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -33,6 +31,7 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -41,8 +40,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
-
-import static com.simibubi.create.foundation.block.ProperWaterloggedBlock.WATERLOGGED;
 
 public class CopycatSlabBlock extends CTWaterloggedMultiStateCopycatBlock implements ICopycatWithWrappedBlock<Block> {
 
@@ -64,12 +61,17 @@ public class CopycatSlabBlock extends CTWaterloggedMultiStateCopycatBlock implem
     }
 
     @Override
+    public float vectorScale() {
+        return 2;
+    }
+
+    @Override
     public Set<String> storageProperties() {
         return Set.of(SlabType.BOTTOM.getSerializedName(), SlabType.TOP.getSerializedName());
     }
 
     @Override
-    public String getPropertyFromInteraction(BlockState state, BlockPos hitLocation, BlockPos blockPos) {
+    public String getPropertyFromInteraction(BlockState state, BlockPos hitLocation, BlockPos blockPos, Vec3 originalHitLocation, Direction facing) {
         if (state.getValue(SLAB_TYPE) == SlabType.DOUBLE) {
             return switch (state.getValue(AXIS)) {
                 case X -> {
@@ -80,7 +82,7 @@ public class CopycatSlabBlock extends CTWaterloggedMultiStateCopycatBlock implem
                     }
                 }
                 case Y -> {
-                    if (hitLocation.getY() == 1) {
+                    if (hitLocation.getY() == 1 || hitLocation.getY() == 2) {
                         yield SlabType.TOP.getSerializedName();
                     } else {
                         yield SlabType.BOTTOM.getSerializedName();

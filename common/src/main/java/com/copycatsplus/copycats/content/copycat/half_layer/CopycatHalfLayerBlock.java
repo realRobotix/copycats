@@ -2,7 +2,7 @@ package com.copycatsplus.copycats.content.copycat.half_layer;
 
 import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.Copycats;
-import com.copycatsplus.copycats.content.copycat.base.CTWaterloggedCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.multistate.CTWaterloggedMultiStateCopycatBlock;
 import com.google.common.collect.ImmutableMap;
 import com.simibubi.create.content.schematics.requirement.ISpecialBlockItemRequirement;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
@@ -25,10 +25,7 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.level.block.state.properties.Half;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.block.state.properties.*;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -38,12 +35,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 
 import static net.minecraft.core.Direction.Axis;
 import static net.minecraft.core.Direction.AxisDirection;
 
-public class CopycatHalfLayerBlock extends CTWaterloggedCopycatBlock implements ISpecialBlockItemRequirement {
+public class CopycatHalfLayerBlock extends CTWaterloggedMultiStateCopycatBlock implements ISpecialBlockItemRequirement {
 
 
     public static final EnumProperty<Axis> AXIS = BlockStateProperties.HORIZONTAL_AXIS;
@@ -84,6 +82,21 @@ public class CopycatHalfLayerBlock extends CTWaterloggedCopycatBlock implements 
                 .setValue(NEGATIVE_LAYERS, 0)
         );
         this.shapesCache = this.getShapeForEachState(CopycatHalfLayerBlock::calculateMultiFaceShape);
+    }
+
+    @Override
+    public int maxMaterials() {
+        return 2;
+    }
+
+    @Override
+    public float vectorScale() {
+        return 2;
+    }
+
+    @Override
+    public Set<String> storageProperties() {
+        return Set.of(POSITIVE_LAYERS.getName(), NEGATIVE_LAYERS.getName());
     }
 
     @Override
@@ -177,6 +190,28 @@ public class CopycatHalfLayerBlock extends CTWaterloggedCopycatBlock implements 
     }
 
     @Override
+    public String getPropertyFromInteraction(BlockState state, BlockPos hitLocation, BlockPos blockPos, Vec3 originalHitLocation, Direction facing) {
+        return switch (state.getValue(AXIS)) {
+            case X -> {
+                if (hitLocation.getZ() >= 0 && hitLocation.getX() == 0 && state.getValue(POSITIVE_LAYERS) > 0) {
+                    yield POSITIVE_LAYERS.getName();
+                } else {
+                    yield NEGATIVE_LAYERS.getName();
+                }
+            }
+            case Z -> {
+                if (hitLocation.getX() >= 0 && hitLocation.getZ() == 0 && state.getValue(NEGATIVE_LAYERS) > 0) {
+                    yield NEGATIVE_LAYERS.getName();
+                } else {
+                    yield POSITIVE_LAYERS.getName();
+                }
+            }
+            //Doesnt matter cause we only use horizontal directions
+            case Y -> null;
+        };
+    }
+
+    @Override
     public ItemRequirement getRequiredItems(BlockState state, BlockEntity blockEntity) {
         return new ItemRequirement(
                 ItemRequirement.ItemUseType.CONSUME,
@@ -184,7 +219,6 @@ public class CopycatHalfLayerBlock extends CTWaterloggedCopycatBlock implements 
         );
     }
 
-    @Override
     public boolean isIgnoredConnectivitySide(BlockAndTintGetter reader, BlockState state, Direction face,
                                              BlockPos fromPos, BlockPos toPos) {
         BlockState toState = reader.getBlockState(toPos);
@@ -274,7 +308,7 @@ public class CopycatHalfLayerBlock extends CTWaterloggedCopycatBlock implements 
     @Override
     @SuppressWarnings("deprecation")
     public @NotNull BlockState mirror(BlockState state, Mirror mirrorIn) {
-        return state.rotate(mirrorIn.getRotation(Direction.get(Direction.AxisDirection.POSITIVE, state.getValue(AXIS))));
+        return state.rotate(mirrorIn.getRotation(Direction.get(AxisDirection.POSITIVE, state.getValue(AXIS))));
     }
 
     @SuppressWarnings("deprecation")

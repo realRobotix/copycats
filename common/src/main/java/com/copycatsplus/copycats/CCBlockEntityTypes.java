@@ -13,7 +13,7 @@ public class CCBlockEntityTypes {
             REGISTRATE.blockEntity("copycat", CopycatBlockEntity::new)
                     .validBlocks(
                             CCBlocks.COPYCAT_BLOCK,
-/*                            CCBlocks.COPYCAT_SLAB,*/
+                            /*                            CCBlocks.COPYCAT_SLAB,*/
                             CCBlocks.COPYCAT_BEAM,
                             CCBlocks.COPYCAT_VERTICAL_STEP,
                             CCBlocks.COPYCAT_HALF_PANEL,
@@ -22,12 +22,12 @@ public class CCBlockEntityTypes {
                             CCBlocks.COPYCAT_FENCE_GATE,
                             CCBlocks.COPYCAT_TRAPDOOR,
                             CCBlocks.COPYCAT_WALL,
-                            CCBlocks.COPYCAT_BOARD,
-                            CCBlocks.COPYCAT_BYTE,
+/*                            CCBlocks.COPYCAT_BOARD,*/
+                            /*                            CCBlocks.COPYCAT_BYTE,*/
                             CCBlocks.COPYCAT_GHOST_BLOCK,
                             CCBlocks.COPYCAT_LADDER,
                             CCBlocks.COPYCAT_LAYER,
-                            CCBlocks.COPYCAT_HALF_LAYER,
+/*                            CCBlocks.COPYCAT_HALF_LAYER,*/
                             CCBlocks.COPYCAT_SLICE,
                             CCBlocks.COPYCAT_VERTICAL_SLICE,
                             CCBlocks.COPYCAT_WOODEN_BUTTON,
@@ -41,14 +41,18 @@ public class CCBlockEntityTypes {
 
     public static final BlockEntityEntry<? extends MultiStateCopycatBlockEntity> MULTI_STATE_COPYCAT_BLOCK_ENTITY =
             REGISTRATE.blockEntity("multistate_copycat", getPlatformMultiState())
-                    .validBlocks(CCBlocks.COPYCAT_SLAB)
+                    .validBlocks(
+                            CCBlocks.COPYCAT_SLAB,
+                            CCBlocks.COPYCAT_BYTE,
+                            CCBlocks.COPYCAT_HALF_LAYER,
+                            CCBlocks.COPYCAT_BOARD
+                    )
                     .register();
 
     @ExpectPlatform
     public static BlockEntityBuilder.BlockEntityFactory<? extends MultiStateCopycatBlockEntity> getPlatformMultiState() {
         throw new AssertionError("This shouldn't appear");
     }
-
 
     public static void register() {
     }

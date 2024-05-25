@@ -1,7 +1,7 @@
 package com.copycatsplus.copycats.content.copycat.bytes;
 
 import com.copycatsplus.copycats.Copycats;
-import com.copycatsplus.copycats.content.copycat.base.CTWaterloggedCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.multistate.CTWaterloggedMultiStateCopycatBlock;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.math.OctahedralGroup;
 import com.simibubi.create.content.schematics.requirement.ISpecialBlockItemRequirement;
@@ -36,9 +36,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
-public class CopycatByteBlock extends CTWaterloggedCopycatBlock implements ISpecialBlockItemRequirement {
+public class CopycatByteBlock extends CTWaterloggedMultiStateCopycatBlock implements ISpecialBlockItemRequirement {
     public static BooleanProperty TOP_NE = BooleanProperty.create("top_northeast");
     public static BooleanProperty TOP_NW = BooleanProperty.create("top_northwest");
     public static BooleanProperty TOP_SE = BooleanProperty.create("top_southeast");
@@ -65,11 +67,26 @@ public class CopycatByteBlock extends CTWaterloggedCopycatBlock implements ISpec
     }
 
     @Override
+    public int maxMaterials() {
+        return 8;
+    }
+
+    @Override
+    public float vectorScale() {
+        return 2;
+    }
+
+    @Override
+    public Set<String> storageProperties() {
+        return Set.of(TOP_NE, TOP_NW, TOP_SE, TOP_SW, BOTTOM_NE, BOTTOM_NW, BOTTOM_SE, BOTTOM_SW).stream().map(BooleanProperty::getName).collect(Collectors.toSet());
+    }
+
+    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
         super.createBlockStateDefinition(pBuilder.add(TOP_NE, TOP_NW, TOP_SE, TOP_SW, BOTTOM_NE, BOTTOM_NW, BOTTOM_SE, BOTTOM_SW));
     }
 
-    @Override
+
     public boolean isIgnoredConnectivitySide(BlockAndTintGetter reader, BlockState state, Direction face, BlockPos fromPos, BlockPos toPos) {
         return true;
     }
@@ -187,6 +204,32 @@ public class CopycatByteBlock extends CTWaterloggedCopycatBlock implements ISpec
             playRemoveSound(world, pos);
         }
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public String getPropertyFromInteraction(BlockState state, BlockPos hitLocation, BlockPos blockPos, Vec3 originalHitLocation, Direction facing) {
+        String property = TOP_NE.getName();
+        if (hitLocation.equals(BlockPos.ZERO) && state.getValue(BOTTOM_NW) || (hitLocation.equals(BlockPos.ZERO.atY(1)) && !state.getValue(TOP_NW))) {
+            property = BOTTOM_NW.getName();
+        } else if (hitLocation.equals(BlockPos.ZERO.atY(1)) && state.getValue(TOP_NW)) {
+            property = TOP_NW.getName();
+        }
+        if (hitLocation.getZ() >= 1 && hitLocation.getX() == 0 && state.getValue(BOTTOM_SW) && (hitLocation.getY() == 0 || hitLocation.getY() == 1 && !state.getValue(TOP_SW))) {
+            property = BOTTOM_SW.getName();
+        } else if (hitLocation.getZ() >= 1 && hitLocation.getX() == 0 && (hitLocation.getY() == 1 && state.getValue(TOP_SW))) {
+            property = TOP_SW.getName();
+        }
+        if (hitLocation.getZ() >= 1 && hitLocation.getX() >= 1 && state.getValue(BOTTOM_SE) && (hitLocation.getY() == 0 || hitLocation.getY() == 1 && !state.getValue(TOP_SE))) {
+            property = BOTTOM_SE.getName();
+        } else if (hitLocation.getZ() >= 1 && hitLocation.getX() >= 1 && (hitLocation.getY() == 1 && state.getValue(TOP_SE))) {
+            property = TOP_SE.getName();
+        }
+        if (hitLocation.getX() >= 1 && hitLocation.getZ() == 0 && state.getValue(BOTTOM_NE) && (hitLocation.getY() == 0 || hitLocation.getY() == 1 && !state.getValue(TOP_NE))) {
+            property = BOTTOM_NE.getName();
+        } else if (hitLocation.getX() == 2 && hitLocation.getZ() == 0 && (hitLocation.getY() == 1 && state.getValue(TOP_NE))) {
+            property = TOP_NE.getName();
+        }
+        return property;
     }
 
     @Override

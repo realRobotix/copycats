@@ -10,12 +10,14 @@ import com.copycatsplus.copycats.content.copycat.block.CopycatBlockBlock;
 import com.copycatsplus.copycats.content.copycat.block.CopycatBlockModel;
 import com.copycatsplus.copycats.content.copycat.board.CopycatBoardBlock;
 import com.copycatsplus.copycats.content.copycat.board.CopycatBoardModel;
+import com.copycatsplus.copycats.content.copycat.board.CopycatMultiBoardModel;
 import com.copycatsplus.copycats.content.copycat.button.CopycatButtonModel;
 import com.copycatsplus.copycats.content.copycat.button.CopycatStoneButtonBlock;
 import com.copycatsplus.copycats.content.copycat.button.CopycatWoodenButtonBlock;
 import com.copycatsplus.copycats.content.copycat.button.WrappedButton;
 import com.copycatsplus.copycats.content.copycat.bytes.CopycatByteBlock;
 import com.copycatsplus.copycats.content.copycat.bytes.CopycatByteModel;
+import com.copycatsplus.copycats.content.copycat.bytes.CopycatMultiByteModel;
 import com.copycatsplus.copycats.content.copycat.fence.CopycatFenceBlock;
 import com.copycatsplus.copycats.content.copycat.fence.CopycatFenceModel;
 import com.copycatsplus.copycats.content.copycat.fence.WrappedFenceBlock;
@@ -26,6 +28,7 @@ import com.copycatsplus.copycats.content.copycat.ghost_block.CopycatGhostBlock;
 import com.copycatsplus.copycats.content.copycat.ghost_block.CopycatGhostBlockModel;
 import com.copycatsplus.copycats.content.copycat.half_layer.CopycatHalfLayerBlock;
 import com.copycatsplus.copycats.content.copycat.half_layer.CopycatHalfLayerModel;
+import com.copycatsplus.copycats.content.copycat.half_layer.CopycatMultiHalfLayerModel;
 import com.copycatsplus.copycats.content.copycat.half_panel.CopycatHalfPanelBlock;
 import com.copycatsplus.copycats.content.copycat.half_panel.CopycatHalfPanelModel;
 import com.copycatsplus.copycats.content.copycat.ladder.CopycatLadderBlock;
@@ -102,9 +105,9 @@ public class CCBlocks {
 
     public static final BlockEntry<CopycatBoardBlock> COPYCAT_BOARD =
             REGISTRATE.block("copycat_board", CopycatBoardBlock::new)
-                    .transform(BuilderTransformers.copycat())
+                    .transform(CCBuilderTransformers.multiCopycat())
                     .transform(FeatureToggle.register())
-                    .onRegister(CreateRegistrate.blockModel(() -> model -> SimpleCopycatPart.create(model, new CopycatBoardModel())))
+                    .onRegister(CreateRegistrate.blockModel(() -> model -> SimpleMultiStateCopycatPart.create(model, new CopycatMultiBoardModel())))
                     .loot(CCLootGen.build(CCLootGen.lootForDirections()))
                     .item()
                     .tag(CCTags.Items.COPYCAT_BOARD.tag)
@@ -157,9 +160,9 @@ public class CCBlocks {
 
     public static final BlockEntry<CopycatByteBlock> COPYCAT_BYTE =
             REGISTRATE.block("copycat_byte", CopycatByteBlock::new)
-                    .transform(BuilderTransformers.copycat())
+                    .transform(CCBuilderTransformers.multiCopycat())
                     .transform(FeatureToggle.register())
-                    .onRegister(CreateRegistrate.blockModel(() -> model -> SimpleCopycatPart.create(model, new CopycatByteModel())))
+                    .onRegister(CreateRegistrate.blockModel(() -> model -> SimpleMultiStateCopycatPart.create(model, new CopycatMultiByteModel())))
                     .loot(CCLootGen.build(CCLootGen.lootForBytes()))
                     .item()
                     .transform(customItemModel("copycat_base", "byte"))
@@ -217,9 +220,9 @@ public class CCBlocks {
 
     public static final BlockEntry<CopycatHalfLayerBlock> COPYCAT_HALF_LAYER =
             REGISTRATE.block("copycat_half_layer", CopycatHalfLayerBlock::new)
-                    .transform(BuilderTransformers.copycat())
+                    .transform(CCBuilderTransformers.multiCopycat())
                     .transform(FeatureToggle.register())
-                    .onRegister(CreateRegistrate.blockModel(() -> model -> SimpleCopycatPart.create(model, new CopycatHalfLayerModel())))
+                    .onRegister(CreateRegistrate.blockModel(() -> model -> SimpleMultiStateCopycatPart.create(model, new CopycatMultiHalfLayerModel())))
                     .loot(CCLootGen.build(
                             CCLootGen.lootForLayers(CopycatHalfLayerBlock.NEGATIVE_LAYERS),
                             CCLootGen.lootForLayers(CopycatHalfLayerBlock.POSITIVE_LAYERS)

@@ -1,8 +1,9 @@
 package com.copycatsplus.copycats.content.copycat.board;
 
 import com.copycatsplus.copycats.CCShapes;
-import com.copycatsplus.copycats.content.copycat.base.CTWaterloggedCopycatBlock;
+import com.copycatsplus.copycats.Copycats;
 import com.copycatsplus.copycats.content.copycat.base.ICustomCTBlocking;
+import com.copycatsplus.copycats.content.copycat.base.multistate.CTWaterloggedMultiStateCopycatBlock;
 import com.google.common.collect.ImmutableMap;
 import com.simibubi.create.content.schematics.requirement.ISpecialBlockItemRequirement;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
@@ -31,6 +32,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -38,8 +40,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
-public class CopycatBoardBlock extends CTWaterloggedCopycatBlock implements ISpecialBlockItemRequirement, ICustomCTBlocking {
+public class CopycatBoardBlock extends CTWaterloggedMultiStateCopycatBlock implements ISpecialBlockItemRequirement, ICustomCTBlocking {
     public static BooleanProperty UP = BlockStateProperties.UP;
     public static BooleanProperty DOWN = BlockStateProperties.DOWN;
     public static BooleanProperty NORTH = BlockStateProperties.NORTH;
@@ -63,11 +66,26 @@ public class CopycatBoardBlock extends CTWaterloggedCopycatBlock implements ISpe
     }
 
     @Override
+    public int maxMaterials() {
+        return 6;
+    }
+
+    @Override
+    public float vectorScale() {
+        return 2;
+    }
+
+    @Override
+    public Set<String> storageProperties() {
+        return Set.of(UP, DOWN, NORTH, EAST, SOUTH, WEST).stream().map(BooleanProperty::getName).collect(Collectors.toSet());
+    }
+
+    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
         super.createBlockStateDefinition(pBuilder.add(UP, DOWN, NORTH, SOUTH, EAST, WEST));
     }
 
-    @Override
+
     public boolean isIgnoredConnectivitySide(BlockAndTintGetter reader, BlockState state, Direction face, BlockPos fromPos, BlockPos toPos) {
         return !reader.getBlockState(toPos).is(this);
     }
@@ -205,6 +223,16 @@ public class CopycatBoardBlock extends CTWaterloggedCopycatBlock implements ISpe
     }
 
     @Override
+    public String getPropertyFromInteraction(BlockState state, BlockPos hitLocation, BlockPos blockPos, Vec3 originalHitLocation, Direction facing) {
+       BooleanProperty face = byDirection(facing);
+       if (state.getValue(face)) {
+           return face.getName();
+       } else {
+           return byDirection(facing.getOpposite()).getName();
+       }
+    }
+
+    @Override
     public ItemRequirement getRequiredItems(BlockState state, BlockEntity blockEntity) {
         return new ItemRequirement(
                 ItemRequirement.ItemUseType.CONSUME,
@@ -231,13 +259,15 @@ public class CopycatBoardBlock extends CTWaterloggedCopycatBlock implements ISpe
 
     public boolean hidesNeighborFace(BlockGetter level, BlockPos pos, BlockState state, BlockState neighborState,
                                      Direction dir) {
-        if (state.is(this) && !state.getValue(byDirection(dir))) return false;
+        //TODO: Needs re-adding with multistate stuff
+/*        if (state.is(this) && !state.getValue(byDirection(dir))) return false;
         if (neighborState.is(this) && !neighborState.getValue(byDirection(dir.getOpposite()))) return false;
-        if (state.is(this) == neighborState.is(this)) {
-            return (getMaterial(level, pos).skipRendering(getMaterial(level, pos.relative(dir)), dir.getOpposite()));
+        if (state.is(this) == neighborState.is(this)) {a
+            return (get(level, pos).skipRendering(getMaterial(level, pos.relative(dir)), dir.getOpposite()));
         }
 
-        return getMaterial(level, pos).skipRendering(neighborState, dir.getOpposite());
+        return getMaterial(level, pos).skipRendering(neighborState, dir.getOpposite());*/
+        return false;
     }
 
     @SuppressWarnings("deprecation")

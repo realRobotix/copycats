@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.SlabType;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Set;
 
@@ -84,12 +85,17 @@ public class CopycatTestBlock extends MultiStateCopycatBlock {
     }
 
     @Override
+    public float vectorScale() {
+        return 2;
+    }
+
+    @Override
     public Set<String> storageProperties() {
         return Set.of(SlabType.TOP.getSerializedName(), SlabType.BOTTOM.getSerializedName());
     }
 
     @Override
-    public String getPropertyFromInteraction(BlockState state, BlockPos hitLocation, BlockPos blockPos) {
+    public String getPropertyFromInteraction(BlockState state, BlockPos hitLocation, BlockPos blockPos, Vec3 originalHitLocation, Direction facing) {
         if (state.getValue(SLAB_TYPE) == SlabType.DOUBLE) {
             return switch (state.getValue(AXIS)) {
                 case X -> {
@@ -100,7 +106,7 @@ public class CopycatTestBlock extends MultiStateCopycatBlock {
                     }
                 }
                 case Y -> {
-                    if (hitLocation.getY() == 1) {
+                    if (hitLocation.getY() == 1 || hitLocation.getY() == 2) {
                         yield SlabType.TOP.getSerializedName();
                     } else {
                         yield SlabType.BOTTOM.getSerializedName();

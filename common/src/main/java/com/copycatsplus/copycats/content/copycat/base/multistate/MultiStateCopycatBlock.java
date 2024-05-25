@@ -6,8 +6,6 @@ import com.simibubi.create.AllTags;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
 import dev.architectury.injectables.annotations.ExpectPlatform;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -53,6 +51,8 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
 
     public abstract int maxMaterials();
 
+    public abstract float vectorScale();
+
     public abstract Set<String> storageProperties();
 
     @Override
@@ -64,7 +64,7 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
     @Override
     public InteractionResult onWrenched(BlockState state, UseOnContext context) {
         return onBlockEntityUse(context.getLevel(), context.getClickedPos(), ufte -> {
-            String property = getProperty(state, context.getClickedPos(), context.getClickLocation());
+            String property = getProperty(state, context.getClickedPos(), context.getClickLocation(), context.getClickedFace());
             ItemStack consumedItem = ufte.getMaterialItemStorage().getMaterialItem(property).consumedItem();
             if (!ufte.getMaterialItemStorage().hasCustomMaterial(property))
                 return InteractionResult.PASS;
@@ -80,7 +80,7 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
         });
     }
 
-    public abstract String getPropertyFromInteraction(BlockState state, BlockPos hitLocation, BlockPos blockPos);
+    public abstract String getPropertyFromInteraction(BlockState state, BlockPos hitLocation, BlockPos blockPos, Vec3 originalHitLocation, Direction facing);
 
     @Override
     public @NotNull InteractionResult use(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
@@ -162,15 +162,16 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
 
     public String getProperty(@NotNull BlockState state, @NotNull BlockPos pos, @NotNull BlockHitResult hit) {
         Vec3 hitVec = hit.getLocation();
-        return getProperty(state, pos, hitVec);
+        return getProperty(state, pos, hitVec, hit.getDirection());
     }
 
-    protected String getProperty(@NotNull BlockState state, @NotNull BlockPos pos, @NotNull Vec3 hitVec) {
+    protected String getProperty(@NotNull BlockState state, @NotNull BlockPos pos, Vec3 hitVec, Direction face) {
         // Relativize the hit vector around the player position
+        Vec3 unchanged = hitVec;
         hitVec = hitVec.add(-pos.getX(), -pos.getY(), -pos.getZ());
-        hitVec = hitVec.scale(maxMaterials());
+        hitVec = hitVec.scale(vectorScale());
         BlockPos location = new BlockPos((int) hitVec.x(), (int) hitVec.y(), (int) hitVec.z());
-        return getPropertyFromInteraction(state, location, pos);
+        return getPropertyFromInteraction(state, location, pos, unchanged, face);
     }
 
     //Copied from CopycatBlock
