@@ -4,6 +4,7 @@ import com.copycatsplus.copycats.CCBlocks;
 import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.content.copycat.base.ICopycatWithWrappedBlock;
 import com.copycatsplus.copycats.content.copycat.base.multistate.CTWaterloggedMultiStateCopycatBlock;
+import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.decoration.copycat.CopycatBlock;
 import com.simibubi.create.foundation.placement.IPlacementHelper;
 import com.simibubi.create.foundation.placement.PlacementHelpers;
@@ -147,6 +148,11 @@ public class CopycatSlabBlock extends CTWaterloggedMultiStateCopycatBlock implem
         if (world instanceof ServerLevel) {
             if (player != null && !player.isCreative()) {
                 List<ItemStack> drops = Block.getDrops(defaultBlockState().setValue(SLAB_TYPE, property.equals(SlabType.BOTTOM.getSerializedName()) ? SlabType.BOTTOM : SlabType.TOP), (ServerLevel) world, pos, world.getBlockEntity(pos), player, context.getItemInHand());
+                withBlockEntityDo(world, pos, ufte -> {
+                    drops.add(ufte.getMaterialItemStorage().getMaterialItem(property).consumedItem());
+                    ufte.setMaterial(property, AllBlocks.COPYCAT_BASE.getDefaultState());
+                    ufte.setConsumedItem(property, ItemStack.EMPTY);
+                });
                 for (ItemStack drop : drops) {
                     player.getInventory().placeItemBackInInventory(drop);
                 }

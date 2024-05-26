@@ -4,6 +4,7 @@ import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.Copycats;
 import com.copycatsplus.copycats.content.copycat.base.multistate.CTWaterloggedMultiStateCopycatBlock;
 import com.google.common.collect.ImmutableMap;
+import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.schematics.requirement.ISpecialBlockItemRequirement;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.utility.VoxelShaper;
@@ -25,7 +26,10 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.*;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.Half;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -187,6 +191,13 @@ public class CopycatHalfLayerBlock extends CTWaterloggedMultiStateCopycatBlock i
                 List<ItemStack> drops = Block.getDrops(
                         state.setValue(POSITIVE_LAYERS, 0).setValue(NEGATIVE_LAYERS, 0).setValue(targetProp, 1),
                         serverLevel, pos, world.getBlockEntity(pos), player, context.getItemInHand());
+                if (state.getValue(targetProp) == 1)
+                    withBlockEntityDo(world, pos, ufte -> {
+                        String property = targetProp.getName();
+                        drops.add(ufte.getMaterialItemStorage().getMaterialItem(property).consumedItem());
+                        ufte.setMaterial(property, AllBlocks.COPYCAT_BASE.getDefaultState());
+                        ufte.setConsumedItem(property, ItemStack.EMPTY);
+                    });
                 for (ItemStack drop : drops) {
                     player.getInventory().placeItemBackInInventory(drop);
                 }

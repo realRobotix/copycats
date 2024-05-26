@@ -4,6 +4,7 @@ import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.content.copycat.base.ICustomCTBlocking;
 import com.copycatsplus.copycats.content.copycat.base.multistate.CTWaterloggedMultiStateCopycatBlock;
 import com.google.common.collect.ImmutableMap;
+import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.schematics.requirement.ISpecialBlockItemRequirement;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.utility.Iterate;
@@ -220,6 +221,12 @@ public class CopycatBoardBlock extends CTWaterloggedMultiStateCopycatBlock imple
         if (world instanceof ServerLevel) {
             if (player != null && !player.isCreative()) {
                 List<ItemStack> drops = Block.getDrops(defaultBlockState().setValue(byDirection(options.get(0)), true), (ServerLevel) world, pos, world.getBlockEntity(pos), player, context.getItemInHand());
+                withBlockEntityDo(world, pos, ufte -> {
+                    String property = byDirection(options.get(0)).getName();
+                    drops.add(ufte.getMaterialItemStorage().getMaterialItem(property).consumedItem());
+                    ufte.setMaterial(property, AllBlocks.COPYCAT_BASE.getDefaultState());
+                    ufte.setConsumedItem(property, ItemStack.EMPTY);
+                });
                 for (ItemStack drop : drops) {
                     player.getInventory().placeItemBackInInventory(drop);
                 }

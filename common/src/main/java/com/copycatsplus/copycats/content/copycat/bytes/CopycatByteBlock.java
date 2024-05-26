@@ -4,6 +4,7 @@ import com.copycatsplus.copycats.Copycats;
 import com.copycatsplus.copycats.content.copycat.base.multistate.CTWaterloggedMultiStateCopycatBlock;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.math.OctahedralGroup;
+import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.schematics.requirement.ISpecialBlockItemRequirement;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.utility.Iterate;
@@ -209,6 +210,12 @@ public class CopycatByteBlock extends CTWaterloggedMultiStateCopycatBlock implem
         if (world instanceof ServerLevel) {
             if (player != null && !player.isCreative()) {
                 List<ItemStack> drops = Block.getDrops(defaultBlockState().setValue(byByte(bite), true), (ServerLevel) world, pos, world.getBlockEntity(pos), player, context.getItemInHand());
+                withBlockEntityDo(world, pos, ufte -> {
+                    String property = byByte(bite).getName();
+                    drops.add(ufte.getMaterialItemStorage().getMaterialItem(property).consumedItem());
+                    ufte.setMaterial(property, AllBlocks.COPYCAT_BASE.getDefaultState());
+                    ufte.setConsumedItem(property, ItemStack.EMPTY);
+                });
                 for (ItemStack drop : drops) {
                     player.getInventory().placeItemBackInInventory(drop);
                 }
