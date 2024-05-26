@@ -2,16 +2,19 @@ package com.copycatsplus.copycats.content.copycat.base.multistate.forge;
 
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
 import com.simibubi.create.AllBlocks;
+import com.simibubi.create.content.decoration.copycat.CopycatModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.client.model.data.ModelDataManager;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -44,5 +47,17 @@ public class MultiStateCopycatBlockImpl {
             return bonus.get();
         }
         return 0f;
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    public static BlockState multiPlatformGetAppearance(MultiStateCopycatBlock block, BlockState state, BlockAndTintGetter level, BlockPos pos, Direction side,
+                                                        BlockState queryState, BlockPos queryPos) {
+        if (block.isIgnoredConnectivitySide(level, state, side, pos, queryPos))
+            return state;
+
+        ModelDataManager modelDataManager = level.getModelDataManager();
+        if (modelDataManager == null)
+            return MultiStateCopycatBlock.getMaterial(level, pos);
+        return CopycatModel.getMaterial(modelDataManager.getAt(pos));
     }
 }

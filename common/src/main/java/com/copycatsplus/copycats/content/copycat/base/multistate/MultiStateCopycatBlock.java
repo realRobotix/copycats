@@ -282,6 +282,19 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
         return CCBlockEntityTypes.MULTI_STATE_COPYCAT_BLOCK_ENTITY.get();
     }
 
+    @ExpectPlatform
+    public static BlockState multiPlatformGetAppearance(MultiStateCopycatBlock block, BlockState state, BlockAndTintGetter level, BlockPos pos, Direction side,
+                                                        BlockState queryState, BlockPos queryPos) {
+        throw new AssertionError("This should never appear");
+    }
+
+    @Environment(EnvType.CLIENT)
+    public BlockState getAppearance(BlockState state, BlockAndTintGetter level, BlockPos pos, Direction side,
+                                    BlockState queryState, BlockPos queryPos) {
+
+        return multiPlatformGetAppearance(this, state, level, pos, side, queryState, queryPos);
+    }
+
     public boolean isIgnoredConnectivitySide(BlockAndTintGetter reader, BlockState state, Direction face,
                                              BlockPos fromPos, BlockPos toPos) {
         return false;
