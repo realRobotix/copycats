@@ -1,7 +1,6 @@
 package com.copycatsplus.copycats.content.copycat.board;
 
 import com.copycatsplus.copycats.CCShapes;
-import com.copycatsplus.copycats.Copycats;
 import com.copycatsplus.copycats.content.copycat.base.ICustomCTBlocking;
 import com.copycatsplus.copycats.content.copycat.base.multistate.CTWaterloggedMultiStateCopycatBlock;
 import com.google.common.collect.ImmutableMap;
@@ -32,7 +31,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.pathfinder.PathComputationType;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -78,6 +76,17 @@ public class CopycatBoardBlock extends CTWaterloggedMultiStateCopycatBlock imple
     @Override
     public Set<String> storageProperties() {
         return Set.of(UP, DOWN, NORTH, EAST, SOUTH, WEST).stream().map(BooleanProperty::getName).collect(Collectors.toSet());
+    }
+
+    @Override
+    public boolean partExists(BlockState state, String property) {
+        if (property.equals(UP.getName())) return state.getValue(UP);
+        if (property.equals(DOWN.getName())) return state.getValue(DOWN);
+        if (property.equals(NORTH.getName())) return state.getValue(NORTH);
+        if (property.equals(SOUTH.getName())) return state.getValue(SOUTH);
+        if (property.equals(EAST.getName())) return state.getValue(EAST);
+        if (property.equals(WEST.getName())) return state.getValue(WEST);
+        return false;
     }
 
     @Override
@@ -223,13 +232,10 @@ public class CopycatBoardBlock extends CTWaterloggedMultiStateCopycatBlock imple
     }
 
     @Override
-    public String getPropertyFromInteraction(BlockState state, BlockPos hitLocation, BlockPos blockPos, Vec3 originalHitLocation, Direction facing) {
-       BooleanProperty face = byDirection(facing);
-       if (state.getValue(face)) {
-           return face.getName();
-       } else {
-           return byDirection(facing.getOpposite()).getName();
-       }
+    public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing) {
+        facing = Direction.fromAxisAndDirection(facing.getAxis(), hitLocation.get(facing.getAxis()) > 0 ? Direction.AxisDirection.POSITIVE : Direction.AxisDirection.NEGATIVE);
+        BooleanProperty face = byDirection(facing);
+        return face.getName();
     }
 
     @Override

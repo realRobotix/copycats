@@ -9,6 +9,7 @@ import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.utility.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
@@ -74,6 +75,19 @@ public class CopycatByteBlock extends CTWaterloggedMultiStateCopycatBlock implem
     @Override
     public float vectorScale() {
         return 2;
+    }
+
+    @Override
+    public boolean partExists(BlockState state, String property) {
+        if (property.equals(TOP_NE.getName())) return state.getValue(TOP_NE);
+        if (property.equals(TOP_NW.getName())) return state.getValue(TOP_NW);
+        if (property.equals(TOP_SE.getName())) return state.getValue(TOP_SE);
+        if (property.equals(TOP_SW.getName())) return state.getValue(TOP_SW);
+        if (property.equals(BOTTOM_NE.getName())) return state.getValue(BOTTOM_NE);
+        if (property.equals(BOTTOM_NW.getName())) return state.getValue(BOTTOM_NW);
+        if (property.equals(BOTTOM_SE.getName())) return state.getValue(BOTTOM_SE);
+        if (property.equals(BOTTOM_SW.getName())) return state.getValue(BOTTOM_SW);
+        return false;
     }
 
     @Override
@@ -207,7 +221,7 @@ public class CopycatByteBlock extends CTWaterloggedMultiStateCopycatBlock implem
     }
 
     @Override
-    public String getPropertyFromInteraction(BlockState state, BlockPos hitLocation, BlockPos blockPos, Vec3 originalHitLocation, Direction facing) {
+    public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing) {
         String property = TOP_NE.getName();
         if (hitLocation.equals(BlockPos.ZERO) && state.getValue(BOTTOM_NW) || (hitLocation.equals(BlockPos.ZERO.atY(1)) && !state.getValue(TOP_NW))) {
             property = BOTTOM_NW.getName();

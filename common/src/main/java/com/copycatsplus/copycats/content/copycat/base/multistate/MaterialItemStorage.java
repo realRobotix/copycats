@@ -58,7 +58,7 @@ public class MaterialItemStorage {
     }
 
     public boolean hasCustomMaterial(String property) {
-        return storage.get(property).material() != AllBlocks.COPYCAT_BASE.getDefaultState();
+        return !storage.get(property).material().is(AllBlocks.COPYCAT_BASE.get());
     }
 
     public CompoundTag serialize() {
@@ -77,9 +77,10 @@ public class MaterialItemStorage {
         AtomicBoolean anyUpdated = new AtomicBoolean(false);
         tag.getAllKeys().forEach(key -> {
             MaterialItem newVersion = MaterialItem.deserialize(tag.getCompound(key));
-             if (newVersion.material() != storage.put(key, newVersion).material() && !anyUpdated.get()) {
-                 anyUpdated.set(true);
-             };
+            if (newVersion.material() != storage.put(key, newVersion).material() && !anyUpdated.get()) {
+                anyUpdated.set(true);
+            }
+            ;
         });
         return anyUpdated.get();
     }

@@ -95,6 +95,16 @@ public class CopycatHalfLayerBlock extends CTWaterloggedMultiStateCopycatBlock i
     }
 
     @Override
+    public boolean partExists(BlockState state, String property) {
+        if (property.equals(POSITIVE_LAYERS.getName())) {
+            return state.getValue(POSITIVE_LAYERS) > 0;
+        } else if (property.equals(NEGATIVE_LAYERS.getName())) {
+            return state.getValue(NEGATIVE_LAYERS) > 0;
+        }
+        return false;
+    }
+
+    @Override
     public Set<String> storageProperties() {
         return Set.of(POSITIVE_LAYERS.getName(), NEGATIVE_LAYERS.getName());
     }
@@ -190,7 +200,7 @@ public class CopycatHalfLayerBlock extends CTWaterloggedMultiStateCopycatBlock i
     }
 
     @Override
-    public String getPropertyFromInteraction(BlockState state, BlockPos hitLocation, BlockPos blockPos, Vec3 originalHitLocation, Direction facing) {
+    public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing) {
         return switch (state.getValue(AXIS)) {
             case X -> {
                 if (hitLocation.getZ() >= 0 && hitLocation.getX() == 0 && state.getValue(POSITIVE_LAYERS) > 0) {

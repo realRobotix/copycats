@@ -3,6 +3,7 @@ package com.copycatsplus.copycats.content.copycat.test_block;
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -12,7 +13,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.SlabType;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.Set;
 
@@ -90,12 +90,23 @@ public class CopycatTestBlock extends MultiStateCopycatBlock {
     }
 
     @Override
+    public boolean partExists(BlockState state, String property) {
+        SlabType slabType = state.getValue(SLAB_TYPE);
+        if (property.equals(SlabType.BOTTOM.getSerializedName())) {
+            return slabType == SlabType.DOUBLE || slabType == SlabType.BOTTOM;
+        } else if (property.equals(SlabType.TOP.getSerializedName())) {
+            return slabType == SlabType.DOUBLE || slabType == SlabType.TOP;
+        }
+        return false;
+    }
+
+    @Override
     public Set<String> storageProperties() {
         return Set.of(SlabType.TOP.getSerializedName(), SlabType.BOTTOM.getSerializedName());
     }
 
     @Override
-    public String getPropertyFromInteraction(BlockState state, BlockPos hitLocation, BlockPos blockPos, Vec3 originalHitLocation, Direction facing) {
+    public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing) {
         if (state.getValue(SLAB_TYPE) == SlabType.DOUBLE) {
             return switch (state.getValue(AXIS)) {
                 case X -> {

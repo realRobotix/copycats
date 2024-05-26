@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -46,6 +47,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static net.minecraft.core.Direction.Axis;
 
 public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiStateCopycatBlockEntity>, IWrenchable {
+
     public MultiStateCopycatBlock(Properties properties) {
         super(properties);
     }
@@ -56,6 +58,40 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
 
     public abstract Set<String> storageProperties();
 
+    public abstract boolean partExists(BlockState state, String property);
+
+    public abstract String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing);
+
+    /**
+     * @param targetingSolid Whether the interaction is targeting the solid part behind the block face or the air in front of the block face.
+     */
+    public String getProperty(@NotNull BlockState state, @NotNull BlockPos pos, @NotNull BlockHitResult hit, boolean targetingSolid) {
+        Vec3 hitVec = hit.getLocation();
+        return getProperty(state, pos, hitVec, hit.getDirection(), targetingSolid);
+    }
+
+    /**
+     * @param targetingSolid Whether the interaction is targeting the solid part behind the block face or the air in front of the block face.
+     */
+    protected String getProperty(@NotNull BlockState state, @NotNull BlockPos pos, Vec3 hitVec, Direction face, boolean targetingSolid) {
+        // Relativize the hit vector around the player position
+        if (targetingSolid) {
+            hitVec = hitVec.subtract(Vec3.atLowerCornerOf(face.getNormal()).scale(0.05));
+        } else {
+            hitVec = hitVec.add(Vec3.atLowerCornerOf(face.getNormal()).scale(0.05));
+        }
+        hitVec = hitVec.add(-pos.getX(), -pos.getY(), -pos.getZ());
+        hitVec = hitVec.scale(vectorScale());
+        BlockPos location = new BlockPos((int) hitVec.x(), (int) hitVec.y(), (int) hitVec.z());
+        return getPropertyFromInteraction(state, location, pos, face);
+    }
+
+    @Nullable
+    @Override
+    public <S extends BlockEntity> BlockEntityTicker<S> getTicker(Level p_153212_, BlockState p_153213_, BlockEntityType<S> p_153214_) {
+        return null;
+    }
+
     @Override
     public InteractionResult onSneakWrenched(BlockState state, UseOnContext context) {
         onWrenched(state, context);
@@ -65,7 +101,8 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
     @Override
     public InteractionResult onWrenched(BlockState state, UseOnContext context) {
         return onBlockEntityUse(context.getLevel(), context.getClickedPos(), ufte -> {
-            String property = getProperty(state, context.getClickedPos(), context.getClickLocation(), context.getClickedFace());
+            String property = getProperty(state, context.getClickedPos(), context.getClickLocation(), context.getClickedFace(), true);
+            if (!partExists(state, property)) return InteractionResult.PASS;
             ItemStack consumedItem = ufte.getMaterialItemStorage().getMaterialItem(property).consumedItem();
             if (!ufte.getMaterialItemStorage().hasCustomMaterial(property))
                 return InteractionResult.PASS;
@@ -81,15 +118,13 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
         });
     }
 
-    public abstract String getPropertyFromInteraction(BlockState state, BlockPos hitLocation, BlockPos blockPos, Vec3 originalHitLocation, Direction facing);
-
     @Override
     public @NotNull InteractionResult use(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
         if (player == null || !player.mayBuild() && !player.isSpectator())
             return InteractionResult.PASS;
 
-        ItemStack itemInHand = player.getItemInHand(hand);
         Direction face = hit.getDirection();
+        ItemStack itemInHand = player.getItemInHand(hand);
         BlockState materialIn = getAcceptedBlockState(level, pos, itemInHand, face);
 
         if (materialIn != null)
@@ -99,8 +134,10 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
 
         BlockState material = materialIn;
         return onBlockEntityUse(level, pos, ufte -> {
-            String property = getProperty(state, pos, hit);
-            if (ufte.getMaterialItemStorage().getMaterialItem(property).material().is(material.getBlock())) {
+            String property = getProperty(state, pos, hit, true);
+            if (!partExists(state, property)) return InteractionResult.PASS;
+            if (ufte.getMaterialItemStorage().getMaterialItem(property).material()
+                    .is(material.getBlock())) {
                 if (!ufte.cycleMaterial(property))
                     return InteractionResult.PASS;
                 ufte.getLevel()
@@ -108,16 +145,13 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
                                 .95f);
                 return InteractionResult.SUCCESS;
             }
-            if (ufte.getMaterialItemStorage().hasCustomMaterial(property)
-                    && !ufte.getMaterialItemStorage().getMaterialItem(property).material().is(AllBlocks.COPYCAT_BASE.get()))
+            if (ufte.getMaterialItemStorage().hasCustomMaterial(property))
                 return InteractionResult.PASS;
-
             if (level.isClientSide())
                 return InteractionResult.SUCCESS;
 
             ufte.setMaterial(property, material);
             ufte.setConsumedItem(property, itemInHand);
-
             ufte.getLevel()
                     .playSound(null, ufte.getBlockPos(), material.getSoundType()
                             .getPlaceSound(), SoundSource.BLOCKS, 1, .75f);
@@ -133,10 +167,8 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
     }
 
     @Override
-    public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, LivingEntity pPlacer, ItemStack pStack) {
-        //TODO: Not sure how to retrieve the property here as im unsure what to put as the context for the clipcontext.
-        //Otherwise its all good to go
-/*        if (pPlacer == null)
+    public void setPlacedBy(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, LivingEntity pPlacer, @NotNull ItemStack pStack) {
+        if (pPlacer == null)
             return;
         ItemStack offhandItem = pPlacer.getItemInHand(InteractionHand.OFF_HAND);
         BlockState appliedState =
@@ -144,38 +176,27 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
 
         if (appliedState == null)
             return;
-        Vec3i vecPos = new Vec3i(pPos.getX(), pPos.getY(), pPos.getZ());
-        String property = getProperty(pState, pPos, pLevel.clip(new ClipContext(VecHelper.getCenterOf(vecPos), new Vec3(vecPos.getX(), vecPos.getY(), vecPos.getZ()), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, pPlacer)));
         withBlockEntityDo(pLevel, pPos, ufte -> {
-            if (ufte.getMaterialItemStorage().hasCustomMaterial(property))
-                return;
+            for (String property : this.storageProperties()) {
+                if (!partExists(pState, property))
+                    continue;
+                if (ufte.getMaterialItemStorage().hasCustomMaterial(property))
+                    continue;
 
-            ufte.setMaterial(property, appliedState);
-            ufte.setConsumedItem(property, offhandItem);
+                ufte.setMaterial(property, appliedState);
+                ufte.setConsumedItem(property, offhandItem);
 
-            if (pPlacer instanceof Player player && player.isCreative())
-                return;
-            offhandItem.shrink(1);
-            if (offhandItem.isEmpty())
-                pPlacer.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
-        });*/
+                if (pPlacer instanceof Player player && player.isCreative())
+                    continue;
+                offhandItem.shrink(1);
+                if (offhandItem.isEmpty()) {
+                    pPlacer.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
+                    break;
+                }
+            }
+        });
     }
 
-    public String getProperty(@NotNull BlockState state, @NotNull BlockPos pos, @NotNull BlockHitResult hit) {
-        Vec3 hitVec = hit.getLocation();
-        return getProperty(state, pos, hitVec, hit.getDirection());
-    }
-
-    protected String getProperty(@NotNull BlockState state, @NotNull BlockPos pos, Vec3 hitVec, Direction face) {
-        // Relativize the hit vector around the player position
-        Vec3 unchanged = hitVec;
-        hitVec = hitVec.add(-pos.getX(), -pos.getY(), -pos.getZ());
-        hitVec = hitVec.scale(vectorScale());
-        BlockPos location = new BlockPos((int) hitVec.x(), (int) hitVec.y(), (int) hitVec.z());
-        return getPropertyFromInteraction(state, location, pos, unchanged, face);
-    }
-
-    //Copied from CopycatBlock
     @Nullable
     public BlockState getAcceptedBlockState(Level pLevel, BlockPos pPos, ItemStack item, Direction face) {
         if (!(item.getItem() instanceof BlockItem bi))
@@ -236,7 +257,7 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
     }
 
     @Override
-    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
+    public void onRemove(BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pNewState, boolean pIsMoving) {
         if (!pState.hasBlockEntity() || pState.getBlock() == pNewState.getBlock())
             return;
         if (!pIsMoving)
@@ -245,7 +266,7 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
     }
 
     @Override
-    public void playerWillDestroy(Level pLevel, BlockPos pPos, BlockState pState, Player pPlayer) {
+    public void playerWillDestroy(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, @NotNull Player pPlayer) {
         super.playerWillDestroy(pLevel, pPos, pState, pPlayer);
         if (pPlayer.isCreative())
             withBlockEntityDo(pLevel, pPos, ufte -> ufte.getMaterialItemStorage().getAllProperties().forEach(key -> ufte.getMaterialItemStorage().getMaterialItem(key).setConsumedItem(ItemStack.EMPTY)));
@@ -261,15 +282,27 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
         return CCBlockEntityTypes.MULTI_STATE_COPYCAT_BLOCK_ENTITY.get();
     }
 
-    @Nullable
-    @Override
-    public <S extends BlockEntity> BlockEntityTicker<S> getTicker(Level p_153212_, BlockState p_153213_, BlockEntityType<S> p_153214_) {
-        return null;
+    public boolean isIgnoredConnectivitySide(BlockAndTintGetter reader, BlockState state, Direction face,
+                                             BlockPos fromPos, BlockPos toPos) {
+        return false;
     }
-
 
     public abstract boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos,
                                                      BlockState state);
+
+    /**
+     * Get the first non-empty material in this multi-state copycat.
+     * You should avoid using this method as much as possible and figure out which specific
+     * material to get instead.
+     */
+    public static BlockState getMaterial(BlockGetter reader, BlockPos targetPos) {
+        if (reader.getBlockEntity(targetPos) instanceof MultiStateCopycatBlockEntity cbe)
+            return cbe.getMaterialItemStorage().getAllMaterials().stream()
+                    .filter(s -> !s.is(AllBlocks.COPYCAT_BASE.get()))
+                    .findFirst()
+                    .orElse(Blocks.AIR.defaultBlockState());
+        return Blocks.AIR.defaultBlockState();
+    }
 
     public boolean canFaceBeOccluded(BlockState state, Direction face) {
         return false;
@@ -282,44 +315,31 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
     // Wrapped properties
     //Copied From CopycatBlock and of course edited to work
 
-    @Override
-    public void fallOn(Level pLevel, BlockState pState, BlockPos pPos, Entity pEntity, float p_152430_) {
-        String property = getProperty(pState, pPos, new BlockHitResult(Vec3.atCenterOf(pPos), Direction.UP, pPos, true));
-        AtomicReference<BlockState> material = new AtomicReference<>(AllBlocks.COPYCAT_BASE.getDefaultState());
-        withBlockEntityDo(pLevel, pPos, mscbe -> material.set(mscbe.getMaterialItemStorage().getMaterialItem(property).material()));
-        material.get().getBlock()
-                .fallOn(pLevel, material.get(), pPos, pEntity, p_152430_);
-    }
-
-    @Override
-    public float getDestroyProgress(BlockState pState, Player pPlayer, BlockGetter pLevel, BlockPos pPos) {
-        String property = getProperty(pState, pPos, new BlockHitResult(Vec3.atCenterOf(pPos), Direction.UP, pPos, true));
-        AtomicReference<BlockState> material = new AtomicReference<>(AllBlocks.COPYCAT_BASE.getDefaultState());
-        withBlockEntityDo(pLevel, pPos, mscbe -> material.set(mscbe.getMaterialItemStorage().getMaterialItem(property).material()));
-        return material.get().getDestroyProgress(pPlayer, pLevel, pPos);
-    }
-
     public SoundType getSoundType(BlockState state, LevelReader level, BlockPos pos, Entity entity) {
-        AtomicReference<BlockState> blockState = new AtomicReference<>(AllBlocks.COPYCAT_BASE.getDefaultState());
-        withBlockEntityDo(level, pos, mscbe -> blockState.set(mscbe.getMaterialItemStorage().getAllMaterials().stream().findFirst().get()));
-        return blockState.get().getSoundType();
+        return getMaterial(level, pos).getSoundType();
     }
 
     public float getFriction(BlockState state, LevelReader level, BlockPos pos, Entity entity) {
-        AtomicReference<BlockState> blockState = new AtomicReference<>(AllBlocks.COPYCAT_BASE.getDefaultState());
-        withBlockEntityDo(level, pos, mscbe -> blockState.set(mscbe.getMaterialItemStorage().getAllMaterials().stream().findFirst().get()));
-        return blockState.get().getBlock().getFriction();
+        return getMaterial(level, pos).getBlock().getFriction();
     }
 
     public int getLightEmission(BlockState state, BlockGetter level, BlockPos pos) {
         AtomicInteger light = new AtomicInteger(0);
-        withBlockEntityDo(level, pos, mscbe -> mscbe.getMaterialItemStorage().getAllMaterials().forEach(bs -> light.addAndGet(bs.getLightEmission())));
-        return Math.min(light.get(), 15);
+        withBlockEntityDo(level, pos, mscbe -> {
+            mscbe.getMaterialItemStorage().getAllMaterials().forEach(bs -> {
+                light.accumulateAndGet(bs.getLightEmission(), Math::max);
+            });
+        });
+        return light.get();
     }
 
     public float getExplosionResistance(BlockState state, BlockGetter level, BlockPos pos, Explosion explosion) {
         AtomicReference<Float> explosionResistance = new AtomicReference<>(0.0f);
-        withBlockEntityDo(level, pos, mscbe -> mscbe.getMaterialItemStorage().getAllMaterials().forEach(bs -> explosionResistance.set(explosionResistance.get() + bs.getBlock().getExplosionResistance())));
+        withBlockEntityDo(level, pos, mscbe -> {
+            mscbe.getMaterialItemStorage().getAllMaterials().forEach(bs -> {
+                explosionResistance.accumulateAndGet(bs.getBlock().getExplosionResistance(), Math::max);
+            });
+        });
         return explosionResistance.get();
     }
 
@@ -355,13 +375,21 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
         return false;
     }
 
-    public static BlockState getMaterial(BlockGetter reader, BlockPos targetPos) {
-        if (reader.getBlockEntity(targetPos) instanceof MultiStateCopycatBlockEntity cbe)
-            return cbe.getMaterialItemStorage().getAllMaterials().stream()
-                    .filter(s -> !s.is(AllBlocks.COPYCAT_BASE.get()))
-                    .findFirst()
-                    .orElse(Blocks.AIR.defaultBlockState());
-        return Blocks.AIR.defaultBlockState();
+    @Override
+    public void fallOn(@NotNull Level pLevel, @NotNull BlockState pState, @NotNull BlockPos pPos, @NotNull Entity pEntity, float p_152430_) {
+        String property = getProperty(pState, pPos, new BlockHitResult(Vec3.atCenterOf(pPos), Direction.UP, pPos, true), true);
+        AtomicReference<BlockState> material = new AtomicReference<>(AllBlocks.COPYCAT_BASE.getDefaultState());
+        withBlockEntityDo(pLevel, pPos, mscbe -> material.set(mscbe.getMaterialItemStorage().getMaterialItem(property).material()));
+        material.get().getBlock()
+                .fallOn(pLevel, material.get(), pPos, pEntity, p_152430_);
+    }
+
+    @Override
+    public float getDestroyProgress(@NotNull BlockState pState, @NotNull Player pPlayer, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos) {
+        String property = getProperty(pState, pPos, new BlockHitResult(Vec3.atCenterOf(pPos), Direction.UP, pPos, true), true);
+        AtomicReference<BlockState> material = new AtomicReference<>(AllBlocks.COPYCAT_BASE.getDefaultState());
+        withBlockEntityDo(pLevel, pPos, mscbe -> material.set(mscbe.getMaterialItemStorage().getMaterialItem(property).material()));
+        return material.get().getDestroyProgress(pPlayer, pLevel, pPos);
     }
 
     @Environment(EnvType.CLIENT)
@@ -372,7 +400,7 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
     @Environment(EnvType.CLIENT)
     public static class WrappedBlockColor implements BlockColor {
         @Override
-        public int getColor(BlockState pState, @Nullable BlockAndTintGetter pLevel, @Nullable BlockPos pPos,
+        public int getColor(@NotNull BlockState pState, @Nullable BlockAndTintGetter pLevel, @Nullable BlockPos pPos,
                             int pTintIndex) {
             if (pLevel == null || pPos == null)
                 return GrassColor.get(0.5D, 1.0D);

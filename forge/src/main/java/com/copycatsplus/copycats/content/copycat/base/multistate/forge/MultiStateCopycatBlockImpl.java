@@ -19,7 +19,7 @@ public class MultiStateCopycatBlockImpl {
 
     public static boolean multiPlatformLandingEffects(BlockState state1, ServerLevel level, BlockPos pos, BlockState state2, LivingEntity entity, int numberOfParticles) {
         if (state1.getBlock() instanceof MultiStateCopycatBlock mscb) {
-            String property = mscb.getProperty(state1, pos, new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, true));
+            String property = mscb.getProperty(state1, pos, new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, true), true);
             AtomicReference<BlockState> mat = new AtomicReference<>(AllBlocks.COPYCAT_BASE.getDefaultState());
             mscb.withBlockEntityDo(level, pos, mscbe -> mat.set(mscbe.getMaterialItemStorage().getMaterialItem(property).material()));
             return mat.get().getBlock().addLandingEffects(state1, level, pos, state2, entity, numberOfParticles);
@@ -29,7 +29,7 @@ public class MultiStateCopycatBlockImpl {
 
     public static boolean multiPlatformRunningEffects(BlockState state, Level level, BlockPos pos, Entity entity) {
         if (state.getBlock() instanceof MultiStateCopycatBlock mscb) {
-            String property = mscb.getProperty(state, pos, new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, true));
+            String property = mscb.getProperty(state, pos, new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, true), true);
             AtomicReference<BlockState> mat = new AtomicReference<>(AllBlocks.COPYCAT_BASE.getDefaultState());
             mscb.withBlockEntityDo(level, pos, mscbe -> mat.set(mscbe.getMaterialItemStorage().getMaterialItem(property).material()));
             return mat.get().getBlock().addRunningEffects(state, level, pos, entity);

@@ -14,12 +14,14 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.Direction.AxisDirection;
 import net.minecraft.core.Vec3i;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -31,7 +33,6 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -66,12 +67,23 @@ public class CopycatSlabBlock extends CTWaterloggedMultiStateCopycatBlock implem
     }
 
     @Override
+    public boolean partExists(BlockState state, String property) {
+        SlabType slabType = state.getValue(SLAB_TYPE);
+        if (property.equals(SlabType.BOTTOM.getSerializedName())) {
+            return slabType == SlabType.DOUBLE || slabType == SlabType.BOTTOM;
+        } else if (property.equals(SlabType.TOP.getSerializedName())) {
+            return slabType == SlabType.DOUBLE || slabType == SlabType.TOP;
+        }
+        return false;
+    }
+
+    @Override
     public Set<String> storageProperties() {
         return Set.of(SlabType.BOTTOM.getSerializedName(), SlabType.TOP.getSerializedName());
     }
 
     @Override
-    public String getPropertyFromInteraction(BlockState state, BlockPos hitLocation, BlockPos blockPos, Vec3 originalHitLocation, Direction facing) {
+    public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing) {
         if (state.getValue(SLAB_TYPE) == SlabType.DOUBLE) {
             return switch (state.getValue(AXIS)) {
                 case X -> {
@@ -121,6 +133,29 @@ public class CopycatSlabBlock extends CTWaterloggedMultiStateCopycatBlock implem
         }
 
         return super.use(state, world, pos, player, hand, ray);
+    }
+
+    @Override
+    public InteractionResult onSneakWrenched(BlockState state, UseOnContext context) {
+        if (state.getValue(SLAB_TYPE) != SlabType.DOUBLE) return super.onSneakWrenched(state, context);
+
+        Level world = context.getLevel();
+        BlockPos pos = context.getClickedPos();
+        Player player = context.getPlayer();
+        String property = getProperty(state, context.getClickedPos(), context.getClickLocation(), context.getClickedFace(), true);
+        if (!partExists(state, property)) return InteractionResult.FAIL;
+        if (world instanceof ServerLevel) {
+            if (player != null && !player.isCreative()) {
+                List<ItemStack> drops = Block.getDrops(defaultBlockState().setValue(SLAB_TYPE, property.equals(SlabType.BOTTOM.getSerializedName()) ? SlabType.BOTTOM : SlabType.TOP), (ServerLevel) world, pos, world.getBlockEntity(pos), player, context.getItemInHand());
+                for (ItemStack drop : drops) {
+                    player.getInventory().placeItemBackInInventory(drop);
+                }
+            }
+            BlockPos up = pos.relative(Direction.UP);
+            world.setBlockAndUpdate(pos, state.setValue(SLAB_TYPE, property.equals(SlabType.BOTTOM.getSerializedName()) ? SlabType.TOP : SlabType.BOTTOM).updateShape(Direction.UP, world.getBlockState(up), world, pos, up));
+            playRemoveSound(world, pos);
+        }
+        return InteractionResult.SUCCESS;
     }
 
 
