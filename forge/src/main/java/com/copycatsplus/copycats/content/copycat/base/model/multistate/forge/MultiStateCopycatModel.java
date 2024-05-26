@@ -101,14 +101,16 @@ public abstract class MultiStateCopycatModel extends BakedModelWrapperWithData {
             return super.getQuads(state, side, rand, data, renderType);
 
         Map<String, OcclusionData> occlusionData = getOcclusion(data);
-        if (occlusionData.values().stream().allMatch(d -> d.isOccluded(side)))
-            return super.getQuads(state, side, rand, data, renderType);
-
         List<BakedQuad> croppedQuads = new LinkedList<>();
         Map<String, ModelData> wrappedData = getWrappedData(data);
         for (Map.Entry<String, BlockState> entry : materials.entrySet()) {
+            OcclusionData occlusion = occlusionData.get(entry.getKey());
+            if (occlusion == null || occlusion.isOccluded(side))
+                continue;
             BlockState material = entry.getValue();
             ModelData dataForMaterial = wrappedData.get(entry.getKey());
+            if (dataForMaterial == null)
+                dataForMaterial = ModelData.EMPTY;
 
             if (renderType != null && !Minecraft.getInstance()
                     .getBlockRenderer()
@@ -118,11 +120,7 @@ public abstract class MultiStateCopycatModel extends BakedModelWrapperWithData {
                 continue;
 
             croppedQuads.addAll(getCroppedQuads(entry.getKey(), state, side, rand, material, dataForMaterial, renderType));
-        }
 
-        for (Map.Entry<String, BlockState> entry : materials.entrySet()) {
-            BlockState material = entry.getValue();
-            ModelData dataForMaterial = wrappedData.get(entry.getKey());
             // Rubidium: render side!=null versions of the base material during side==null,
             // to avoid getting culled away
             if (side == null && state.getBlock() instanceof MultiStateCopycatBlock ccb)
