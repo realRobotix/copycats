@@ -5,6 +5,7 @@ import com.copycatsplus.copycats.content.copycat.base.model.multistate.SimpleMul
 import com.simibubi.create.foundation.utility.Iterate;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +30,8 @@ public class CopycatMultiBoardModel implements SimpleMultiStateCopycatPart {
         }
 
         for (Direction direction : Iterate.directions) {
-            if (state.getValue(byDirection(direction)))
+            BooleanProperty prop = byDirection(direction);
+            if (state.getValue(prop))
                 if (direction.getAxis().isVertical()) {
                     Map<Direction, Boolean> edges = direction == Direction.DOWN ? bottomEdges : topEdges;
                     int north = !edges.get(Direction.NORTH) ? 1 : 0;
@@ -40,11 +42,12 @@ public class CopycatMultiBoardModel implements SimpleMultiStateCopycatPart {
                     if (south == 1) edges.put(Direction.SOUTH, true);
                     if (east == 1) edges.put(Direction.EAST, true);
                     if (west == 1) edges.put(Direction.WEST, true);
-                    assemblePiece(context, 0, direction == Direction.UP,
-                            vec3(1 - west, 0, 1 - north),
-                            aabb(14 + east + west, 1, 14 + north + south).move(1 - west, 0, 1 - north),
-                            cull(NORTH * (1 - north) | SOUTH * (1 - south) | EAST * (1 - east) | WEST * (1 - west))
-                    );
+                    if (key.equals(prop.getName()))
+                        assemblePiece(context, 0, direction == Direction.UP,
+                                vec3(1 - west, 0, 1 - north),
+                                aabb(14 + east + west, 1, 14 + north + south).move(1 - west, 0, 1 - north),
+                                cull(NORTH * (1 - north) | SOUTH * (1 - south) | EAST * (1 - east) | WEST * (1 - west))
+                        );
                 } else {
                     int up = !topEdges.get(direction) ? 1 : 0;
                     int down = !bottomEdges.get(direction) ? 1 : 0;
@@ -54,11 +57,12 @@ public class CopycatMultiBoardModel implements SimpleMultiStateCopycatPart {
                     if (down == 1) bottomEdges.put(direction, true);
                     if (left == 1) leftEdges.put(direction, true);
                     if (right == 1) leftEdges.put(direction.getCounterClockWise(), true);
-                    assemblePiece(context, (int) direction.toYRot() + 180, false,
-                            vec3(1 - right, 1 - down, 0),
-                            aabb(14 + left + right, 14 + up + down, 1).move(1 - right, 1 - down, 0),
-                            cull(UP * (1 - up) | DOWN * (1 - down) | EAST * (1 - left) | WEST * (1 - right))
-                    );
+                    if (key.equals(prop.getName()))
+                        assemblePiece(context, (int) direction.toYRot() + 180, false,
+                                vec3(1 - right, 1 - down, 0),
+                                aabb(14 + left + right, 14 + up + down, 1).move(1 - right, 1 - down, 0),
+                                cull(UP * (1 - up) | DOWN * (1 - down) | EAST * (1 - left) | WEST * (1 - right))
+                        );
                 }
         }
     }

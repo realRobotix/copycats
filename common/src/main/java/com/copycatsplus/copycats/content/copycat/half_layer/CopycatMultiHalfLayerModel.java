@@ -25,33 +25,32 @@ public class CopycatMultiHalfLayerModel implements SimpleMultiStateCopycatPart {
 
         boolean flipY = state.getValue(HALF) == Half.TOP;
         int rot = state.getValue(AXIS) == Direction.Axis.X ? 0 : 90;
-        for (boolean positive : Iterate.falseAndTrue) {
-            int layer = state.getValue(positive ? POSITIVE_LAYERS : NEGATIVE_LAYERS);
-            if (layer == 0) continue;
-            assemblePiece(
-                    context, rot + (positive ? 180 : 0), flipY,
-                    vec3(0, 0, 0),
-                    aabb(4, layer, 16),
-                    cull(EAST | UP)
-            );
-            assemblePiece(
-                    context, rot + (positive ? 180 : 0), flipY,
-                    vec3(0, layer, 0),
-                    aabb(4, layer, 16).move(0, 16 - layer, 0),
-                    cull(EAST | DOWN)
-            );
-            assemblePiece(
-                    context, rot + (positive ? 180 : 0), flipY,
-                    vec3(4, 0, 0),
-                    aabb(4, layer, 16).move(12, 0, 0),
-                    cull(WEST | UP)
-            );
-            assemblePiece(
-                    context, rot + (positive ? 180 : 0), flipY,
-                    vec3(4, layer, 0),
-                    aabb(4, layer, 16).move(12, 16 - layer, 0),
-                    cull(WEST | DOWN)
-            );
-        }
+        boolean positive = key.equals(POSITIVE_LAYERS.getName());
+        int layer = state.getValue(positive ? POSITIVE_LAYERS : NEGATIVE_LAYERS);
+        if (layer == 0) return;
+        assemblePiece(
+                context, rot + (positive ? 180 : 0), flipY,
+                vec3(0, 0, 0),
+                aabb(4, layer, 16),
+                cull(EAST | UP)
+        );
+        assemblePiece(
+                context, rot + (positive ? 180 : 0), flipY,
+                vec3(0, layer, 0),
+                aabb(4, layer, 16).move(0, 16 - layer, 0),
+                cull(EAST | DOWN)
+        );
+        assemblePiece(
+                context, rot + (positive ? 180 : 0), flipY,
+                vec3(4, 0, 0),
+                aabb(4, layer, 16).move(12, 0, 0),
+                cull(WEST | UP)
+        );
+        assemblePiece(
+                context, rot + (positive ? 180 : 0), flipY,
+                vec3(4, layer, 0),
+                aabb(4, layer, 16).move(12, 16 - layer, 0),
+                cull(WEST | DOWN)
+        );
     }
 }

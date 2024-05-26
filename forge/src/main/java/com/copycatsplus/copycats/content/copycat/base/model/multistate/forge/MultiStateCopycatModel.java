@@ -87,6 +87,7 @@ public abstract class MultiStateCopycatModel extends BakedModelWrapperWithData {
         }
     }
 
+    @NotNull
     @Override
     public List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource rand, ModelData data, RenderType renderType) {
 
