@@ -119,24 +119,11 @@ public class CopycatHalfLayerBlock extends CTWaterloggedMultiStateCopycatBlock i
 
     @Override
     public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing) {
-        return switch (state.getValue(AXIS)) {
-            case X -> {
-                if (hitLocation.getZ() >= 0 && hitLocation.getX() == 0 && state.getValue(POSITIVE_LAYERS) > 0) {
-                    yield POSITIVE_LAYERS.getName();
-                } else {
-                    yield NEGATIVE_LAYERS.getName();
-                }
-            }
-            case Z -> {
-                if (hitLocation.getX() >= 0 && hitLocation.getZ() == 0 && state.getValue(NEGATIVE_LAYERS) > 0) {
-                    yield NEGATIVE_LAYERS.getName();
-                } else {
-                    yield POSITIVE_LAYERS.getName();
-                }
-            }
-            //Doesnt matter cause we only use horizontal directions
-            case Y -> null;
-        };
+        if (hitLocation.get(state.getValue(AXIS)) > 0) {
+            return POSITIVE_LAYERS.getName();
+        } else {
+            return NEGATIVE_LAYERS.getName();
+        }
     }
 
     @Override

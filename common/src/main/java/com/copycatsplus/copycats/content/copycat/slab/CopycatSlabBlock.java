@@ -73,32 +73,10 @@ public class CopycatSlabBlock extends CTWaterloggedMultiStateCopycatBlock implem
 
     @Override
     public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing) {
-        if (state.getValue(SLAB_TYPE) == SlabType.DOUBLE) {
-            return switch (state.getValue(AXIS)) {
-                case X -> {
-                    if (hitLocation.getX() == 1) {
-                        yield (SlabType.TOP.getSerializedName());
-                    } else {
-                        yield SlabType.BOTTOM.getSerializedName();
-                    }
-                }
-                case Y -> {
-                    if (hitLocation.getY() == 1 || hitLocation.getY() == 2) {
-                        yield SlabType.TOP.getSerializedName();
-                    } else {
-                        yield SlabType.BOTTOM.getSerializedName();
-                    }
-                }
-                case Z -> {
-                    if (hitLocation.getZ() == 1) {
-                        yield SlabType.TOP.getSerializedName();
-                    } else {
-                        yield SlabType.BOTTOM.getSerializedName();
-                    }
-                }
-            };
+        if (hitLocation.get(state.getValue(AXIS)) > 0) {
+            return SlabType.TOP.getSerializedName();
         } else {
-            return state.getValue(SLAB_TYPE).getSerializedName();
+            return SlabType.BOTTOM.getSerializedName();
         }
     }
 
