@@ -54,13 +54,18 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
 
     public abstract int maxMaterials();
 
-    public abstract float vectorScale();
+    /**
+     * Get the number of parts this block is divided into in each axis.
+     */
+    public abstract Vec3i vectorScale(BlockState state);
 
     public abstract Set<String> storageProperties();
 
     public abstract boolean partExists(BlockState state, String property);
 
     public abstract String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing);
+
+    public abstract Vec3i getVectorFromProperty(BlockState state, String property);
 
     /**
      * @param targetingSolid Whether the interaction is targeting the solid part behind the block face or the air in front of the block face.
@@ -81,7 +86,8 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
             hitVec = hitVec.add(Vec3.atLowerCornerOf(face.getNormal()).scale(0.05));
         }
         hitVec = hitVec.add(-pos.getX(), -pos.getY(), -pos.getZ());
-        hitVec = hitVec.scale(vectorScale());
+        Vec3i scale = vectorScale(state);
+        hitVec = hitVec.multiply(scale.getX(), scale.getY(), scale.getZ());
         BlockPos location = new BlockPos((int) hitVec.x(), (int) hitVec.y(), (int) hitVec.z());
         return getPropertyFromInteraction(state, location, pos, face);
     }
@@ -300,7 +306,7 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
         return false;
     }
 
-    public abstract boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos,
+    public abstract boolean canConnectTexturesToward(String property, BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos,
                                                      BlockState state);
 
     /**
@@ -314,6 +320,12 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
                     .filter(s -> !s.is(AllBlocks.COPYCAT_BASE.get()))
                     .findFirst()
                     .orElse(Blocks.AIR.defaultBlockState());
+        return Blocks.AIR.defaultBlockState();
+    }
+
+    public static BlockState getMaterial(BlockGetter reader, BlockPos targetPos, String property) {
+        if (reader.getBlockEntity(targetPos) instanceof MultiStateCopycatBlockEntity cbe)
+            return cbe.getMaterialItemStorage().getMaterialItem(property).material();
         return Blocks.AIR.defaultBlockState();
     }
 

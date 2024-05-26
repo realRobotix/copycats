@@ -85,8 +85,12 @@ public class CopycatTestBlock extends MultiStateCopycatBlock {
     }
 
     @Override
-    public float vectorScale() {
-        return 2;
+    public Vec3i vectorScale(BlockState state) {
+        return switch (state.getValue(AXIS)) {
+            case X -> new Vec3i(2, 1, 1);
+            case Y -> new Vec3i(1, 2, 1);
+            case Z -> new Vec3i(1, 1, 2);
+        };
     }
 
     @Override
@@ -137,7 +141,16 @@ public class CopycatTestBlock extends MultiStateCopycatBlock {
     }
 
     @Override
-    public boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos, BlockState state) {
+    public Vec3i getVectorFromProperty(BlockState state, String property) {
+        return switch (state.getValue(AXIS)) {
+            case X -> property.equals(SlabType.TOP.getSerializedName()) ? new Vec3i(1, 0, 0) : new Vec3i(0, 0, 0);
+            case Y -> property.equals(SlabType.TOP.getSerializedName()) ? new Vec3i(0, 1, 0) : new Vec3i(0, 0, 0);
+            case Z -> property.equals(SlabType.TOP.getSerializedName()) ? new Vec3i(0, 0, 1) : new Vec3i(0, 0, 0);
+        };
+    }
+
+    @Override
+    public boolean canConnectTexturesToward(String property, BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos, BlockState state) {
         return true;
     }
 }

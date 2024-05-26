@@ -63,24 +63,12 @@ public class CopycatSlabBlock extends CTWaterloggedMultiStateCopycatBlock implem
     }
 
     @Override
-    public float vectorScale() {
-        return 2;
-    }
-
-    @Override
-    public boolean partExists(BlockState state, String property) {
-        SlabType slabType = state.getValue(SLAB_TYPE);
-        if (property.equals(SlabType.BOTTOM.getSerializedName())) {
-            return slabType == SlabType.DOUBLE || slabType == SlabType.BOTTOM;
-        } else if (property.equals(SlabType.TOP.getSerializedName())) {
-            return slabType == SlabType.DOUBLE || slabType == SlabType.TOP;
-        }
-        return false;
-    }
-
-    @Override
-    public Set<String> storageProperties() {
-        return Set.of(SlabType.BOTTOM.getSerializedName(), SlabType.TOP.getSerializedName());
+    public Vec3i vectorScale(BlockState state) {
+        return switch (state.getValue(AXIS)) {
+            case X -> new Vec3i(2, 1, 1);
+            case Y -> new Vec3i(1, 2, 1);
+            case Z -> new Vec3i(1, 1, 2);
+        };
     }
 
     @Override
@@ -115,6 +103,31 @@ public class CopycatSlabBlock extends CTWaterloggedMultiStateCopycatBlock implem
     }
 
     @Override
+    public Vec3i getVectorFromProperty(BlockState state, String property) {
+        return switch (state.getValue(AXIS)) {
+            case X -> property.equals(SlabType.TOP.getSerializedName()) ? new Vec3i(1, 0, 0) : new Vec3i(0, 0, 0);
+            case Y -> property.equals(SlabType.TOP.getSerializedName()) ? new Vec3i(0, 1, 0) : new Vec3i(0, 0, 0);
+            case Z -> property.equals(SlabType.TOP.getSerializedName()) ? new Vec3i(0, 0, 1) : new Vec3i(0, 0, 0);
+        };
+    }
+
+    @Override
+    public boolean partExists(BlockState state, String property) {
+        SlabType slabType = state.getValue(SLAB_TYPE);
+        if (property.equals(SlabType.BOTTOM.getSerializedName())) {
+            return slabType == SlabType.DOUBLE || slabType == SlabType.BOTTOM;
+        } else if (property.equals(SlabType.TOP.getSerializedName())) {
+            return slabType == SlabType.DOUBLE || slabType == SlabType.TOP;
+        }
+        return false;
+    }
+
+    @Override
+    public Set<String> storageProperties() {
+        return Set.of(SlabType.BOTTOM.getSerializedName(), SlabType.TOP.getSerializedName());
+    }
+
+    @Override
     public Block getWrappedBlock() {
         return Blocks.SMOOTH_STONE_SLAB;
     }
@@ -146,15 +159,17 @@ public class CopycatSlabBlock extends CTWaterloggedMultiStateCopycatBlock implem
         String property = getProperty(state, context.getClickedPos(), context.getClickLocation(), context.getClickedFace(), true);
         if (!partExists(state, property)) return InteractionResult.FAIL;
         if (world instanceof ServerLevel) {
-            if (player != null && !player.isCreative()) {
+            if (player != null) {
                 List<ItemStack> drops = Block.getDrops(defaultBlockState().setValue(SLAB_TYPE, property.equals(SlabType.BOTTOM.getSerializedName()) ? SlabType.BOTTOM : SlabType.TOP), (ServerLevel) world, pos, world.getBlockEntity(pos), player, context.getItemInHand());
                 withBlockEntityDo(world, pos, ufte -> {
                     drops.add(ufte.getMaterialItemStorage().getMaterialItem(property).consumedItem());
                     ufte.setMaterial(property, AllBlocks.COPYCAT_BASE.getDefaultState());
                     ufte.setConsumedItem(property, ItemStack.EMPTY);
                 });
-                for (ItemStack drop : drops) {
-                    player.getInventory().placeItemBackInInventory(drop);
+                if (!player.isCreative()) {
+                    for (ItemStack drop : drops) {
+                        player.getInventory().placeItemBackInInventory(drop);
+                    }
                 }
             }
             BlockPos up = pos.relative(Direction.UP);
@@ -183,7 +198,7 @@ public class CopycatSlabBlock extends CTWaterloggedMultiStateCopycatBlock implem
     }
 
     @Override
-    public boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos,
+    public boolean canConnectTexturesToward(String property, BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos,
                                             BlockState state) {
         BlockState toState = reader.getBlockState(toPos);
         if (!toState.is(this)) return false;

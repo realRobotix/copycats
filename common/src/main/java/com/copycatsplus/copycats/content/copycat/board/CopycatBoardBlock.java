@@ -70,8 +70,8 @@ public class CopycatBoardBlock extends CTWaterloggedMultiStateCopycatBlock imple
     }
 
     @Override
-    public float vectorScale() {
-        return 2;
+    public Vec3i vectorScale(BlockState state) {
+        return new Vec3i(2, 2, 2);
     }
 
     @Override
@@ -91,6 +91,18 @@ public class CopycatBoardBlock extends CTWaterloggedMultiStateCopycatBlock imple
     }
 
     @Override
+    public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing) {
+        facing = Direction.fromAxisAndDirection(facing.getAxis(), hitLocation.get(facing.getAxis()) > 0 ? Direction.AxisDirection.POSITIVE : Direction.AxisDirection.NEGATIVE);
+        BooleanProperty face = byDirection(facing);
+        return face.getName();
+    }
+
+    @Override
+    public Vec3i getVectorFromProperty(BlockState state, String property) {
+        return Vec3i.ZERO;
+    }
+
+    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
         super.createBlockStateDefinition(pBuilder.add(UP, DOWN, NORTH, SOUTH, EAST, WEST));
     }
@@ -101,7 +113,7 @@ public class CopycatBoardBlock extends CTWaterloggedMultiStateCopycatBlock imple
     }
 
     @Override
-    public boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos, BlockState state) {
+    public boolean canConnectTexturesToward(String property, BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos, BlockState state) {
         BlockState toState = reader.getBlockState(toPos);
         if (!toState.is(this)) return false;
         return reader.getBlockState(toPos).is(this);
@@ -219,7 +231,7 @@ public class CopycatBoardBlock extends CTWaterloggedMultiStateCopycatBlock imple
         BlockPos pos = context.getClickedPos();
         Player player = context.getPlayer();
         if (world instanceof ServerLevel) {
-            if (player != null && !player.isCreative()) {
+            if (player != null) {
                 List<ItemStack> drops = Block.getDrops(defaultBlockState().setValue(byDirection(options.get(0)), true), (ServerLevel) world, pos, world.getBlockEntity(pos), player, context.getItemInHand());
                 withBlockEntityDo(world, pos, ufte -> {
                     String property = byDirection(options.get(0)).getName();
@@ -227,8 +239,10 @@ public class CopycatBoardBlock extends CTWaterloggedMultiStateCopycatBlock imple
                     ufte.setMaterial(property, AllBlocks.COPYCAT_BASE.getDefaultState());
                     ufte.setConsumedItem(property, ItemStack.EMPTY);
                 });
-                for (ItemStack drop : drops) {
-                    player.getInventory().placeItemBackInInventory(drop);
+                if (!player.isCreative()) {
+                    for (ItemStack drop : drops) {
+                        player.getInventory().placeItemBackInInventory(drop);
+                    }
                 }
             }
             BlockPos up = pos.relative(Direction.UP);
@@ -236,13 +250,6 @@ public class CopycatBoardBlock extends CTWaterloggedMultiStateCopycatBlock imple
             playRemoveSound(world, pos);
         }
         return InteractionResult.SUCCESS;
-    }
-
-    @Override
-    public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing) {
-        facing = Direction.fromAxisAndDirection(facing.getAxis(), hitLocation.get(facing.getAxis()) > 0 ? Direction.AxisDirection.POSITIVE : Direction.AxisDirection.NEGATIVE);
-        BooleanProperty face = byDirection(facing);
-        return face.getName();
     }
 
     @Override

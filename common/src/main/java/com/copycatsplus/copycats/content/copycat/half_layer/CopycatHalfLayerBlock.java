@@ -94,8 +94,12 @@ public class CopycatHalfLayerBlock extends CTWaterloggedMultiStateCopycatBlock i
     }
 
     @Override
-    public float vectorScale() {
-        return 2;
+    public Vec3i vectorScale(BlockState state) {
+        return switch (state.getValue(AXIS)) {
+            case X -> new Vec3i(2, 1, 1);
+            case Y -> new Vec3i(1, 2, 1);
+            case Z -> new Vec3i(1, 1, 2);
+        };
     }
 
     @Override
@@ -111,6 +115,37 @@ public class CopycatHalfLayerBlock extends CTWaterloggedMultiStateCopycatBlock i
     @Override
     public Set<String> storageProperties() {
         return Set.of(POSITIVE_LAYERS.getName(), NEGATIVE_LAYERS.getName());
+    }
+
+    @Override
+    public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing) {
+        return switch (state.getValue(AXIS)) {
+            case X -> {
+                if (hitLocation.getZ() >= 0 && hitLocation.getX() == 0 && state.getValue(POSITIVE_LAYERS) > 0) {
+                    yield POSITIVE_LAYERS.getName();
+                } else {
+                    yield NEGATIVE_LAYERS.getName();
+                }
+            }
+            case Z -> {
+                if (hitLocation.getX() >= 0 && hitLocation.getZ() == 0 && state.getValue(NEGATIVE_LAYERS) > 0) {
+                    yield NEGATIVE_LAYERS.getName();
+                } else {
+                    yield POSITIVE_LAYERS.getName();
+                }
+            }
+            //Doesnt matter cause we only use horizontal directions
+            case Y -> null;
+        };
+    }
+
+    @Override
+    public Vec3i getVectorFromProperty(BlockState state, String property) {
+        return switch (state.getValue(AXIS)) {
+            case X -> property.equals(POSITIVE_LAYERS.getName()) ? new Vec3i(1, 0, 0) : new Vec3i(0, 0, 0);
+            case Y -> property.equals(POSITIVE_LAYERS.getName()) ? new Vec3i(0, 1, 0) : new Vec3i(0, 0, 0);
+            case Z -> property.equals(POSITIVE_LAYERS.getName()) ? new Vec3i(0, 0, 1) : new Vec3i(0, 0, 0);
+        };
     }
 
     @Override
@@ -186,8 +221,7 @@ public class CopycatHalfLayerBlock extends CTWaterloggedMultiStateCopycatBlock i
             targetProp = POSITIVE_LAYERS;
         }
         if (world instanceof ServerLevel serverLevel) {
-            if (player != null && !player.isCreative()) {
-                // Respect loot tables
+            if (player != null) {
                 List<ItemStack> drops = Block.getDrops(
                         state.setValue(POSITIVE_LAYERS, 0).setValue(NEGATIVE_LAYERS, 0).setValue(targetProp, 1),
                         serverLevel, pos, world.getBlockEntity(pos), player, context.getItemInHand());
@@ -198,8 +232,10 @@ public class CopycatHalfLayerBlock extends CTWaterloggedMultiStateCopycatBlock i
                         ufte.setMaterial(property, AllBlocks.COPYCAT_BASE.getDefaultState());
                         ufte.setConsumedItem(property, ItemStack.EMPTY);
                     });
-                for (ItemStack drop : drops) {
-                    player.getInventory().placeItemBackInInventory(drop);
+                if (!player.isCreative()) {
+                    for (ItemStack drop : drops) {
+                        player.getInventory().placeItemBackInInventory(drop);
+                    }
                 }
             }
             BlockPos up = pos.relative(Direction.UP);
@@ -208,28 +244,6 @@ public class CopycatHalfLayerBlock extends CTWaterloggedMultiStateCopycatBlock i
             playRemoveSound(world, pos);
         }
         return InteractionResult.SUCCESS;
-    }
-
-    @Override
-    public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing) {
-        return switch (state.getValue(AXIS)) {
-            case X -> {
-                if (hitLocation.getZ() >= 0 && hitLocation.getX() == 0 && state.getValue(POSITIVE_LAYERS) > 0) {
-                    yield POSITIVE_LAYERS.getName();
-                } else {
-                    yield NEGATIVE_LAYERS.getName();
-                }
-            }
-            case Z -> {
-                if (hitLocation.getX() >= 0 && hitLocation.getZ() == 0 && state.getValue(NEGATIVE_LAYERS) > 0) {
-                    yield NEGATIVE_LAYERS.getName();
-                } else {
-                    yield POSITIVE_LAYERS.getName();
-                }
-            }
-            //Doesnt matter cause we only use horizontal directions
-            case Y -> null;
-        };
     }
 
     @Override
@@ -261,7 +275,7 @@ public class CopycatHalfLayerBlock extends CTWaterloggedMultiStateCopycatBlock i
     }
 
     @Override
-    public boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos,
+    public boolean canConnectTexturesToward(String property, BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos,
                                             BlockState state) {
         BlockState toState = reader.getBlockState(toPos);
         if (!toState.is(this)) return false;

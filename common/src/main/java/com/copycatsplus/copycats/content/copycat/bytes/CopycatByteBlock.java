@@ -35,10 +35,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -52,6 +49,21 @@ public class CopycatByteBlock extends CTWaterloggedMultiStateCopycatBlock implem
     public static BooleanProperty BOTTOM_SE = BooleanProperty.create("bottom_southeast");
     public static BooleanProperty BOTTOM_SW = BooleanProperty.create("bottom_southwest");
     private final ImmutableMap<BlockState, VoxelShape> shapesCache;
+
+    public static final List<Byte> allBytes;
+    public static final Map<String, Byte> byteMap;
+
+    static {
+        allBytes = new ArrayList<>(8);
+        for (boolean x : Iterate.falseAndTrue) {
+            for (boolean y : Iterate.falseAndTrue) {
+                for (boolean z : Iterate.falseAndTrue) {
+                    allBytes.add(bite(x, y, z));
+                }
+            }
+        }
+        byteMap = allBytes.stream().collect(Collectors.toMap(b -> byByte(b).getName(), b -> b));
+    }
 
     public CopycatByteBlock(Properties properties) {
         super(properties);
@@ -74,8 +86,8 @@ public class CopycatByteBlock extends CTWaterloggedMultiStateCopycatBlock implem
     }
 
     @Override
-    public float vectorScale() {
-        return 2;
+    public Vec3i vectorScale(BlockState state) {
+        return new Vec3i(2, 2, 2);
     }
 
     @Override
@@ -97,20 +109,29 @@ public class CopycatByteBlock extends CTWaterloggedMultiStateCopycatBlock implem
     }
 
     @Override
+    public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing) {
+        return byByte(hitLocation.getX() > 0, hitLocation.getY() > 0, hitLocation.getZ() > 0).getName();
+    }
+
+    @Override
+    public Vec3i getVectorFromProperty(BlockState state, String property) {
+        Byte bite = byteMap.get(property);
+        return new Vec3i(bite.x ? 1 : 0, bite.y ? 1 : 0, bite.z ? 1 : 0);
+    }
+
+    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
         super.createBlockStateDefinition(pBuilder.add(TOP_NE, TOP_NW, TOP_SE, TOP_SW, BOTTOM_NE, BOTTOM_NW, BOTTOM_SE, BOTTOM_SW));
     }
 
 
     public boolean isIgnoredConnectivitySide(BlockAndTintGetter reader, BlockState state, Direction face, BlockPos fromPos, BlockPos toPos) {
-        return true;
+        return false;
     }
 
     @Override
-    public boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos, BlockState state) {
-        BlockState toState = reader.getBlockState(toPos);
-        if (!toState.is(this)) return false;
-        return false;
+    public boolean canConnectTexturesToward(String property, BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos, BlockState state) {
+        return true;
     }
 
     @Override
@@ -208,7 +229,7 @@ public class CopycatByteBlock extends CTWaterloggedMultiStateCopycatBlock implem
         Vec3 bias = Vec3.atLowerCornerOf(context.getClickedFace().getNormal()).scale(-1 / 16f);
         Byte bite = getByteFromVec(context.getClickLocation().add(bias), context.getClickedPos());
         if (world instanceof ServerLevel) {
-            if (player != null && !player.isCreative()) {
+            if (player != null) {
                 List<ItemStack> drops = Block.getDrops(defaultBlockState().setValue(byByte(bite), true), (ServerLevel) world, pos, world.getBlockEntity(pos), player, context.getItemInHand());
                 withBlockEntityDo(world, pos, ufte -> {
                     String property = byByte(bite).getName();
@@ -216,8 +237,10 @@ public class CopycatByteBlock extends CTWaterloggedMultiStateCopycatBlock implem
                     ufte.setMaterial(property, AllBlocks.COPYCAT_BASE.getDefaultState());
                     ufte.setConsumedItem(property, ItemStack.EMPTY);
                 });
-                for (ItemStack drop : drops) {
-                    player.getInventory().placeItemBackInInventory(drop);
+                if (!player.isCreative()) {
+                    for (ItemStack drop : drops) {
+                        player.getInventory().placeItemBackInInventory(drop);
+                    }
                 }
             }
             BlockPos up = pos.relative(Direction.UP);
@@ -225,32 +248,6 @@ public class CopycatByteBlock extends CTWaterloggedMultiStateCopycatBlock implem
             playRemoveSound(world, pos);
         }
         return InteractionResult.SUCCESS;
-    }
-
-    @Override
-    public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing) {
-        String property = TOP_NE.getName();
-        if (hitLocation.equals(BlockPos.ZERO) && state.getValue(BOTTOM_NW) || (hitLocation.equals(BlockPos.ZERO.atY(1)) && !state.getValue(TOP_NW))) {
-            property = BOTTOM_NW.getName();
-        } else if (hitLocation.equals(BlockPos.ZERO.atY(1)) && state.getValue(TOP_NW)) {
-            property = TOP_NW.getName();
-        }
-        if (hitLocation.getZ() >= 1 && hitLocation.getX() == 0 && state.getValue(BOTTOM_SW) && (hitLocation.getY() == 0 || hitLocation.getY() == 1 && !state.getValue(TOP_SW))) {
-            property = BOTTOM_SW.getName();
-        } else if (hitLocation.getZ() >= 1 && hitLocation.getX() == 0 && (hitLocation.getY() == 1 && state.getValue(TOP_SW))) {
-            property = TOP_SW.getName();
-        }
-        if (hitLocation.getZ() >= 1 && hitLocation.getX() >= 1 && state.getValue(BOTTOM_SE) && (hitLocation.getY() == 0 || hitLocation.getY() == 1 && !state.getValue(TOP_SE))) {
-            property = BOTTOM_SE.getName();
-        } else if (hitLocation.getZ() >= 1 && hitLocation.getX() >= 1 && (hitLocation.getY() == 1 && state.getValue(TOP_SE))) {
-            property = TOP_SE.getName();
-        }
-        if (hitLocation.getX() >= 1 && hitLocation.getZ() == 0 && state.getValue(BOTTOM_NE) && (hitLocation.getY() == 0 || hitLocation.getY() == 1 && !state.getValue(TOP_NE))) {
-            property = BOTTOM_NE.getName();
-        } else if (hitLocation.getX() == 2 && hitLocation.getZ() == 0 && (hitLocation.getY() == 1 && state.getValue(TOP_NE))) {
-            property = TOP_NE.getName();
-        }
-        return property;
     }
 
     @Override
@@ -303,19 +300,6 @@ public class CopycatByteBlock extends CTWaterloggedMultiStateCopycatBlock implem
         }
 
         return blockstate;
-    }
-
-    public static final List<Byte> allBytes;
-
-    static {
-        allBytes = new ArrayList<>(8);
-        for (boolean x : Iterate.falseAndTrue) {
-            for (boolean y : Iterate.falseAndTrue) {
-                for (boolean z : Iterate.falseAndTrue) {
-                    allBytes.add(bite(x, y, z));
-                }
-            }
-        }
     }
 
     public static Byte bite(boolean x, boolean y, boolean z) {

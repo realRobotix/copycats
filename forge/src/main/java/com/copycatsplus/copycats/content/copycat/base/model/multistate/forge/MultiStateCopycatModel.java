@@ -1,7 +1,6 @@
 package com.copycatsplus.copycats.content.copycat.base.model.multistate.forge;
 
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
-import com.simibubi.create.content.decoration.copycat.FilteredBlockAndTintGetter;
 import com.simibubi.create.foundation.model.BakedModelWrapperWithData;
 import com.simibubi.create.foundation.utility.Iterate;
 import net.minecraft.client.Minecraft;
@@ -11,6 +10,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
@@ -55,9 +55,11 @@ public abstract class MultiStateCopycatModel extends BakedModelWrapperWithData {
         builder.with(OCCLUSION_PROPERTY, occlusionMap);
 
 
-        FilteredBlockAndTintGetter filteredWorld = new FilteredBlockAndTintGetter(world,
-                targetPos -> copycatBlock.canConnectTexturesToward(world, pos, targetPos, state));
         Map<String, ModelData> wrappedDataMap = material.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, s -> {
+            Vec3i inner = copycatBlock.getVectorFromProperty(state, s.getKey());
+            ScaledBlockAndTintGetter scaledWorld = new ScaledBlockAndTintGetter(world, pos, inner, copycatBlock.vectorScale(state), p -> true);
+            ScaledBlockAndTintGetter filteredWorld = new ScaledBlockAndTintGetter(world, pos, inner, copycatBlock.vectorScale(state),
+                    targetPos -> copycatBlock.canConnectTexturesToward(s.getKey(), scaledWorld, pos, targetPos, state));
             return getModelOf(s.getValue()).getModelData(
                     filteredWorld,
                     pos, s.getValue(), ModelData.EMPTY);

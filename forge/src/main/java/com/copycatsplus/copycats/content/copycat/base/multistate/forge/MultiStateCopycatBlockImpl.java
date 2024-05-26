@@ -1,10 +1,12 @@
 package com.copycatsplus.copycats.content.copycat.base.multistate.forge;
 
+import com.copycatsplus.copycats.content.copycat.base.model.multistate.forge.MultiStateCopycatModel;
+import com.copycatsplus.copycats.content.copycat.base.model.multistate.forge.ScaledBlockAndTintGetter;
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
 import com.simibubi.create.AllBlocks;
-import com.simibubi.create.content.decoration.copycat.CopycatModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -52,12 +54,24 @@ public class MultiStateCopycatBlockImpl {
     @SuppressWarnings("UnstableApiUsage")
     public static BlockState multiPlatformGetAppearance(MultiStateCopycatBlock block, BlockState state, BlockAndTintGetter level, BlockPos pos, Direction side,
                                                         BlockState queryState, BlockPos queryPos) {
+        String property;
+        BlockPos truePos = null;
+        if (level instanceof ScaledBlockAndTintGetter scaledLevel) {
+            truePos = scaledLevel.getTruePos(pos);
+            Vec3i inner = scaledLevel.getInner(pos);
+            property = block.getPropertyFromInteraction(state, inner, truePos, side);
+        } else {
+            property = block.storageProperties().stream().findFirst().get();
+        }
         if (block.isIgnoredConnectivitySide(level, state, side, pos, queryPos))
             return state;
 
         ModelDataManager modelDataManager = level.getModelDataManager();
-        if (modelDataManager == null)
-            return MultiStateCopycatBlock.getMaterial(level, pos);
-        return CopycatModel.getMaterial(modelDataManager.getAt(pos));
+        BlockState appearance = null;
+        if (modelDataManager != null)
+            appearance = MultiStateCopycatModel.getMaterials(modelDataManager.getAt(truePos == null ? pos : truePos)).get(property);
+        if (appearance == null)
+            appearance = MultiStateCopycatBlock.getMaterial(level, pos, property);
+        return appearance;
     }
 }
