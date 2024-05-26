@@ -297,6 +297,8 @@ public class CopycatSlabBlock extends CTWaterloggedMultiStateCopycatBlock implem
     @SuppressWarnings("deprecation")
     @Override
     public @NotNull VoxelShape getShape(BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull CollisionContext pContext) {
+        VoxelShape shapeOverride = multiPlatformGetShape(pState, pLevel, pPos, pContext);
+        if (shapeOverride != null) return shapeOverride;
         SlabType type = pState.getValue(SLAB_TYPE);
         Axis axis = pState.getValue(AXIS);
         if (type == SlabType.DOUBLE) {

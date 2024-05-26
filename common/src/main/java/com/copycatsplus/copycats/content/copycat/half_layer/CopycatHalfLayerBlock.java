@@ -373,6 +373,8 @@ public class CopycatHalfLayerBlock extends CTWaterloggedMultiStateCopycatBlock i
     @SuppressWarnings("deprecation")
     @Override
     public @NotNull VoxelShape getShape(@NotNull BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull CollisionContext pContext) {
+        VoxelShape shapeOverride = multiPlatformGetShape(pState, pLevel, pPos, pContext);
+        if (shapeOverride != null) return shapeOverride;
         return Objects.requireNonNull(this.shapesCache.get(pState));
     }
 
