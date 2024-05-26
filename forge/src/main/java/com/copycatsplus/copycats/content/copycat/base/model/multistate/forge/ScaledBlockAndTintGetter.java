@@ -35,18 +35,20 @@ public class ScaledBlockAndTintGetter implements BlockAndTintGetter {
 
     public BlockPos getTruePos(BlockPos pos) {
         return new BlockPos(
-                origin.getX() + (pos.getX() + originInner.getX() - origin.getX()) / scale.getX(),
-                origin.getY() + (pos.getY() + originInner.getY() - origin.getY()) / scale.getY(),
-                origin.getZ() + (pos.getZ() + originInner.getZ() - origin.getZ()) / scale.getZ()
+                origin.getX() + (int) Math.floor((pos.getX() + originInner.getX() - origin.getX()) / (double) scale.getX()),
+                origin.getY() + (int) Math.floor((pos.getY() + originInner.getY() - origin.getY()) / (double) scale.getY()),
+                origin.getZ() + (int) Math.floor((pos.getZ() + originInner.getZ() - origin.getZ()) / (double) scale.getZ())
         );
     }
 
     public Vec3i getInner(BlockPos pos) {
-        return new Vec3i(
-                (pos.getX() - origin.getX() + originInner.getX()) % scale.getX(),
-                (pos.getY() - origin.getY() + originInner.getY()) % scale.getY(),
-                (pos.getZ() - origin.getZ() + originInner.getZ()) % scale.getZ()
-        );
+        int x = (pos.getX() - origin.getX() + originInner.getX()) % scale.getX();
+        int y = (pos.getY() - origin.getY() + originInner.getY()) % scale.getY();
+        int z = (pos.getZ() - origin.getZ() + originInner.getZ()) % scale.getZ();
+        if (x < 0) x += scale.getX();
+        if (y < 0) y += scale.getY();
+        if (z < 0) z += scale.getZ();
+        return new Vec3i(x, y, z);
     }
 
     @Override
