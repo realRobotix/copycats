@@ -6,6 +6,10 @@ import com.simibubi.create.AllTags;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
 import dev.architectury.injectables.annotations.ExpectPlatform;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -22,10 +26,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.*;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.EntityBlock;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -267,7 +268,6 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
     }
 
 
-
     public abstract boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos,
                                                      BlockState state);
 
@@ -353,5 +353,32 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
     public boolean isValidSpawn(BlockState state, BlockGetter level, BlockPos pos, SpawnPlacements.Type type,
                                 EntityType<?> entityType) {
         return false;
+    }
+
+    public static BlockState getMaterial(BlockGetter reader, BlockPos targetPos) {
+        if (reader.getBlockEntity(targetPos) instanceof MultiStateCopycatBlockEntity cbe)
+            return cbe.getMaterialItemStorage().getAllMaterials().stream()
+                    .filter(s -> !s.is(AllBlocks.COPYCAT_BASE.get()))
+                    .findFirst()
+                    .orElse(Blocks.AIR.defaultBlockState());
+        return Blocks.AIR.defaultBlockState();
+    }
+
+    @Environment(EnvType.CLIENT)
+    public static BlockColor wrappedColor() {
+        return new WrappedBlockColor();
+    }
+
+    @Environment(EnvType.CLIENT)
+    public static class WrappedBlockColor implements BlockColor {
+        @Override
+        public int getColor(BlockState pState, @Nullable BlockAndTintGetter pLevel, @Nullable BlockPos pPos,
+                            int pTintIndex) {
+            if (pLevel == null || pPos == null)
+                return GrassColor.get(0.5D, 1.0D);
+            return Minecraft.getInstance()
+                    .getBlockColors()
+                    .getColor(getMaterial(pLevel, pPos), pLevel, pPos, pTintIndex);
+        }
     }
 }
