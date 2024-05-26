@@ -241,8 +241,8 @@ public class CopycatHalfLayerBlock extends CTWaterloggedMultiStateCopycatBlock i
         );
     }
 
-    public boolean isIgnoredConnectivitySide(BlockAndTintGetter reader, BlockState state, Direction face,
-                                             BlockPos fromPos, BlockPos toPos) {
+    @Override
+    public boolean isIgnoredConnectivitySide(String property, BlockAndTintGetter reader, BlockState state, Direction face, BlockPos fromPos, BlockPos toPos) {
         BlockState toState = reader.getBlockState(toPos);
 
         if (toState.is(this)) {

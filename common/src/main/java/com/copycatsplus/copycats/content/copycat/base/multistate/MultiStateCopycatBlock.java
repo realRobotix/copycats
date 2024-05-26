@@ -302,7 +302,7 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
         return multiPlatformGetAppearance(this, state, level, pos, side, queryState, queryPos);
     }
 
-    public boolean isIgnoredConnectivitySide(BlockAndTintGetter reader, BlockState state, Direction face,
+    public boolean isIgnoredConnectivitySide(String property, BlockAndTintGetter reader, BlockState state, Direction face,
                                              BlockPos fromPos, BlockPos toPos) {
         return false;
     }

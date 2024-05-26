@@ -158,8 +158,8 @@ public class CopycatSlabBlock extends CTWaterloggedMultiStateCopycatBlock implem
     }
 
 
-    public boolean isIgnoredConnectivitySide(BlockAndTintGetter reader, BlockState state, Direction face,
-                                             BlockPos fromPos, BlockPos toPos) {
+    @Override
+    public boolean isIgnoredConnectivitySide(String property, BlockAndTintGetter reader, BlockState state, Direction face, BlockPos fromPos, BlockPos toPos) {
         Axis axis = state.getValue(AXIS);
         BlockState toState = reader.getBlockState(toPos);
 

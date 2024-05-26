@@ -77,7 +77,7 @@ public class MultiStateCopycatBlockImpl {
         } else {
             property = block.storageProperties().stream().findFirst().get();
         }
-        if (block.isIgnoredConnectivitySide(level, state, side, pos, queryPos))
+        if (block.isIgnoredConnectivitySide(property, level, state, side, pos, queryPos))
             return state;
 
         ModelDataManager modelDataManager = level.getModelDataManager();
