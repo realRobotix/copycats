@@ -50,7 +50,7 @@ public class MaterialItemStorage {
     }
 
     public List<ItemStack> getAllConsumedItems() {
-        return storage.values().stream().map(MaterialItem::consumedItem).collect(Collectors.toList());
+        return storage.values().stream().map(MaterialItem::consumedItem).dropWhile(itemStack -> itemStack.equals(ItemStack.EMPTY)).collect(Collectors.toList());
     }
 
     public Map<String, BlockState> getMaterialMap() {

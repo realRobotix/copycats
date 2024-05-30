@@ -5,8 +5,6 @@ import com.copycatsplus.copycats.content.copycat.base.multistate.CTWaterloggedMu
 import com.google.common.collect.ImmutableMap;
 import com.mojang.math.OctahedralGroup;
 import com.simibubi.create.AllBlocks;
-import com.simibubi.create.content.schematics.requirement.ISpecialBlockItemRequirement;
-import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.utility.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -24,7 +22,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -39,7 +36,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class CopycatByteBlock extends CTWaterloggedMultiStateCopycatBlock implements ISpecialBlockItemRequirement {
+public class CopycatByteBlock extends CTWaterloggedMultiStateCopycatBlock {
     public static BooleanProperty TOP_NE = BooleanProperty.create("top_northeast");
     public static BooleanProperty TOP_NW = BooleanProperty.create("top_northwest");
     public static BooleanProperty TOP_SE = BooleanProperty.create("top_southeast");
@@ -251,14 +248,6 @@ public class CopycatByteBlock extends CTWaterloggedMultiStateCopycatBlock implem
             playRemoveSound(world, pos);
         }
         return InteractionResult.SUCCESS;
-    }
-
-    @Override
-    public ItemRequirement getRequiredItems(BlockState state, BlockEntity blockEntity) {
-        return new ItemRequirement(
-                ItemRequirement.ItemUseType.CONSUME,
-                new ItemStack(asItem(), (int) allBytes.stream().filter(b -> state.getValue(byByte(b))).count())
-        );
     }
 
     @SuppressWarnings("deprecation")

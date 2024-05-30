@@ -45,7 +45,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class CopycatBoardBlock extends CTWaterloggedMultiStateCopycatBlock implements ISpecialBlockItemRequirement, ICustomCTBlocking {
+public class CopycatBoardBlock extends CTWaterloggedMultiStateCopycatBlock implements ICustomCTBlocking {
     public static BooleanProperty UP = BlockStateProperties.UP;
     public static BooleanProperty DOWN = BlockStateProperties.DOWN;
     public static BooleanProperty NORTH = BlockStateProperties.NORTH;
@@ -259,14 +259,6 @@ public class CopycatBoardBlock extends CTWaterloggedMultiStateCopycatBlock imple
             playRemoveSound(world, pos);
         }
         return InteractionResult.SUCCESS;
-    }
-
-    @Override
-    public ItemRequirement getRequiredItems(BlockState state, BlockEntity blockEntity) {
-        return new ItemRequirement(
-                ItemRequirement.ItemUseType.CONSUME,
-                new ItemStack(asItem(), (int) Arrays.stream(Iterate.directions).filter(d -> state.getValue(byDirection(d))).count())
-        );
     }
 
     private static int getByAxis(Vec3i pos, Direction.Axis axis) {

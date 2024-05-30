@@ -4,6 +4,9 @@ import com.copycatsplus.copycats.CCBlockEntityTypes;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
+import com.simibubi.create.content.schematics.requirement.ISpecialBlockEntityItemRequirement;
+import com.simibubi.create.content.schematics.requirement.ISpecialBlockItemRequirement;
+import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.block.IBE;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.fabricmc.api.EnvType;
@@ -41,13 +44,16 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import static net.minecraft.core.Direction.Axis;
 
-public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiStateCopycatBlockEntity>, IWrenchable {
+public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiStateCopycatBlockEntity>, IWrenchable, ISpecialBlockItemRequirement {
 
     public MultiStateCopycatBlock(Properties properties) {
         super(properties);
@@ -97,6 +103,17 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
     @Override
     public <S extends BlockEntity> BlockEntityTicker<S> getTicker(Level p_153212_, BlockState p_153213_, BlockEntityType<S> p_153214_) {
         return null;
+    }
+
+    @Override
+    public ItemRequirement getRequiredItems(BlockState state, BlockEntity blockEntity) {
+        if (state.getBlock() instanceof MultiStateCopycatBlock msb) {
+            List<ItemStack> stacks = new ArrayList<>(msb.storageProperties().stream()
+                    .filter(prop -> msb.partExists(state, prop))
+                    .map(prop -> new ItemStack(state.getBlock().asItem())).toList());
+            return new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, stacks);
+        }
+        return ItemRequirement.INVALID;
     }
 
     @Override
