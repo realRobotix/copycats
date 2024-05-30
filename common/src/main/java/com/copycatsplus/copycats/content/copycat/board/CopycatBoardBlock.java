@@ -1,8 +1,10 @@
 package com.copycatsplus.copycats.content.copycat.board;
 
 import com.copycatsplus.copycats.CCShapes;
+import com.copycatsplus.copycats.Copycats;
 import com.copycatsplus.copycats.content.copycat.base.ICustomCTBlocking;
 import com.copycatsplus.copycats.content.copycat.base.multistate.CTWaterloggedMultiStateCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
 import com.google.common.collect.ImmutableMap;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.schematics.requirement.ISpecialBlockItemRequirement;
@@ -32,6 +34,8 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -109,14 +113,17 @@ public class CopycatBoardBlock extends CTWaterloggedMultiStateCopycatBlock imple
 
     @Override
     public boolean isIgnoredConnectivitySide(String property, BlockAndTintGetter reader, BlockState state, Direction face, BlockPos fromPos, BlockPos toPos) {
-        return !reader.getBlockState(toPos).is(this);
-    }
-
-    @Override
-    public boolean canConnectTexturesToward(String property, BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos, BlockState state) {
         BlockState toState = reader.getBlockState(toPos);
-        if (!toState.is(this)) return false;
-        return reader.getBlockState(toPos).is(this);
+        if (toState.getBlock() instanceof MultiStateCopycatBlock mscb) {
+            if (mscb.partExists(toState, property)) {
+                BlockState toMat = MultiStateCopycatBlock.getMaterial(reader, toPos, property);
+                return !toMat.is(getMaterial(reader, fromPos, property).getBlock());
+            } else {
+                return true;
+            }
+        } else {
+            return !toState.is(getMaterial(reader, fromPos, property).getBlock());
+        }
     }
 
     @Override
@@ -281,15 +288,14 @@ public class CopycatBoardBlock extends CTWaterloggedMultiStateCopycatBlock imple
 
     public boolean hidesNeighborFace(BlockGetter level, BlockPos pos, BlockState state, BlockState neighborState,
                                      Direction dir) {
-        //TODO: Needs re-adding with multistate stuff
-/*        if (state.is(this) && !state.getValue(byDirection(dir))) return false;
+        if (state.is(this) && !state.getValue(byDirection(dir))) return false;
         if (neighborState.is(this) && !neighborState.getValue(byDirection(dir.getOpposite()))) return false;
-        if (state.is(this) == neighborState.is(this)) {a
-            return (get(level, pos).skipRendering(getMaterial(level, pos.relative(dir)), dir.getOpposite()));
+        String property = getProperty(state, pos, new BlockHitResult(Vec3.atCenterOf(pos), dir, pos, true), true);
+        if (state.is(this) == neighborState.is(this)) {
+            return (getMaterial(level, pos, property).skipRendering(getMaterial(level, pos.relative(dir)), dir.getOpposite()));
         }
 
-        return getMaterial(level, pos).skipRendering(neighborState, dir.getOpposite());*/
-        return false;
+        return getMaterial(level, pos, property).skipRendering(neighborState, dir.getOpposite());
     }
 
     @SuppressWarnings("deprecation")

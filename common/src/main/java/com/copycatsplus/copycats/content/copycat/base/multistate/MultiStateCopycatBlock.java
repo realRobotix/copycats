@@ -304,11 +304,31 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
 
     public boolean isIgnoredConnectivitySide(String property, BlockAndTintGetter reader, BlockState state, Direction face,
                                              BlockPos fromPos, BlockPos toPos) {
-        return false;
+        BlockState toState = reader.getBlockState(toPos);
+        if (toState.getBlock() instanceof MultiStateCopycatBlock mscb) {
+            return true;
+        } else {
+            return !toState.is(getMaterial(reader, fromPos).getBlock());
+        }
     }
 
-    public abstract boolean canConnectTexturesToward(String property, BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos,
-                                                     BlockState state);
+    public boolean canConnectTexturesToward(String property, BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos,
+                                                     BlockState state) {
+        BlockState toState = reader.getBlockState(toPos);
+        if (toState.getBlock() instanceof MultiStateCopycatBlock mscb) {
+            if (mscb.partExists(toState, property)) {
+                BlockState toMat = getMaterial(reader, toPos, property);
+                return toMat.is(getMaterial(reader, fromPos, property).getBlock());
+            } else {
+                for (String prop : mscb.storageProperties()) {
+                    return (mscb.partExists(toState, prop) && getMaterial(reader, toPos, prop).is(getMaterial(reader, fromPos, property).getBlock()));
+                }
+                return false;
+            }
+        } else {
+            return toState.is(getMaterial(reader, fromPos, property).getBlock());
+        }
+    }
 
     /**
      * Get the first non-empty material in this multi-state copycat.
