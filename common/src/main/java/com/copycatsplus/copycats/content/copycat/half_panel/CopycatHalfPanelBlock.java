@@ -3,6 +3,7 @@ package com.copycatsplus.copycats.content.copycat.half_panel;
 import com.copycatsplus.copycats.CCBlocks;
 import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.content.copycat.base.CTWaterloggedCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.IStateType;
 import com.simibubi.create.content.equipment.extendoGrip.ExtendoGripItem;
 import com.simibubi.create.foundation.placement.IPlacementHelper;
 import com.simibubi.create.foundation.placement.PlacementHelpers;
@@ -45,7 +46,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public class CopycatHalfPanelBlock extends CTWaterloggedCopycatBlock {
+public class CopycatHalfPanelBlock extends CTWaterloggedCopycatBlock implements IStateType {
 
     /**
      * The direction where the base of the half panel is facing.

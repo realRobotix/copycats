@@ -1,6 +1,8 @@
 package com.copycatsplus.copycats.content.copycat.base.multistate;
 
 import com.copycatsplus.copycats.CCBlockEntityTypes;
+import com.copycatsplus.copycats.content.copycat.base.IStateType;
+import com.copycatsplus.copycats.content.copycat.base.StateType;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
@@ -53,7 +55,7 @@ import java.util.stream.Collectors;
 
 import static net.minecraft.core.Direction.Axis;
 
-public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiStateCopycatBlockEntity>, IWrenchable, ISpecialBlockItemRequirement {
+public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiStateCopycatBlockEntity>, IWrenchable, ISpecialBlockItemRequirement, IStateType {
 
     public MultiStateCopycatBlock(Properties properties) {
         super(properties);
@@ -305,6 +307,11 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
     @Override
     public BlockEntityType<? extends MultiStateCopycatBlockEntity> getBlockEntityType() {
         return CCBlockEntityTypes.MULTI_STATE_COPYCAT_BLOCK_ENTITY.get();
+    }
+
+    @Override
+    public StateType stateType() {
+        return StateType.MULTI;
     }
 
     @ExpectPlatform

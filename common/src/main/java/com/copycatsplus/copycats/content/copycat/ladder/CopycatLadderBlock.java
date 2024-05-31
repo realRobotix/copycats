@@ -1,6 +1,7 @@
 package com.copycatsplus.copycats.content.copycat.ladder;
 
 import com.copycatsplus.copycats.content.copycat.base.ICopycatWithWrappedBlock;
+import com.copycatsplus.copycats.content.copycat.base.IStateType;
 import com.simibubi.create.content.decoration.copycat.CopycatBlock;
 import com.simibubi.create.content.equipment.extendoGrip.ExtendoGripItem;
 import com.simibubi.create.foundation.placement.IPlacementHelper;
@@ -38,7 +39,7 @@ import java.util.function.Predicate;
 import static net.minecraft.world.level.block.LadderBlock.FACING;
 import static net.minecraft.world.level.block.LadderBlock.WATERLOGGED;
 
-public class CopycatLadderBlock extends CopycatBlock implements ICopycatWithWrappedBlock<WrappedLadderBlock> {
+public class CopycatLadderBlock extends CopycatBlock implements ICopycatWithWrappedBlock<WrappedLadderBlock>, IStateType {
 
     private static final int placementHelperId = PlacementHelpers.register(new PlacementHelper());
     public static WrappedLadderBlock ladder;

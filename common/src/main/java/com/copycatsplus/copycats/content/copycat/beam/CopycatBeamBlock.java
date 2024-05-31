@@ -3,6 +3,7 @@ package com.copycatsplus.copycats.content.copycat.beam;
 import com.copycatsplus.copycats.CCBlocks;
 import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.content.copycat.base.CTWaterloggedCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.IStateType;
 import com.simibubi.create.foundation.placement.IPlacementHelper;
 import com.simibubi.create.foundation.placement.PlacementHelpers;
 import com.simibubi.create.foundation.placement.PoleHelper;
@@ -35,7 +36,7 @@ import java.util.function.Predicate;
 
 import static net.minecraft.core.Direction.Axis;
 
-public class CopycatBeamBlock extends CTWaterloggedCopycatBlock {
+public class CopycatBeamBlock extends CTWaterloggedCopycatBlock implements IStateType {
 
     public static final EnumProperty<Axis> AXIS = BlockStateProperties.AXIS;
 
