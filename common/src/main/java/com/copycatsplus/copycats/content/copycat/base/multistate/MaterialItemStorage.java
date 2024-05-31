@@ -9,6 +9,7 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,7 @@ public class MaterialItemStorage {
         storage = new HashMap<>(maxStorage);
         this.maxStorage = maxStorage;
         for (String property : properties) {
-            storage.put(property, MaterialItem.EMPTY);
+            storage.put(property, new MaterialItem(AllBlocks.COPYCAT_BASE.getDefaultState(), ItemStack.EMPTY));
         }
     }
 
@@ -37,8 +38,8 @@ public class MaterialItemStorage {
         storage.put(property, materialItem);
     }
 
-    public MaterialItem getMaterialItem(String property) {
-        return storage.getOrDefault(property, MaterialItem.EMPTY);
+    public @Nullable MaterialItem getMaterialItem(String property) {
+        return storage.get(property);
     }
 
     public Set<String> getAllProperties() {

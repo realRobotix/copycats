@@ -370,7 +370,8 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
 
     public static BlockState getMaterial(BlockGetter reader, BlockPos targetPos, String property) {
         if (reader.getBlockEntity(targetPos) instanceof MultiStateCopycatBlockEntity cbe)
-            return cbe.getMaterialItemStorage().getMaterialItem(property).material();
+            if (cbe.getMaterialItemStorage().getMaterialItem(property) != null)
+                return cbe.getMaterialItemStorage().getMaterialItem(property).material();
         return Blocks.AIR.defaultBlockState();
     }
 
