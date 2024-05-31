@@ -25,7 +25,7 @@ public class MaterialItemStorage {
         storage = new HashMap<>(maxStorage);
         this.maxStorage = maxStorage;
         for (String property : properties) {
-            storage.put(property, new MaterialItem(AllBlocks.COPYCAT_BASE.getDefaultState(), ItemStack.EMPTY));
+            storage.put(property, MaterialItem.EMPTY);
         }
     }
 
@@ -38,7 +38,7 @@ public class MaterialItemStorage {
     }
 
     public MaterialItem getMaterialItem(String property) {
-        return storage.get(property);
+        return storage.getOrDefault(property, MaterialItem.EMPTY);
     }
 
     public Set<String> getAllProperties() {
@@ -86,6 +86,8 @@ public class MaterialItemStorage {
     }
 
     public static class MaterialItem {
+
+        public static MaterialItem EMPTY = new MaterialItem(AllBlocks.COPYCAT_BASE.getDefaultState(), ItemStack.EMPTY);
 
         private BlockState material;
         private ItemStack consumedItem;

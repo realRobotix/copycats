@@ -1,12 +1,12 @@
 package com.copycatsplus.copycats.content.copycat.base.multistate;
 
 import com.copycatsplus.copycats.CCBlockEntityTypes;
+import com.copycatsplus.copycats.Copycats;
 import com.copycatsplus.copycats.content.copycat.base.IStateType;
 import com.copycatsplus.copycats.content.copycat.base.StateType;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
-import com.simibubi.create.content.schematics.requirement.ISpecialBlockEntityItemRequirement;
 import com.simibubi.create.content.schematics.requirement.ISpecialBlockItemRequirement;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.block.IBE;
@@ -51,7 +51,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 import static net.minecraft.core.Direction.Axis;
 
@@ -477,14 +476,29 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
 
     @Environment(EnvType.CLIENT)
     public static class WrappedBlockColor implements BlockColor {
+
         @Override
         public int getColor(@NotNull BlockState pState, @Nullable BlockAndTintGetter pLevel, @Nullable BlockPos pPos,
                             int pTintIndex) {
             if (pLevel == null || pPos == null)
                 return GrassColor.get(0.5D, 1.0D);
-            return Minecraft.getInstance()
+            //First tint from first material
+            int tint = Minecraft.getInstance()
                     .getBlockColors()
                     .getColor(getMaterial(pLevel, pPos), pLevel, pPos, pTintIndex);
+            BlockEntity be = pLevel.getBlockEntity(pPos);
+            if (tint == -1) {
+                if (be instanceof MultiStateCopycatBlockEntity mscb) {
+                    for (String property : mscb.getMaterialItemStorage().getAllProperties()) {
+                        int anyTint = Minecraft.getInstance()
+                                .getBlockColors()
+                                .getColor(MultiStateCopycatBlock.getMaterial(pLevel, pPos, property), pLevel, pPos, pTintIndex);
+                        if (anyTint != -1)
+                            return anyTint;
+                    }
+                }
+            }
+            return tint;
         }
     }
 }
