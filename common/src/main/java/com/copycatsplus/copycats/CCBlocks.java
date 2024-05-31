@@ -1,6 +1,7 @@
 package com.copycatsplus.copycats;
 
 import com.copycatsplus.copycats.config.FeatureToggle;
+import com.copycatsplus.copycats.content.copycat.base.ICopycatWithWrappedBlock;
 import com.copycatsplus.copycats.content.copycat.base.model.SimpleCopycatPart;
 import com.copycatsplus.copycats.content.copycat.base.model.ToggleableCopycatModel;
 import com.copycatsplus.copycats.content.copycat.base.model.multistate.SimpleMultiStateCopycatPart;
@@ -9,14 +10,12 @@ import com.copycatsplus.copycats.content.copycat.beam.CopycatBeamModel;
 import com.copycatsplus.copycats.content.copycat.block.CopycatBlockBlock;
 import com.copycatsplus.copycats.content.copycat.block.CopycatBlockModel;
 import com.copycatsplus.copycats.content.copycat.board.CopycatBoardBlock;
-import com.copycatsplus.copycats.content.copycat.board.CopycatBoardModel;
 import com.copycatsplus.copycats.content.copycat.board.CopycatMultiBoardModel;
 import com.copycatsplus.copycats.content.copycat.button.CopycatButtonModel;
 import com.copycatsplus.copycats.content.copycat.button.CopycatStoneButtonBlock;
 import com.copycatsplus.copycats.content.copycat.button.CopycatWoodenButtonBlock;
 import com.copycatsplus.copycats.content.copycat.button.WrappedButton;
 import com.copycatsplus.copycats.content.copycat.bytes.CopycatByteBlock;
-import com.copycatsplus.copycats.content.copycat.bytes.CopycatByteModel;
 import com.copycatsplus.copycats.content.copycat.bytes.CopycatMultiByteModel;
 import com.copycatsplus.copycats.content.copycat.fence.CopycatFenceBlock;
 import com.copycatsplus.copycats.content.copycat.fence.CopycatFenceModel;
@@ -27,7 +26,6 @@ import com.copycatsplus.copycats.content.copycat.fence_gate.WrappedFenceGateBloc
 import com.copycatsplus.copycats.content.copycat.ghost_block.CopycatGhostBlock;
 import com.copycatsplus.copycats.content.copycat.ghost_block.CopycatGhostBlockModel;
 import com.copycatsplus.copycats.content.copycat.half_layer.CopycatHalfLayerBlock;
-import com.copycatsplus.copycats.content.copycat.half_layer.CopycatHalfLayerModel;
 import com.copycatsplus.copycats.content.copycat.half_layer.CopycatMultiHalfLayerModel;
 import com.copycatsplus.copycats.content.copycat.half_panel.CopycatHalfPanelBlock;
 import com.copycatsplus.copycats.content.copycat.half_panel.CopycatHalfPanelModel;
@@ -39,7 +37,6 @@ import com.copycatsplus.copycats.content.copycat.layer.CopycatLayerModel;
 import com.copycatsplus.copycats.content.copycat.pressure_plate.*;
 import com.copycatsplus.copycats.content.copycat.slab.CopycatMultiSlabModel;
 import com.copycatsplus.copycats.content.copycat.slab.CopycatSlabBlock;
-import com.copycatsplus.copycats.content.copycat.slab.CopycatSlabModel;
 import com.copycatsplus.copycats.content.copycat.slice.CopycatSliceBlock;
 import com.copycatsplus.copycats.content.copycat.slice.CopycatSliceModel;
 import com.copycatsplus.copycats.content.copycat.stairs.CopycatStairsBlock;
@@ -65,7 +62,9 @@ import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.tterrag.registrate.providers.DataGenContext;
 import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
 import com.tterrag.registrate.util.entry.BlockEntry;
+import com.tterrag.registrate.util.entry.RegistryEntry;
 import dev.architectury.injectables.annotations.ExpectPlatform;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -73,6 +72,12 @@ import net.minecraft.world.level.block.PressurePlateBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.WoodType;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.simibubi.create.foundation.data.CreateRegistrate.blockModel;
 import static com.simibubi.create.foundation.data.ModelGen.customItemModel;
@@ -471,5 +476,13 @@ public class CCBlocks {
 
     public static void register() {
 
+    }
+
+    public static Set<RegistryEntry<Block>> getAllRegisteredBlocks() {
+       return new HashSet<>(REGISTRATE.getAll(BuiltInRegistries.BLOCK.key()));
+    }
+
+    public static Set<RegistryEntry<Block>> getAllRegisteredBlocksWithoutWrapped() {
+        return new HashSet<>(REGISTRATE.getAll(BuiltInRegistries.BLOCK.key())).stream().filter(entry -> !(entry.getId().getPath().startsWith("wrapped"))).collect(Collectors.toSet());
     }
 }
