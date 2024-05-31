@@ -36,6 +36,7 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -74,7 +75,7 @@ public class CopycatSlabBlock extends CTWaterloggedMultiStateCopycatBlock implem
     }
 
     @Override
-    public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing) {
+    public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing, Vec3 unscaledHit) {
         if (hitLocation.get(state.getValue(AXIS)) > 0) {
             return SlabType.TOP.getSerializedName();
         } else {

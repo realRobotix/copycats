@@ -108,7 +108,7 @@ public class CopycatByteBlock extends CTWaterloggedMultiStateCopycatBlock {
     }
 
     @Override
-    public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing) {
+    public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing, Vec3 unscaledHit) {
         return byByte(hitLocation.getX() > 0, hitLocation.getY() > 0, hitLocation.getZ() > 0).getName();
     }
 

@@ -76,7 +76,7 @@ public class CopycatBoardBlock extends CTWaterloggedMultiStateCopycatBlock imple
 
     @Override
     public Vec3i vectorScale(BlockState state) {
-        return new Vec3i(2, 2, 2);
+        return new Vec3i(1, 1, 1);
     }
 
     @Override
@@ -96,8 +96,8 @@ public class CopycatBoardBlock extends CTWaterloggedMultiStateCopycatBlock imple
     }
 
     @Override
-    public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing) {
-        facing = Direction.fromAxisAndDirection(facing.getAxis(), hitLocation.get(facing.getAxis()) > 0 ? Direction.AxisDirection.POSITIVE : Direction.AxisDirection.NEGATIVE);
+    public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing, Vec3 unscaledHit) {
+        facing = Direction.fromAxisAndDirection(facing.getAxis(), unscaledHit.get(facing.getAxis()) > 0.5 ? Direction.AxisDirection.POSITIVE : Direction.AxisDirection.NEGATIVE);
         BooleanProperty face = byDirection(facing);
         return face.getName();
     }
@@ -114,15 +114,12 @@ public class CopycatBoardBlock extends CTWaterloggedMultiStateCopycatBlock imple
 
     @Override
     public boolean isIgnoredConnectivitySide(String property, BlockAndTintGetter reader, BlockState state, Direction face, BlockPos fromPos, BlockPos toPos) {
-        return true;
-        // todo: reimplement connected textures for copycat boards
-        // all current implementations don't work because boards don't partition the same way as other copycats,
-        // causing blocking logic to fail
+        return !reader.getBlockState(toPos).is(this);
     }
 
     @Override
     public boolean canConnectTexturesToward(String property, BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos, BlockState state) {
-        return false;
+        return reader.getBlockState(toPos).is(this);
     }
 
     @Override

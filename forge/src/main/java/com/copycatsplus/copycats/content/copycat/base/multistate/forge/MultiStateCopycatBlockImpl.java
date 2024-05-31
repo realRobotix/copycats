@@ -73,7 +73,7 @@ public class MultiStateCopycatBlockImpl {
         if (level instanceof ScaledBlockAndTintGetter scaledLevel) {
             truePos = scaledLevel.getTruePos(pos);
             Vec3i inner = scaledLevel.getInner(pos);
-            property = block.getPropertyFromInteraction(state, inner, truePos, side);
+            property = block.getPropertyFromInteraction(state, inner, truePos, side, Vec3.atCenterOf(inner));
         } else {
             property = block.storageProperties().stream().findFirst().get();
         }

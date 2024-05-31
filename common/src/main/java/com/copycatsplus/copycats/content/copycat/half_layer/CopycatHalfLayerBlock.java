@@ -116,7 +116,7 @@ public class CopycatHalfLayerBlock extends CTWaterloggedMultiStateCopycatBlock {
     }
 
     @Override
-    public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing) {
+    public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing, Vec3 unscaledHit) {
         if (hitLocation.get(state.getValue(AXIS)) > 0) {
             return POSITIVE_LAYERS.getName();
         } else {
@@ -243,7 +243,7 @@ public class CopycatHalfLayerBlock extends CTWaterloggedMultiStateCopycatBlock {
         if (reader instanceof ScaledBlockAndTintGetter scaledReader && toState.is(this)) {
             BlockPos toTruePos = scaledReader.getTruePos(toPos);
             Vec3i toInner = scaledReader.getInner(toPos);
-            String toProperty = getPropertyFromInteraction(toState, toInner, toTruePos, Direction.UP);
+            String toProperty = getPropertyFromInteraction(toState, toInner, toTruePos, Direction.UP, Vec3.atCenterOf(toInner));
             int fromLayers = state.getValue(property.equals(POSITIVE_LAYERS.getName()) ? POSITIVE_LAYERS : NEGATIVE_LAYERS);
             int toLayers = toState.getValue(toProperty.equals(POSITIVE_LAYERS.getName()) ? POSITIVE_LAYERS : NEGATIVE_LAYERS);
             return fromLayers == toLayers;

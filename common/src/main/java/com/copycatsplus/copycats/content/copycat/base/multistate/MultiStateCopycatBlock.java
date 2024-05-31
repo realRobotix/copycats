@@ -70,7 +70,7 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
 
     public abstract boolean partExists(BlockState state, String property);
 
-    public abstract String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing);
+    public abstract String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing, Vec3 unscaledHit);
 
     public abstract Vec3i getVectorFromProperty(BlockState state, String property);
 
@@ -93,10 +93,11 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
             hitVec = hitVec.add(Vec3.atLowerCornerOf(face.getNormal()).scale(0.05));
         }
         hitVec = hitVec.add(-pos.getX(), -pos.getY(), -pos.getZ());
+        Vec3 unscaledHit = hitVec;
         Vec3i scale = vectorScale(state);
         hitVec = hitVec.multiply(scale.getX(), scale.getY(), scale.getZ());
         BlockPos location = new BlockPos((int) hitVec.x(), (int) hitVec.y(), (int) hitVec.z());
-        return getPropertyFromInteraction(state, location, pos, face);
+        return getPropertyFromInteraction(state, location, pos, face, unscaledHit);
     }
 
     @Nullable
@@ -330,7 +331,7 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
     }
 
     public boolean canConnectTexturesToward(String property, BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos,
-                                                     BlockState state) {
+                                            BlockState state) {
         BlockState toState = reader.getBlockState(toPos);
         if (toState.getBlock() instanceof MultiStateCopycatBlock mscb) {
             if (mscb.partExists(toState, property)) {
