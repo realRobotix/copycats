@@ -57,8 +57,8 @@ public abstract class MultiStateCopycatModel extends BakedModelWrapperWithData {
 
         Map<String, ModelData> wrappedDataMap = material.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, s -> {
             Vec3i inner = copycatBlock.getVectorFromProperty(state, s.getKey());
-            ScaledBlockAndTintGetter scaledWorld = new ScaledBlockAndTintGetter(world, pos, inner, copycatBlock.vectorScale(state), p -> true);
-            ScaledBlockAndTintGetter filteredWorld = new ScaledBlockAndTintGetter(world, pos, inner, copycatBlock.vectorScale(state),
+            ScaledBlockAndTintGetterForge scaledWorld = new ScaledBlockAndTintGetterForge(world, pos, inner, copycatBlock.vectorScale(state), p -> true);
+            ScaledBlockAndTintGetterForge filteredWorld = new ScaledBlockAndTintGetterForge(world, pos, inner, copycatBlock.vectorScale(state),
                     targetPos -> copycatBlock.canConnectTexturesToward(s.getKey(), scaledWorld, pos, targetPos, state));
             return getModelOf(s.getValue()).getModelData(
                     filteredWorld,

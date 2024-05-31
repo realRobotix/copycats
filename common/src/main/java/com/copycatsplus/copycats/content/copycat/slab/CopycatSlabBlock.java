@@ -4,6 +4,8 @@ import com.copycatsplus.copycats.CCBlocks;
 import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.content.copycat.base.ICopycatWithWrappedBlock;
 import com.copycatsplus.copycats.content.copycat.base.multistate.CTWaterloggedMultiStateCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.multistate.ScaledBlockAndTintGetter;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.decoration.copycat.CopycatBlock;
 import com.simibubi.create.foundation.placement.IPlacementHelper;
@@ -157,52 +159,26 @@ public class CopycatSlabBlock extends CTWaterloggedMultiStateCopycatBlock implem
         return InteractionResult.SUCCESS;
     }
 
-
     @Override
     public boolean isIgnoredConnectivitySide(String property, BlockAndTintGetter reader, BlockState state, Direction face, BlockPos fromPos, BlockPos toPos) {
-        Axis axis = state.getValue(AXIS);
         BlockState toState = reader.getBlockState(toPos);
-
-        if (toState.is(this)) {
-            // connecting to another copycat slab
-            if (toState.getValue(AXIS) != axis) return true;
-            return getFaceShape(state, face) != getFaceShape(toState, face);
-        } else {
-            // do not connect slab sides
-            if (face.getAxis() != axis) return true;
-            // connecting to another block
-            return getFaceShape(state, face) != FaceShape.FULL;
+        if (reader instanceof ScaledBlockAndTintGetter scaledReader) {
+            BlockPos fromTruePos = scaledReader.getTruePos(fromPos);
+            BlockPos toTruePos = scaledReader.getTruePos(toPos);
+            return fromTruePos.equals(toTruePos);
         }
+        return !toState.is(this);
     }
 
     @Override
-    public boolean canConnectTexturesToward(String property, BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos,
-                                            BlockState state) {
+    public boolean canConnectTexturesToward(String property, BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos, BlockState state) {
         BlockState toState = reader.getBlockState(toPos);
-        if (!toState.is(this)) return false;
-        Axis axis = state.getValue(AXIS);
-
-        BlockPos diff = toPos.subtract(fromPos);
-        if (diff.equals(Vec3i.ZERO)) {
-            return true;
+        if (reader instanceof ScaledBlockAndTintGetter scaledReader) {
+            BlockPos fromTruePos = scaledReader.getTruePos(fromPos);
+            BlockPos toTruePos = scaledReader.getTruePos(toPos);
+            return !fromTruePos.equals(toTruePos) && toState.is(this);
         }
-        Direction face = Direction.fromDelta(diff.getX(), diff.getY(), diff.getZ());
-        if (face == null) {
-            boolean correctAxis = switch (axis) {
-                case X -> diff.getX() == 0;
-                case Y -> diff.getY() == 0;
-                case Z -> diff.getZ() == 0;
-            };
-            return correctAxis && diff.distManhattan(Vec3i.ZERO) <= 2;
-        }
-
-        if (face.getAxis() == axis) return false;
-
-        if (toState.is(this)) {
-            return FaceShape.canConnect(getFaceShape(state, face), getFaceShape(toState, face.getOpposite()));
-        } else {
-            return true;
-        }
+        return toState.is(this);
     }
 
     @Override

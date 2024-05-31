@@ -2,6 +2,8 @@ package com.copycatsplus.copycats.content.copycat.bytes;
 
 import com.copycatsplus.copycats.Copycats;
 import com.copycatsplus.copycats.content.copycat.base.multistate.CTWaterloggedMultiStateCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.multistate.ScaledBlockAndTintGetter;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.math.OctahedralGroup;
 import com.simibubi.create.AllBlocks;
@@ -124,12 +126,14 @@ public class CopycatByteBlock extends CTWaterloggedMultiStateCopycatBlock {
 
     @Override
     public boolean isIgnoredConnectivitySide(String property, BlockAndTintGetter reader, BlockState state, Direction face, BlockPos fromPos, BlockPos toPos) {
-        return false;
+        BlockState toState = reader.getBlockState(toPos);
+        return !toState.is(this);
     }
 
     @Override
     public boolean canConnectTexturesToward(String property, BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos, BlockState state) {
-        return true;
+        BlockState toState = reader.getBlockState(toPos);
+        return toState.is(this);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.copycatsplus.copycats.content.copycat.base.multistate.forge;
 
 import com.copycatsplus.copycats.content.copycat.base.model.multistate.forge.MultiStateCopycatModel;
-import com.copycatsplus.copycats.content.copycat.base.model.multistate.forge.ScaledBlockAndTintGetter;
+import com.copycatsplus.copycats.content.copycat.base.multistate.ScaledBlockAndTintGetter;
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
 import com.simibubi.create.AllBlocks;
 import net.minecraft.core.BlockPos;

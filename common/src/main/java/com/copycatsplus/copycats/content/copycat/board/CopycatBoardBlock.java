@@ -5,6 +5,7 @@ import com.copycatsplus.copycats.Copycats;
 import com.copycatsplus.copycats.content.copycat.base.ICustomCTBlocking;
 import com.copycatsplus.copycats.content.copycat.base.multistate.CTWaterloggedMultiStateCopycatBlock;
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.multistate.ScaledBlockAndTintGetter;
 import com.google.common.collect.ImmutableMap;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.schematics.requirement.ISpecialBlockItemRequirement;
@@ -113,17 +114,15 @@ public class CopycatBoardBlock extends CTWaterloggedMultiStateCopycatBlock imple
 
     @Override
     public boolean isIgnoredConnectivitySide(String property, BlockAndTintGetter reader, BlockState state, Direction face, BlockPos fromPos, BlockPos toPos) {
-        BlockState toState = reader.getBlockState(toPos);
-        if (toState.getBlock() instanceof MultiStateCopycatBlock mscb) {
-            if (mscb.partExists(toState, property)) {
-                BlockState toMat = MultiStateCopycatBlock.getMaterial(reader, toPos, property);
-                return !toMat.is(getMaterial(reader, fromPos, property).getBlock());
-            } else {
-                return true;
-            }
-        } else {
-            return !toState.is(getMaterial(reader, fromPos, property).getBlock());
-        }
+        return true;
+        // todo: reimplement connected textures for copycat boards
+        // all current implementations don't work because boards don't partition the same way as other copycats,
+        // causing blocking logic to fail
+    }
+
+    @Override
+    public boolean canConnectTexturesToward(String property, BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos, BlockState state) {
+        return false;
     }
 
     @Override

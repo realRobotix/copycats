@@ -1,6 +1,7 @@
 package com.copycatsplus.copycats.content.copycat.test_block;
 
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.multistate.ScaledBlockAndTintGetter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -140,7 +141,24 @@ public class CopycatTestBlock extends MultiStateCopycatBlock {
     }
 
     @Override
+    public boolean isIgnoredConnectivitySide(String property, BlockAndTintGetter reader, BlockState state, Direction face, BlockPos fromPos, BlockPos toPos) {
+        BlockState toState = reader.getBlockState(toPos);
+        if (reader instanceof ScaledBlockAndTintGetter scaledReader) {
+            BlockPos fromTruePos = scaledReader.getTruePos(fromPos);
+            BlockPos toTruePos = scaledReader.getTruePos(toPos);
+            return fromTruePos.equals(toTruePos);
+        }
+        return !toState.is(this);
+    }
+
+    @Override
     public boolean canConnectTexturesToward(String property, BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos, BlockState state) {
-        return true;
+        BlockState toState = reader.getBlockState(toPos);
+        if (reader instanceof ScaledBlockAndTintGetter scaledReader) {
+            BlockPos fromTruePos = scaledReader.getTruePos(fromPos);
+            BlockPos toTruePos = scaledReader.getTruePos(toPos);
+            return !fromTruePos.equals(toTruePos) && toState.is(this);
+        }
+        return toState.is(this);
     }
 }

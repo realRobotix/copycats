@@ -3,6 +3,7 @@ package com.copycatsplus.copycats.content.copycat.half_layer;
 import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.Copycats;
 import com.copycatsplus.copycats.content.copycat.base.multistate.CTWaterloggedMultiStateCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.multistate.ScaledBlockAndTintGetter;
 import com.google.common.collect.ImmutableMap;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.foundation.utility.VoxelShaper;
@@ -233,55 +234,21 @@ public class CopycatHalfLayerBlock extends CTWaterloggedMultiStateCopycatBlock {
     @Override
     public boolean isIgnoredConnectivitySide(String property, BlockAndTintGetter reader, BlockState state, Direction face, BlockPos fromPos, BlockPos toPos) {
         BlockState toState = reader.getBlockState(toPos);
-
-        if (toState.is(this)) {
-            // connecting to another copycat beam
-            Axis axis = state.getValue(AXIS);
-            Half half = state.getValue(HALF);
-            int positiveLayers = state.getValue(POSITIVE_LAYERS);
-            int negativeLayers = state.getValue(NEGATIVE_LAYERS);
-            return toState.getValue(AXIS) != axis ||
-                    toState.getValue(HALF) != half ||
-                    toState.getValue(POSITIVE_LAYERS) != positiveLayers ||
-                    toState.getValue(NEGATIVE_LAYERS) != negativeLayers;
-        } else {
-            // doesn't connect to any other blocks
-            return true;
-        }
+        return !toState.is(this);
     }
 
     @Override
-    public boolean canConnectTexturesToward(String property, BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos,
-                                            BlockState state) {
+    public boolean canConnectTexturesToward(String property, BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos, BlockState state) {
         BlockState toState = reader.getBlockState(toPos);
-        if (!toState.is(this)) return false;
-        BlockPos diff = toPos.subtract(fromPos);
-        if (diff.equals(Vec3i.ZERO)) {
-            return true;
+        if (reader instanceof ScaledBlockAndTintGetter scaledReader && toState.is(this)) {
+            BlockPos toTruePos = scaledReader.getTruePos(toPos);
+            Vec3i toInner = scaledReader.getInner(toPos);
+            String toProperty = getPropertyFromInteraction(toState, toInner, toTruePos, Direction.UP);
+            int fromLayers = state.getValue(property.equals(POSITIVE_LAYERS.getName()) ? POSITIVE_LAYERS : NEGATIVE_LAYERS);
+            int toLayers = toState.getValue(toProperty.equals(POSITIVE_LAYERS.getName()) ? POSITIVE_LAYERS : NEGATIVE_LAYERS);
+            return fromLayers == toLayers;
         }
-        Direction face = Direction.fromDelta(diff.getX(), diff.getY(), diff.getZ());
-        if (face == null) {
-            return false;
-        }
-
-        Axis axis = state.getValue(AXIS);
-        Half half = state.getValue(HALF);
-        int positiveLayers = state.getValue(POSITIVE_LAYERS);
-        int negativeLayers = state.getValue(NEGATIVE_LAYERS);
-
-        if (toState.is(this)) {
-            try {
-                return toState.getValue(AXIS) == axis &&
-                        toState.getValue(HALF) == half &&
-                        toState.getValue(POSITIVE_LAYERS) == positiveLayers &&
-                        toState.getValue(NEGATIVE_LAYERS) == negativeLayers &&
-                        face.getClockWise().getAxis() == axis;
-            } catch (IllegalStateException ignored) {
-                return false;
-            }
-        } else {
-            return false;
-        }
+        return toState.is(this);
     }
 
     @SuppressWarnings("deprecation")
