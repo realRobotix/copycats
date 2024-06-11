@@ -93,7 +93,6 @@ public abstract class MultiStateCopycatBlockEntity extends SmartBlockEntity impl
     }
 
     public void setConsumedItem(String property, ItemStack itemStack) {
-        MaterialItemStorage.MaterialItem materialItem = getMaterialItemStorage().getMaterialItem(property);
         getMaterialItemStorage().getMaterialItem(property).setConsumedItem(itemStack);
         setChanged();
 
@@ -106,7 +105,7 @@ public abstract class MultiStateCopycatBlockEntity extends SmartBlockEntity impl
             level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 16);
             level.getChunkSource()
                     .getLightEngine()
-                    .checkBlock(worldPosition);
+                    .checkBlock(getBlockPos());
         }
     }
 

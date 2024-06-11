@@ -31,6 +31,7 @@ import com.copycatsplus.copycats.content.copycat.half_panel.CopycatHalfPanelBloc
 import com.copycatsplus.copycats.content.copycat.half_panel.CopycatHalfPanelModel;
 import com.copycatsplus.copycats.content.copycat.ladder.CopycatLadderBlock;
 import com.copycatsplus.copycats.content.copycat.ladder.CopycatLadderModel;
+import com.copycatsplus.copycats.content.copycat.ladder.CopycatMultiLadderModel;
 import com.copycatsplus.copycats.content.copycat.ladder.WrappedLadderBlock;
 import com.copycatsplus.copycats.content.copycat.layer.CopycatLayerBlock;
 import com.copycatsplus.copycats.content.copycat.layer.CopycatLayerModel;
@@ -59,6 +60,7 @@ import com.copycatsplus.copycats.datagen.CCLootGen;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.foundation.data.BuilderTransformers;
 import com.simibubi.create.foundation.data.CreateRegistrate;
+import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.providers.DataGenContext;
 import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
 import com.tterrag.registrate.util.entry.BlockEntry;
@@ -73,6 +75,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.WoodType;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -255,11 +258,11 @@ public class CCBlocks {
 
     public static final BlockEntry<CopycatLadderBlock> COPYCAT_LADDER =
             REGISTRATE.block("copycat_ladder", CopycatLadderBlock::new)
-                    .transform(BuilderTransformers.copycat())
+                    .transform(CCBuilderTransformers.multiCopycat())
                     .properties(p -> p.isValidSpawn((state, level, pos, entity) -> false))
                     .tag(BlockTags.CLIMBABLE)
                     .transform(FeatureToggle.register())
-                    .onRegister(CreateRegistrate.blockModel(() -> model -> SimpleCopycatPart.create(model, new CopycatLadderModel())))
+                    .onRegister(CreateRegistrate.blockModel(() -> model -> SimpleMultiStateCopycatPart.create(model, new CopycatMultiLadderModel())))
                     .item()
                     .transform(customItemModel("copycat_base", "ladder"))
                     .register();
@@ -460,14 +463,7 @@ public class CCBlocks {
                     .blockstate((c, p) -> getWrappedBlockState(c, p, "wrapped_copycat_wall"))
                     .register();
 
-    public static final BlockEntry<CopycatTestBlock> COPYCAT_TEST_BLOCK =
-            REGISTRATE.block("copycat_test_block", CopycatTestBlock::new)
-                    .transform(CCBuilderTransformers.multiCopycat())
-                    .transform(FeatureToggle.register())
-                    .onRegister(CreateRegistrate.blockModel(() -> model -> SimpleMultiStateCopycatPart.create(model, new CopycatTestBlockModel())))
-                    .item()
-                    .transform(customItemModel("copycat_base", "test_block"))
-                    .register();
+    public static @Nullable BlockEntry<CopycatTestBlock> COPYCAT_TEST_BLOCK;
 
     @ExpectPlatform
     public static void getWrappedBlockState(DataGenContext<Block, ? extends Block> c, RegistrateBlockstateProvider p, String name) {
@@ -475,7 +471,15 @@ public class CCBlocks {
     }
 
     public static void register() {
-
+        if (AbstractRegistrate.isDevEnvironment()) {
+            COPYCAT_TEST_BLOCK = REGISTRATE.block("copycat_test_block", CopycatTestBlock::new)
+                    .transform(CCBuilderTransformers.multiCopycat())
+                    .transform(FeatureToggle.register())
+                    .onRegister(CreateRegistrate.blockModel(() -> model -> SimpleMultiStateCopycatPart.create(model, new CopycatTestBlockModel())))
+                    .item()
+                    .transform(customItemModel("copycat_base", "test_block"))
+                    .register();
+        }
     }
 
     public static Set<RegistryEntry<Block>> getAllRegisteredBlocks() {

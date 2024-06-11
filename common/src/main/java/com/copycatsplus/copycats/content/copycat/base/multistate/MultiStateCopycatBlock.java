@@ -1,7 +1,6 @@
 package com.copycatsplus.copycats.content.copycat.base.multistate;
 
 import com.copycatsplus.copycats.CCBlockEntityTypes;
-import com.copycatsplus.copycats.Copycats;
 import com.copycatsplus.copycats.content.copycat.base.IStateType;
 import com.copycatsplus.copycats.content.copycat.base.StateType;
 import com.simibubi.create.AllBlocks;

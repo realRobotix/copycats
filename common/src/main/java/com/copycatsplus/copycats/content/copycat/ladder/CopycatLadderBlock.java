@@ -1,7 +1,9 @@
 package com.copycatsplus.copycats.content.copycat.ladder;
 
+import com.copycatsplus.copycats.Copycats;
 import com.copycatsplus.copycats.content.copycat.base.ICopycatWithWrappedBlock;
 import com.copycatsplus.copycats.content.copycat.base.IStateType;
+import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
 import com.simibubi.create.content.decoration.copycat.CopycatBlock;
 import com.simibubi.create.content.equipment.extendoGrip.ExtendoGripItem;
 import com.simibubi.create.foundation.placement.IPlacementHelper;
@@ -11,6 +13,7 @@ import com.simibubi.create.infrastructure.config.AllConfigs;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -29,23 +32,59 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Set;
 import java.util.function.Predicate;
 
 import static net.minecraft.world.level.block.LadderBlock.FACING;
 import static net.minecraft.world.level.block.LadderBlock.WATERLOGGED;
 
-public class CopycatLadderBlock extends CopycatBlock implements ICopycatWithWrappedBlock<WrappedLadderBlock>, IStateType {
+public class CopycatLadderBlock extends MultiStateCopycatBlock implements ICopycatWithWrappedBlock<WrappedLadderBlock>, IStateType {
 
     private static final int placementHelperId = PlacementHelpers.register(new PlacementHelper());
     public static WrappedLadderBlock ladder;
     public CopycatLadderBlock(Properties pProperties) {
         super(pProperties);
         registerDefaultState(defaultBlockState().setValue(FACING, Direction.NORTH).setValue(WATERLOGGED, false));
+    }
+
+    @Override
+    public int maxMaterials() {
+        return 2;
+    }
+
+    @Override
+    public Vec3i vectorScale(BlockState state) {
+        return new Vec3i(2, 2, 2);
+    }
+
+    @Override
+    public Set<String> storageProperties() {
+        return Set.of("rails", "steps");
+    }
+
+    @Override
+    public boolean partExists(BlockState state, String property) {
+        return true;
+    }
+
+    @Override
+    public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing, Vec3 unscaledHit) {
+        Copycats.LOGGER.info("Scaled: {}, Unscaled:{}", hitLocation.toShortString(), unscaledHit.toString());
+        if (unscaledHit.x() >= 0.75 && unscaledHit.x() <= 0.85) {
+            return "rails";
+        }
+        return "steps";
+    }
+
+    @Override
+    public Vec3i getVectorFromProperty(BlockState state, String property) {
+        return Vec3i.ZERO;
     }
 
     @Override
@@ -67,7 +106,7 @@ public class CopycatLadderBlock extends CopycatBlock implements ICopycatWithWrap
     }
 
     @Override
-    public boolean canConnectTexturesToward(BlockAndTintGetter blockAndTintGetter, BlockPos blockPos, BlockPos blockPos1, BlockState blockState) {
+    public boolean canConnectTexturesToward(String key, BlockAndTintGetter blockAndTintGetter, BlockPos blockPos, BlockPos blockPos1, BlockState blockState) {
         return false;
     }
 
@@ -96,7 +135,7 @@ public class CopycatLadderBlock extends CopycatBlock implements ICopycatWithWrap
     }
 
     @Override
-    public boolean isIgnoredConnectivitySide(BlockAndTintGetter reader, BlockState state, Direction face,
+    public boolean isIgnoredConnectivitySide(String key, BlockAndTintGetter reader, BlockState state, Direction face,
                                              BlockPos fromPos, BlockPos toPos) {
         return true;
     }
