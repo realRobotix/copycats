@@ -3,9 +3,10 @@ package com.copycatsplus.copycats.content.copycat.vertical_stairs;
 import com.copycatsplus.copycats.CCBlockStateProperties;
 import com.copycatsplus.copycats.CCBlockStateProperties.VerticalStairShape;
 import com.copycatsplus.copycats.CCShapes;
+import com.copycatsplus.copycats.Copycats;
 import com.copycatsplus.copycats.content.copycat.base.CTWaterloggedCopycatBlock;
 import com.copycatsplus.copycats.content.copycat.stairs.CopycatStairsBlock;
-import com.firemerald.additionalplacements.block.VerticalStairBlock;
+import com.copycatsplus.copycats.content.copycat.stairs.WrappedStairsBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -42,11 +43,15 @@ public class CopycatVerticalStairBlock extends CTWaterloggedCopycatBlock {
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        Direction direction = context.getClickedFace();
         BlockPos blockPos = context.getClickedPos();
         FluidState fluidState = context.getLevel().getFluidState(blockPos);
-        BlockState blockState = defaultBlockState().setValue(FACING, context.getHorizontalDirection()).setValue(HALF, direction == Direction.DOWN || direction != Direction.UP && context.getClickLocation().y - (double)blockPos.getY() > 0.5 ? Half.TOP : Half.BOTTOM).setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);
-        return blockState.setValue(VERTICAL_STAIR_SHAPE, getStairShape(blockState, context.getLevel(), blockPos));
+        Half half = switch (context.getHorizontalDirection().getAxis()) {
+            case X -> context.getClickLocation().x - (double)blockPos.getX() > 0.5 ? Half.TOP : Half.BOTTOM;
+            case Z -> context.getClickLocation().z - (double)blockPos.getZ() > 0.5 ? Half.TOP : Half.BOTTOM;
+            default -> Half.BOTTOM;
+        };
+        BlockState blockState = defaultBlockState().setValue(FACING, Direction.fromYRot(context.getRotation()-45)).setValue(HALF, half).setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);
+        return blockState.setValue(VERTICAL_STAIR_SHAPE, getStairsShape(blockState, context.getLevel(), blockPos));
     }
 
     @Override
@@ -63,11 +68,13 @@ public class CopycatVerticalStairBlock extends CTWaterloggedCopycatBlock {
         };
     }
 
-    private static VerticalStairShape getStairShape(BlockState state, BlockGetter level, BlockPos pos) {
+    private static VerticalStairShape getStairsShape(BlockState state, BlockGetter level, BlockPos pos) {
         Direction direction2;
         Direction direction = state.getValue(FACING);
         BlockState blockState = level.getBlockState(pos.relative(direction));
-        if (isStairs(blockState) && state.getValue(HALF) == blockState.getValue(HALF) && (direction2 = blockState.getValue(FACING)).getAxis() != state.getValue(FACING).getAxis() && canTakeShape(state, level, pos, direction2.getOpposite())) {
+        if (isStairs(blockState) && state.getValue(HALF) == blockState.getValue(HALF) &&
+                (direction2 = blockState.getValue(FACING)).getAxis() != state.getValue(FACING).getAxis() &&
+                canTakeShape(state, level, pos, direction2.getOpposite())) {
             if (direction2 == direction.getCounterClockWise()) {
                 return VerticalStairShape.OUTER_LEFT;
             }
@@ -82,7 +89,7 @@ public class CopycatVerticalStairBlock extends CTWaterloggedCopycatBlock {
     }
 
     public static boolean isStairs(BlockState state) {
-        return state.getBlock() instanceof StairBlock || state.getBlock() instanceof CopycatVerticalStairBlock || state.getBlock() instanceof CopycatStairsBlock;
+        return state.getBlock() instanceof StairBlock || state.getBlock() instanceof CopycatVerticalStairBlock || state.getBlock() instanceof WrappedStairsBlock || state.getBlock() instanceof CopycatStairsBlock;
     }
 
 
