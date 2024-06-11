@@ -95,6 +95,6 @@ public class CopycatVerticalStairBlock extends CTWaterloggedCopycatBlock {
 
     @Override
     public boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos, BlockState state) {
-        return state.is(this);
+        return isStairs(state);
     }
 }

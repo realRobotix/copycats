@@ -2,6 +2,7 @@ package com.copycatsplus.copycats.content.copycat.stairs;
 
 import com.copycatsplus.copycats.content.copycat.base.ICustomCTBlocking;
 import com.copycatsplus.copycats.content.copycat.base.WaterloggedCopycatWrappedBlock;
+import com.firemerald.additionalplacements.block.VerticalStairBlock;
 import com.simibubi.create.content.decoration.copycat.CopycatBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
