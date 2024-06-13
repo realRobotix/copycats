@@ -1,16 +1,10 @@
 package com.copycatsplus.copycats.content.copycat.board;
 
 import com.copycatsplus.copycats.CCShapes;
-import com.copycatsplus.copycats.Copycats;
 import com.copycatsplus.copycats.content.copycat.base.ICustomCTBlocking;
-import com.copycatsplus.copycats.content.copycat.base.IStateType;
 import com.copycatsplus.copycats.content.copycat.base.multistate.CTWaterloggedMultiStateCopycatBlock;
-import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
-import com.copycatsplus.copycats.content.copycat.base.multistate.ScaledBlockAndTintGetter;
 import com.google.common.collect.ImmutableMap;
 import com.simibubi.create.AllBlocks;
-import com.simibubi.create.content.schematics.requirement.ISpecialBlockItemRequirement;
-import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.utility.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -30,7 +24,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.PipeBlock;
 import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -97,7 +90,7 @@ public class CopycatBoardBlock extends CTWaterloggedMultiStateCopycatBlock imple
     }
 
     @Override
-    public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing, Vec3 unscaledHit) {
+    public String getPropertyFromInteraction(BlockState state, BlockGetter level, Vec3i hitLocation, BlockPos blockPos, Direction facing, Vec3 unscaledHit) {
         facing = Direction.fromAxisAndDirection(facing.getAxis(), unscaledHit.get(facing.getAxis()) > 0.5 ? Direction.AxisDirection.POSITIVE : Direction.AxisDirection.NEGATIVE);
         BooleanProperty face = byDirection(facing);
         return face.getName();
@@ -279,7 +272,7 @@ public class CopycatBoardBlock extends CTWaterloggedMultiStateCopycatBlock imple
                                      Direction dir) {
         if (state.is(this) && !state.getValue(byDirection(dir))) return false;
         if (neighborState.is(this) && !neighborState.getValue(byDirection(dir.getOpposite()))) return false;
-        String property = getProperty(state, pos, new BlockHitResult(Vec3.atCenterOf(pos), dir, pos, true), true);
+        String property = getProperty(state, level, pos, new BlockHitResult(Vec3.atCenterOf(pos), dir, pos, true), true);
         if (state.is(this) == neighborState.is(this)) {
             return (getMaterial(level, pos, property).skipRendering(getMaterial(level, pos.relative(dir)), dir.getOpposite()));
         }

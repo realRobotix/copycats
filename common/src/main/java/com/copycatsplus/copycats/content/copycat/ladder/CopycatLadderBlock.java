@@ -1,10 +1,11 @@
 package com.copycatsplus.copycats.content.copycat.ladder;
 
-import com.copycatsplus.copycats.Copycats;
+import com.copycatsplus.copycats.CCBlockEntityTypes;
+import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.content.copycat.base.ICopycatWithWrappedBlock;
 import com.copycatsplus.copycats.content.copycat.base.IStateType;
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
-import com.simibubi.create.content.decoration.copycat.CopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlockEntity;
 import com.simibubi.create.content.equipment.extendoGrip.ExtendoGripItem;
 import com.simibubi.create.foundation.placement.IPlacementHelper;
 import com.simibubi.create.foundation.placement.PlacementHelpers;
@@ -21,16 +22,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockAndTintGetter;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LadderBlock;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -40,6 +40,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static net.minecraft.world.level.block.LadderBlock.FACING;
 import static net.minecraft.world.level.block.LadderBlock.WATERLOGGED;
@@ -47,10 +48,17 @@ import static net.minecraft.world.level.block.LadderBlock.WATERLOGGED;
 public class CopycatLadderBlock extends MultiStateCopycatBlock implements ICopycatWithWrappedBlock<WrappedLadderBlock>, IStateType {
 
     private static final int placementHelperId = PlacementHelpers.register(new PlacementHelper());
+    public static BooleanProperty RAILS = BooleanProperty.create("rails");
+    public static BooleanProperty STEPS = BooleanProperty.create("steps");
     public static WrappedLadderBlock ladder;
+
     public CopycatLadderBlock(Properties pProperties) {
         super(pProperties);
-        registerDefaultState(defaultBlockState().setValue(FACING, Direction.NORTH).setValue(WATERLOGGED, false));
+        registerDefaultState(defaultBlockState()
+                .setValue(FACING, Direction.NORTH)
+                .setValue(RAILS, true)
+                .setValue(STEPS, true)
+                .setValue(WATERLOGGED, false));
     }
 
     @Override
@@ -65,25 +73,38 @@ public class CopycatLadderBlock extends MultiStateCopycatBlock implements ICopyc
 
     @Override
     public Set<String> storageProperties() {
-        return Set.of("rails", "steps");
+        return Set.of(RAILS, STEPS).stream().map(BooleanProperty::getName).collect(Collectors.toSet());
     }
 
     @Override
     public boolean partExists(BlockState state, String property) {
-        return true;
+        return switch (property) {
+            case "rails" -> state.getValue(RAILS);
+            case "steps" -> state.getValue(STEPS);
+            default ->
+                    throw new AssertionError("This shouldn't appear as there isn't any other properties for the ladder!");
+        };
     }
 
     @Override
-    public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing, Vec3 unscaledHit) {
-        Copycats.LOGGER.info("Scaled: {}, Unscaled:{}", hitLocation.toShortString(), unscaledHit.toString());
-        if (unscaledHit.x() >= 0.75 && unscaledHit.x() <= 0.85) {
-            return "rails";
+    public String getPropertyFromInteraction(BlockState state, BlockGetter level, Vec3i hitLocation, BlockPos blockPos, Direction facing, Vec3 unscaledHit) {
+        Direction stateFacing = state.getValue(FACING);
+        Vec3 posAsVec = new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        BlockHitResult hitResult = level.clip(new ClipContext(posAsVec, posAsVec.relative(stateFacing, 1), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, null));
+        if (CCShapes.LADDER_RAILS.get(stateFacing).bounds().contains(hitResult.getLocation())) {
+            return RAILS.getName();
+        } else if (CCShapes.LADDER_STEPS.get(stateFacing).bounds().contains(hitResult.getLocation())) {
+            return STEPS.getName();
+        } else {
+            return STEPS.getName();
         }
-        return "steps";
     }
 
     @Override
     public Vec3i getVectorFromProperty(BlockState state, String property) {
+        if (property.equalsIgnoreCase("rails")) {
+            return new Vec3i(1, 0, 0);
+        }
         return Vec3i.ZERO;
     }
 
@@ -94,7 +115,7 @@ public class CopycatLadderBlock extends MultiStateCopycatBlock implements ICopyc
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        super.createBlockStateDefinition(pBuilder.add(FACING).add(WATERLOGGED));
+        super.createBlockStateDefinition(pBuilder.add(FACING).add(RAILS).add(STEPS).add(WATERLOGGED));
     }
 
     @Nullable
@@ -112,7 +133,16 @@ public class CopycatLadderBlock extends MultiStateCopycatBlock implements ICopyc
 
     @Override
     public @NotNull VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        return ladder.getShape(pState, pLevel, pPos, pContext);
+        Direction facing = pState.getValue(FACING);
+        if (pState.getValue(RAILS) && !pState.getValue(STEPS)) {
+            return CCShapes.LADDER_RAILS.get(facing);
+        } else if (pState.getValue(STEPS) && !pState.getValue(RAILS)) {
+            return CCShapes.LADDER_STEPS.get(facing);
+        } else if (pState.getValue(RAILS) && pState.getValue(STEPS)) {
+            return CCShapes.LADDER_BOTH.get(facing);
+        } else {
+            return ladder.getShape(pState, pLevel, pPos, pContext);
+        }
     }
 
     @Override
@@ -162,6 +192,11 @@ public class CopycatLadderBlock extends MultiStateCopycatBlock implements ICopyc
             return helper.getOffset(player, world, state, pos, ray)
                     .placeInWorld(world, (BlockItem) heldItem.getItem(), player, hand, ray);
         return result;
+    }
+
+    @Override
+    public BlockEntityType<? extends MultiStateCopycatBlockEntity> getBlockEntityType() {
+        return CCBlockEntityTypes.MULTI_STATE_COPYCAT_LADDER_BLOCK_ENTITY.get();
     }
 
     @MethodsReturnNonnullByDefault

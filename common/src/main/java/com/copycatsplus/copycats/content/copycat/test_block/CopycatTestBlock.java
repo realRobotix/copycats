@@ -124,7 +124,7 @@ public class CopycatTestBlock extends MultiStateCopycatBlock {
     }
 
     @Override
-    public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing, Vec3 unscaledHit) {
+    public String getPropertyFromInteraction(BlockState state, BlockGetter level, Vec3i hitLocation, BlockPos blockPos, Direction facing, Vec3 unscaledHit) {
         if (hitLocation.get(state.getValue(AXIS)) > 0) {
             return SlabType.TOP.getSerializedName();
         } else {

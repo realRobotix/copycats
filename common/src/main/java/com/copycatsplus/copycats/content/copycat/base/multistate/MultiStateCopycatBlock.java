@@ -71,22 +71,22 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
 
     public abstract boolean partExists(BlockState state, String property);
 
-    public abstract String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing, Vec3 unscaledHit);
+    public abstract String getPropertyFromInteraction(BlockState state, BlockGetter level, Vec3i hitLocation, BlockPos blockPos, Direction facing, Vec3 unscaledHit);
 
     public abstract Vec3i getVectorFromProperty(BlockState state, String property);
 
     /**
      * @param targetingSolid Whether the interaction is targeting the solid part behind the block face or the air in front of the block face.
      */
-    public String getProperty(@NotNull BlockState state, @NotNull BlockPos pos, @NotNull BlockHitResult hit, boolean targetingSolid) {
+    public String getProperty(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull BlockHitResult hit, boolean targetingSolid) {
         Vec3 hitVec = hit.getLocation();
-        return getProperty(state, pos, hitVec, hit.getDirection(), targetingSolid);
+        return getProperty(state, level, pos, hitVec, hit.getDirection(), targetingSolid);
     }
 
     /**
      * @param targetingSolid Whether the interaction is targeting the solid part behind the block face or the air in front of the block face.
      */
-    protected String getProperty(@NotNull BlockState state, @NotNull BlockPos pos, Vec3 hitVec, Direction face, boolean targetingSolid) {
+    protected String getProperty(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, Vec3 hitVec, Direction face, boolean targetingSolid) {
         // Relativize the hit vector around the player position
         if (targetingSolid) {
             hitVec = hitVec.subtract(Vec3.atLowerCornerOf(face.getNormal()).scale(0.05));
@@ -98,7 +98,7 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
         Vec3i scale = vectorScale(state);
         hitVec = hitVec.multiply(scale.getX(), scale.getY(), scale.getZ());
         BlockPos location = new BlockPos((int) hitVec.x(), (int) hitVec.y(), (int) hitVec.z());
-        return getPropertyFromInteraction(state, location, pos, face, unscaledHit);
+        return getPropertyFromInteraction(state, level, location, pos, face, unscaledHit);
     }
 
     @Nullable
@@ -127,7 +127,7 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
     @Override
     public InteractionResult onWrenched(BlockState state, UseOnContext context) {
         return onBlockEntityUse(context.getLevel(), context.getClickedPos(), ufte -> {
-            String property = getProperty(state, context.getClickedPos(), context.getClickLocation(), context.getClickedFace(), true);
+            String property = getProperty(state, context.getLevel(), context.getClickedPos(), context.getClickLocation(), context.getClickedFace(), true);
             if (!partExists(state, property)) return InteractionResult.PASS;
             ItemStack consumedItem = ufte.getMaterialItemStorage().getMaterialItem(property).consumedItem();
             if (!ufte.getMaterialItemStorage().hasCustomMaterial(property))
@@ -160,7 +160,7 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
 
         BlockState material = materialIn;
         return onBlockEntityUse(level, pos, ufte -> {
-            String property = getProperty(state, pos, hit, true);
+            String property = getProperty(state, level, pos, hit, true);
             if (!partExists(state, property)) return InteractionResult.PASS;
             if (ufte.getMaterialItemStorage().getMaterialItem(property).material()
                     .is(material.getBlock())) {
@@ -455,7 +455,7 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
 
     @Override
     public void fallOn(@NotNull Level pLevel, @NotNull BlockState pState, @NotNull BlockPos pPos, @NotNull Entity pEntity, float p_152430_) {
-        String property = getProperty(pState, pPos, new BlockHitResult(Vec3.atCenterOf(pPos), Direction.UP, pPos, true), true);
+        String property = getProperty(pState, pLevel, pPos, new BlockHitResult(Vec3.atCenterOf(pPos), Direction.UP, pPos, true), true);
         AtomicReference<BlockState> material = new AtomicReference<>(AllBlocks.COPYCAT_BASE.getDefaultState());
         withBlockEntityDo(pLevel, pPos, mscbe -> material.set(mscbe.getMaterialItemStorage().getMaterialItem(property).material()));
         material.get().getBlock()
@@ -464,7 +464,7 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
 
     @Override
     public float getDestroyProgress(@NotNull BlockState pState, @NotNull Player pPlayer, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos) {
-        String property = getProperty(pState, pPos, new BlockHitResult(Vec3.atCenterOf(pPos), Direction.UP, pPos, true), true);
+        String property = getProperty(pState, pLevel, pPos, new BlockHitResult(Vec3.atCenterOf(pPos), Direction.UP, pPos, true), true);
         AtomicReference<BlockState> material = new AtomicReference<>(AllBlocks.COPYCAT_BASE.getDefaultState());
         withBlockEntityDo(pLevel, pPos, mscbe -> material.set(mscbe.getMaterialItemStorage().getMaterialItem(property).material()));
         return material.get().getDestroyProgress(pPlayer, pLevel, pPos);

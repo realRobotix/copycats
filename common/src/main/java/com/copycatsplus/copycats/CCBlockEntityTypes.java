@@ -1,6 +1,7 @@
 package com.copycatsplus.copycats;
 
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlockEntity;
+import com.copycatsplus.copycats.content.copycat.ladder.CopycatLadderMultiStateBlockEntity;
 import com.simibubi.create.content.decoration.copycat.CopycatBlockEntity;
 import com.tterrag.registrate.builders.BlockEntityBuilder;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
@@ -45,13 +46,22 @@ public class CCBlockEntityTypes {
                             CCBlocks.COPYCAT_SLAB,
                             CCBlocks.COPYCAT_BYTE,
                             CCBlocks.COPYCAT_HALF_LAYER,
-                            CCBlocks.COPYCAT_BOARD,
-                            CCBlocks.COPYCAT_LADDER
+                            CCBlocks.COPYCAT_BOARD
                     )
+                    .register();
+
+    public static final BlockEntityEntry<? extends MultiStateCopycatBlockEntity> MULTI_STATE_COPYCAT_LADDER_BLOCK_ENTITY =
+            REGISTRATE.blockEntity("multistate_ladder_copycat", getPlatformMultiStateLadder())
+                    .validBlocks(CCBlocks.COPYCAT_LADDER)
                     .register();
 
     @ExpectPlatform
     public static BlockEntityBuilder.BlockEntityFactory<? extends MultiStateCopycatBlockEntity> getPlatformMultiState() {
+        throw new AssertionError("This shouldn't appear");
+    }
+
+    @ExpectPlatform
+    public static BlockEntityBuilder.BlockEntityFactory<? extends CopycatLadderMultiStateBlockEntity> getPlatformMultiStateLadder() {
         throw new AssertionError("This shouldn't appear");
     }
 

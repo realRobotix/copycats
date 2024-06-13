@@ -3,9 +3,7 @@ package com.copycatsplus.copycats.content.copycat.slab;
 import com.copycatsplus.copycats.CCBlocks;
 import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.content.copycat.base.ICopycatWithWrappedBlock;
-import com.copycatsplus.copycats.content.copycat.base.IStateType;
 import com.copycatsplus.copycats.content.copycat.base.multistate.CTWaterloggedMultiStateCopycatBlock;
-import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
 import com.copycatsplus.copycats.content.copycat.base.multistate.ScaledBlockAndTintGetter;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.decoration.copycat.CopycatBlock;
@@ -76,7 +74,7 @@ public class CopycatSlabBlock extends CTWaterloggedMultiStateCopycatBlock implem
     }
 
     @Override
-    public String getPropertyFromInteraction(BlockState state, Vec3i hitLocation, BlockPos blockPos, Direction facing, Vec3 unscaledHit) {
+    public String getPropertyFromInteraction(BlockState state, BlockGetter level, Vec3i hitLocation, BlockPos blockPos, Direction facing, Vec3 unscaledHit) {
         if (hitLocation.get(state.getValue(AXIS)) > 0) {
             return SlabType.TOP.getSerializedName();
         } else {
@@ -138,7 +136,7 @@ public class CopycatSlabBlock extends CTWaterloggedMultiStateCopycatBlock implem
         Level world = context.getLevel();
         BlockPos pos = context.getClickedPos();
         Player player = context.getPlayer();
-        String property = getProperty(state, context.getClickedPos(), context.getClickLocation(), context.getClickedFace(), true);
+        String property = getProperty(state, context.getLevel(), context.getClickedPos(), context.getClickLocation(), context.getClickedFace(), true);
         if (!partExists(state, property)) return InteractionResult.FAIL;
         if (world instanceof ServerLevel) {
             if (player != null) {
