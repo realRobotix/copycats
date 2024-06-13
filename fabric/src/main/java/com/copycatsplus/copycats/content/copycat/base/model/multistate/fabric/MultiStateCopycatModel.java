@@ -3,6 +3,7 @@ package com.copycatsplus.copycats.content.copycat.base.model.multistate.fabric;
 import com.copycatsplus.copycats.Copycats;
 import com.copycatsplus.copycats.content.copycat.base.multistate.MaterialItemStorage;
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.multistate.ScaledBlockAndTintGetter;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.foundation.utility.Iterate;
 import io.github.fabricators_of_create.porting_lib.models.CustomParticleIconModel;
@@ -21,6 +22,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
@@ -104,7 +106,14 @@ public abstract class MultiStateCopycatModel extends ForwardingBakedModel implem
             if (shouldTransform)
                 context.pushTransform(MaterialFixer.create(entry.getValue()));
 
-            emitBlockQuadsInner(entry.getKey(), blockView, state, pos, randomSupplier, context, entry.getValue(), cullFaceRemovalData, occlusionData);
+            BlockAndTintGetter innerBlockView = blockView;
+            if (state.getBlock() instanceof MultiStateCopycatBlock copycatBlock) {
+                Vec3i inner = copycatBlock.getVectorFromProperty(state, entry.getKey());
+                ScaledBlockAndTintGetter scaledWorld = new ScaledBlockAndTintGetter(blockView, pos, inner, copycatBlock.vectorScale(state), p -> true);
+                innerBlockView = new ScaledBlockAndTintGetter(blockView, pos, inner, copycatBlock.vectorScale(state),
+                        targetPos -> copycatBlock.canConnectTexturesToward(entry.getKey(), scaledWorld, pos, targetPos, state));
+            }
+            emitBlockQuadsInner(entry.getKey(), innerBlockView, state, pos, randomSupplier, context, entry.getValue(), cullFaceRemovalData, occlusionData);
 
             // fabric: pop the material changer transform
             if (shouldTransform)
