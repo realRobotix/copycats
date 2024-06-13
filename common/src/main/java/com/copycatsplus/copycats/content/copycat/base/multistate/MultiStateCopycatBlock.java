@@ -483,6 +483,14 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
                             int pTintIndex) {
             if (pLevel == null || pPos == null)
                 return GrassColor.get(0.5D, 1.0D);
+
+            String renderingProperty = MultiStateRenderManager.getRenderingProperty();
+            if (renderingProperty != null) {
+                return Minecraft.getInstance()
+                        .getBlockColors()
+                        .getColor(getMaterial(pLevel, pPos, renderingProperty), pLevel, pPos, pTintIndex);
+            }
+
             //First tint from first material
             int tint = Minecraft.getInstance()
                     .getBlockColors()

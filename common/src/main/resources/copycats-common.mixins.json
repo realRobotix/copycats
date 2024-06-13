@@ -10,6 +10,7 @@
     "compat.diagonalfences.FenceBlockMixin",
     "compat.radium.PathNodeDefaultsMixin",
     "compat.rubidium.BlockOcclusionCacheMixin",
+    "compat.rubidium.BlockRendererMixin",
     "copycat.TrackPlacementMixin",
     "copycat.base.ConnectedTextureBehaviourMixin",
     "copycat.base.CopycatBlockEntityMixin",
@@ -35,7 +36,9 @@
     "copycat.wall.WallBlockMixin",
     "feature_toggle.CreativeModeTabsAccessor"
   ],
-  "client": [],
+  "client": [
+    "copycat.base.ModelBlockRendererMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

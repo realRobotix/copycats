@@ -1,6 +1,7 @@
 package com.copycatsplus.copycats.content.copycat.base.model.multistate.forge;
 
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateTextureAtlasSprite;
 import com.simibubi.create.foundation.model.BakedModelWrapperWithData;
 import com.simibubi.create.foundation.utility.Iterate;
 import net.minecraft.client.Minecraft;
@@ -19,10 +20,7 @@ import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class MultiStateCopycatModel extends BakedModelWrapperWithData {
@@ -121,14 +119,22 @@ public abstract class MultiStateCopycatModel extends BakedModelWrapperWithData {
                     .contains(renderType))
                 continue;
 
-            croppedQuads.addAll(getCroppedQuads(entry.getKey(), state, side, rand, material, dataForMaterial, renderType));
+            emitQuadsForProperty(
+                    croppedQuads,
+                    getCroppedQuads(entry.getKey(), state, side, rand, material, dataForMaterial, renderType),
+                    entry.getKey()
+            );
 
             // Rubidium: render side!=null versions of the base material during side==null,
             // to avoid getting culled away
             if (side == null && state.getBlock() instanceof MultiStateCopycatBlock ccb)
                 for (Direction nonOcclusionSide : Iterate.directions)
                     if (ccb.shouldFaceAlwaysRender(state, nonOcclusionSide))
-                        croppedQuads.addAll(getCroppedQuads(entry.getKey(), state, nonOcclusionSide, rand, material, dataForMaterial, renderType));
+                        emitQuadsForProperty(
+                                croppedQuads,
+                                getCroppedQuads(entry.getKey(), state, nonOcclusionSide, rand, material, dataForMaterial, renderType),
+                                entry.getKey()
+                        );
         }
 
         return croppedQuads;
@@ -136,6 +142,12 @@ public abstract class MultiStateCopycatModel extends BakedModelWrapperWithData {
 
     protected abstract List<BakedQuad> getCroppedQuads(String key, BlockState state, Direction side, RandomSource rand,
                                                        BlockState material, ModelData wrappedData, RenderType renderType);
+
+    private void emitQuadsForProperty(List<BakedQuad> dest, Collection<BakedQuad> source, String property) {
+        for (BakedQuad quad : source) {
+            dest.add(new BakedQuad(quad.getVertices(), quad.getTintIndex(), quad.getDirection(), new MultiStateTextureAtlasSprite(property, quad.getSprite()), quad.isShade()));
+        }
+    }
 
     @Override
     public @NotNull TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
