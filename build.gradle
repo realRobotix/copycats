@@ -4,7 +4,7 @@ plugins {
     id 'org.ajoberstar.grgit' version '4.1.1'
 }
 
-boolean isTestBuild = true;
+boolean isTestBuild = false;
 
 project.ext {
     // Open the Git repository in the current directory.

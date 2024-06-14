@@ -29,6 +29,6 @@ public class CCommon extends SyncConfigBase {
 
         static String dataFixers = "Enables/Disables the data fixers. (Currently none available)";
 
-        static String multiStateConversion = "Enables/Disables the conversion of placed copycats from the single material to the multi material(where applicable) block entity";
+        static String multiStateConversion = "Enables/Disables the conversion of placed copycats from the single material to the multi material(where applicable) block entity. Set this to false to enable conversion! (only happens on world load, so if changed while ingame you will need to load the world again)";
     }
 }
