@@ -2,12 +2,22 @@ plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 loom {
+
+    accessWidenerPath = project(":common").loom.accessWidenerPath
     forge {
         mixinConfig "copycats-common.mixins.json"
         mixinConfig "copycats-forge.mixins.json"
+        convertAccessWideners = true
+        extraAccessWideners.add(loom.accessWidenerPath.get().asFile.name)
     }
 
     runs {
+        client {
+            vmArg "-XX:+AllowEnhancedClassRedefinition"
+        }
+        server {
+            vmArg "-XX:+AllowEnhancedClassRedefinition"
+        }
         data {
             data()
             name "Data Generation"

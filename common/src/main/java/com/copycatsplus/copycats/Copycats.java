@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 
 public class Copycats {
 	public static final String MODID = "copycats";
+	//Only used for the data fixers!!!
+	public static final int DATA_FIXER_VERSION = 1;
 	public static final Logger LOGGER = LoggerFactory.getLogger("Copycats+");
 
 	private static final CopycatRegistrate REGISTRATE = CopycatRegistrate.create(MODID);
@@ -38,6 +40,8 @@ public class Copycats {
 		CCPackets.PACKETS.registerC2SListener();
 
 		finalizeRegistrate();
+
+		CCDataFixers.register();
 	}
 
 	public static void gatherData(DataGenerator gen) {

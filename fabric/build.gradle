@@ -10,6 +10,12 @@ architectury {
 loom {
 
     runs {
+        client {
+            vmArg "-XX:+AllowEnhancedClassRedefinition"
+        }
+        server {
+            vmArg "-XX:+AllowEnhancedClassRedefinition"
+        }
         create("datagen") {
             client()
 

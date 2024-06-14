@@ -222,7 +222,7 @@ public class QuadHelper {
         public boolean east;
         public boolean west;
 
-        MutableCullFace(int mask) {
+        public MutableCullFace(int mask) {
             set((mask & UP) > 0, (mask & DOWN) > 0, (mask & NORTH) > 0, (mask & SOUTH) > 0, (mask & EAST) > 0, (mask & WEST) > 0);
         }
 
@@ -279,7 +279,7 @@ public class QuadHelper {
         public double y;
         public double z;
 
-        MutableVec3(double x, double y, double z) {
+        public MutableVec3(double x, double y, double z) {
             set(x, y, z);
         }
 
@@ -333,7 +333,7 @@ public class QuadHelper {
         public double maxY;
         public double maxZ;
 
-        MutableAABB(double sizeX, double sizeY, double sizeZ) {
+        public MutableAABB(double sizeX, double sizeY, double sizeZ) {
             set(0, 0, 0, sizeX, sizeY, sizeZ);
         }
 

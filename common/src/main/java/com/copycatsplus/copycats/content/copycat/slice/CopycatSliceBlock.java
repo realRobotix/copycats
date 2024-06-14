@@ -3,6 +3,7 @@ package com.copycatsplus.copycats.content.copycat.slice;
 import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.Copycats;
 import com.copycatsplus.copycats.content.copycat.base.CTWaterloggedCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.IStateType;
 import com.simibubi.create.content.schematics.requirement.ISpecialBlockItemRequirement;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.utility.VoxelShaper;
@@ -33,9 +34,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-import static com.copycatsplus.copycats.content.copycat.MathHelper.DirectionFromDelta;
-
-public class CopycatSliceBlock extends CTWaterloggedCopycatBlock implements ISpecialBlockItemRequirement {
+public class CopycatSliceBlock extends CTWaterloggedCopycatBlock implements ISpecialBlockItemRequirement, IStateType {
 
     public static final EnumProperty<Half> HALF = BlockStateProperties.HALF;
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -79,7 +78,7 @@ public class CopycatSliceBlock extends CTWaterloggedCopycatBlock implements ISpe
         if (diff.equals(Vec3i.ZERO)) {
             return true;
         }
-        Direction face = DirectionFromDelta(diff.getX(), diff.getY(), diff.getZ());
+        Direction face = Direction.fromDelta(diff.getX(), diff.getY(), diff.getZ());
         if (face == null) {
             return false;
         }

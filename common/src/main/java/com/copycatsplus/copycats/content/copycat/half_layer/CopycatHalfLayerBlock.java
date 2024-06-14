@@ -2,10 +2,10 @@ package com.copycatsplus.copycats.content.copycat.half_layer;
 
 import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.Copycats;
-import com.copycatsplus.copycats.content.copycat.base.CTWaterloggedCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.multistate.CTWaterloggedMultiStateCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.multistate.ScaledBlockAndTintGetter;
 import com.google.common.collect.ImmutableMap;
-import com.simibubi.create.content.schematics.requirement.ISpecialBlockItemRequirement;
-import com.simibubi.create.content.schematics.requirement.ItemRequirement;
+import com.simibubi.create.AllBlocks;
 import com.simibubi.create.foundation.utility.VoxelShaper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -22,7 +22,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -38,13 +37,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 
-import static com.copycatsplus.copycats.content.copycat.MathHelper.DirectionFromDelta;
 import static net.minecraft.core.Direction.Axis;
 import static net.minecraft.core.Direction.AxisDirection;
 
-public class CopycatHalfLayerBlock extends CTWaterloggedCopycatBlock implements ISpecialBlockItemRequirement {
+public class CopycatHalfLayerBlock extends CTWaterloggedMultiStateCopycatBlock {
 
 
     public static final EnumProperty<Axis> AXIS = BlockStateProperties.HORIZONTAL_AXIS;
@@ -85,6 +84,53 @@ public class CopycatHalfLayerBlock extends CTWaterloggedCopycatBlock implements 
                 .setValue(NEGATIVE_LAYERS, 0)
         );
         this.shapesCache = this.getShapeForEachState(CopycatHalfLayerBlock::calculateMultiFaceShape);
+    }
+
+    @Override
+    public int maxMaterials() {
+        return 2;
+    }
+
+    @Override
+    public Vec3i vectorScale(BlockState state) {
+        return switch (state.getValue(AXIS)) {
+            case X -> new Vec3i(2, 1, 1);
+            case Y -> new Vec3i(1, 2, 1);
+            case Z -> new Vec3i(1, 1, 2);
+        };
+    }
+
+    @Override
+    public boolean partExists(BlockState state, String property) {
+        if (property.equals(POSITIVE_LAYERS.getName())) {
+            return state.getValue(POSITIVE_LAYERS) > 0;
+        } else if (property.equals(NEGATIVE_LAYERS.getName())) {
+            return state.getValue(NEGATIVE_LAYERS) > 0;
+        }
+        return false;
+    }
+
+    @Override
+    public Set<String> storageProperties() {
+        return Set.of(POSITIVE_LAYERS.getName(), NEGATIVE_LAYERS.getName());
+    }
+
+    @Override
+    public String getPropertyFromInteraction(BlockState state, BlockGetter level, Vec3i hitLocation, BlockPos blockPos, Direction facing, Vec3 unscaledHit) {
+        if (hitLocation.get(state.getValue(AXIS)) > 0) {
+            return POSITIVE_LAYERS.getName();
+        } else {
+            return NEGATIVE_LAYERS.getName();
+        }
+    }
+
+    @Override
+    public Vec3i getVectorFromProperty(BlockState state, String property) {
+        return switch (state.getValue(AXIS)) {
+            case X -> property.equals(POSITIVE_LAYERS.getName()) ? new Vec3i(1, 0, 0) : new Vec3i(0, 0, 0);
+            case Y -> property.equals(POSITIVE_LAYERS.getName()) ? new Vec3i(0, 1, 0) : new Vec3i(0, 0, 0);
+            case Z -> property.equals(POSITIVE_LAYERS.getName()) ? new Vec3i(0, 0, 1) : new Vec3i(0, 0, 0);
+        };
     }
 
     @Override
@@ -160,13 +206,21 @@ public class CopycatHalfLayerBlock extends CTWaterloggedCopycatBlock implements 
             targetProp = POSITIVE_LAYERS;
         }
         if (world instanceof ServerLevel serverLevel) {
-            if (player != null && !player.isCreative()) {
-                // Respect loot tables
+            if (player != null) {
                 List<ItemStack> drops = Block.getDrops(
                         state.setValue(POSITIVE_LAYERS, 0).setValue(NEGATIVE_LAYERS, 0).setValue(targetProp, 1),
                         serverLevel, pos, world.getBlockEntity(pos), player, context.getItemInHand());
-                for (ItemStack drop : drops) {
-                    player.getInventory().placeItemBackInInventory(drop);
+                if (state.getValue(targetProp) == 1)
+                    withBlockEntityDo(world, pos, ufte -> {
+                        String property = targetProp.getName();
+                        drops.add(ufte.getMaterialItemStorage().getMaterialItem(property).consumedItem());
+                        ufte.setMaterial(property, AllBlocks.COPYCAT_BASE.getDefaultState());
+                        ufte.setConsumedItem(property, ItemStack.EMPTY);
+                    });
+                if (!player.isCreative()) {
+                    for (ItemStack drop : drops) {
+                        player.getInventory().placeItemBackInInventory(drop);
+                    }
                 }
             }
             BlockPos up = pos.relative(Direction.UP);
@@ -178,66 +232,23 @@ public class CopycatHalfLayerBlock extends CTWaterloggedCopycatBlock implements 
     }
 
     @Override
-    public ItemRequirement getRequiredItems(BlockState state, BlockEntity blockEntity) {
-        return new ItemRequirement(
-                ItemRequirement.ItemUseType.CONSUME,
-                new ItemStack(asItem(), state.getValue(POSITIVE_LAYERS) + state.getValue(NEGATIVE_LAYERS))
-        );
+    public boolean isIgnoredConnectivitySide(String property, BlockAndTintGetter reader, BlockState state, Direction face, BlockPos fromPos, BlockPos toPos) {
+        BlockState toState = reader.getBlockState(toPos);
+        return !toState.is(this);
     }
 
     @Override
-    public boolean isIgnoredConnectivitySide(BlockAndTintGetter reader, BlockState state, Direction face,
-                                             BlockPos fromPos, BlockPos toPos) {
+    public boolean canConnectTexturesToward(String property, BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos, BlockState state) {
         BlockState toState = reader.getBlockState(toPos);
-
-        if (toState.is(this)) {
-            // connecting to another copycat beam
-            Axis axis = state.getValue(AXIS);
-            Half half = state.getValue(HALF);
-            int positiveLayers = state.getValue(POSITIVE_LAYERS);
-            int negativeLayers = state.getValue(NEGATIVE_LAYERS);
-            return toState.getValue(AXIS) != axis ||
-                    toState.getValue(HALF) != half ||
-                    toState.getValue(POSITIVE_LAYERS) != positiveLayers ||
-                    toState.getValue(NEGATIVE_LAYERS) != negativeLayers;
-        } else {
-            // doesn't connect to any other blocks
-            return true;
+        if (reader instanceof ScaledBlockAndTintGetter scaledReader && toState.is(this)) {
+            BlockPos toTruePos = scaledReader.getTruePos(toPos);
+            Vec3i toInner = scaledReader.getInner(toPos);
+            String toProperty = getPropertyFromInteraction(toState, reader, toInner, toTruePos, Direction.UP, Vec3.atCenterOf(toInner));
+            int fromLayers = state.getValue(property.equals(POSITIVE_LAYERS.getName()) ? POSITIVE_LAYERS : NEGATIVE_LAYERS);
+            int toLayers = toState.getValue(toProperty.equals(POSITIVE_LAYERS.getName()) ? POSITIVE_LAYERS : NEGATIVE_LAYERS);
+            return fromLayers == toLayers;
         }
-    }
-
-    @Override
-    public boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos,
-                                            BlockState state) {
-        BlockState toState = reader.getBlockState(toPos);
-        if (!toState.is(this)) return false;
-        BlockPos diff = toPos.subtract(fromPos);
-        if (diff.equals(Vec3i.ZERO)) {
-            return true;
-        }
-        Direction face = DirectionFromDelta(diff.getX(), diff.getY(), diff.getZ());
-        if (face == null) {
-            return false;
-        }
-
-        Axis axis = state.getValue(AXIS);
-        Half half = state.getValue(HALF);
-        int positiveLayers = state.getValue(POSITIVE_LAYERS);
-        int negativeLayers = state.getValue(NEGATIVE_LAYERS);
-
-        if (toState.is(this)) {
-            try {
-                return toState.getValue(AXIS) == axis &&
-                        toState.getValue(HALF) == half &&
-                        toState.getValue(POSITIVE_LAYERS) == positiveLayers &&
-                        toState.getValue(NEGATIVE_LAYERS) == negativeLayers &&
-                        face.getClockWise().getAxis() == axis;
-            } catch (IllegalStateException ignored) {
-                return false;
-            }
-        } else {
-            return false;
-        }
+        return toState.is(this);
     }
 
     @SuppressWarnings("deprecation")
@@ -275,7 +286,7 @@ public class CopycatHalfLayerBlock extends CTWaterloggedCopycatBlock implements 
     @Override
     @SuppressWarnings("deprecation")
     public @NotNull BlockState mirror(BlockState state, Mirror mirrorIn) {
-        return state.rotate(mirrorIn.getRotation(Direction.get(Direction.AxisDirection.POSITIVE, state.getValue(AXIS))));
+        return state.rotate(mirrorIn.getRotation(Direction.get(AxisDirection.POSITIVE, state.getValue(AXIS))));
     }
 
     @SuppressWarnings("deprecation")
@@ -305,6 +316,8 @@ public class CopycatHalfLayerBlock extends CTWaterloggedCopycatBlock implements 
     @SuppressWarnings("deprecation")
     @Override
     public @NotNull VoxelShape getShape(@NotNull BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull CollisionContext pContext) {
+        VoxelShape shapeOverride = multiPlatformGetShape(pState, pLevel, pPos, pContext);
+        if (shapeOverride != null) return shapeOverride;
         return Objects.requireNonNull(this.shapesCache.get(pState));
     }
 

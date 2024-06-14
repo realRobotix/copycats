@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.3.0 - 2024-06-14
+### Changed
+
+- Bytes, boards, slabs and half layers are now MultiStates
+
+### Added
+
+- An easier way for mods adding compat to easily get a set of all our blocks and tell if they are multistates easily
+- Connected textures on the multistate blocks
+- Optional conversion system for blocks that have changed (newly placed blocks will only ever be multistates)
+- Made blocks that are now multistates retain their look when converting to a multistate (until wrenched or broken)
+
 ## 1.2.7 - 2024-04-08
 
 ### Added

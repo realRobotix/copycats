@@ -1,6 +1,7 @@
 package com.copycatsplus.copycats.content.copycat.stairs;
 
 import com.copycatsplus.copycats.content.copycat.base.ICustomCTBlocking;
+import com.copycatsplus.copycats.content.copycat.base.IStateType;
 import com.copycatsplus.copycats.content.copycat.base.WaterloggedCopycatWrappedBlock;
 import com.simibubi.create.content.decoration.copycat.CopycatBlock;
 import net.minecraft.core.BlockPos;
@@ -29,7 +30,7 @@ import static net.minecraft.world.level.block.StairBlock.HALF;
 import static net.minecraft.world.level.block.StairBlock.SHAPE;
 
 @SuppressWarnings("deprecation")
-public class CopycatStairsBlock extends WaterloggedCopycatWrappedBlock<WrappedStairsBlock> implements ICustomCTBlocking {
+public class CopycatStairsBlock extends WaterloggedCopycatWrappedBlock<WrappedStairsBlock> implements ICustomCTBlocking, IStateType {
 
     public static WrappedStairsBlock stairs;
 
