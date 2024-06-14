@@ -67,7 +67,7 @@ import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.entry.RegistryEntry;
 import dev.architectury.injectables.annotations.ExpectPlatform;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -479,14 +479,14 @@ public class CCBlocks {
     }
 
     public static Set<RegistryEntry<Block>> getAllRegisteredBlocks() {
-       return new HashSet<>(REGISTRATE.getAll(BuiltInRegistries.BLOCK.key()));
+       return new HashSet<>(REGISTRATE.getAll(Registry.BLOCK.key()));
     }
 
     public static Set<RegistryEntry<Block>> getAllRegisteredBlocksWithoutWrapped() {
-        return new HashSet<>(REGISTRATE.getAll(BuiltInRegistries.BLOCK.key())).stream().filter(entry -> !(entry.getId().getPath().startsWith("wrapped"))).collect(Collectors.toSet());
+        return new HashSet<>(REGISTRATE.getAll(Registry.BLOCK.key())).stream().filter(entry -> !(entry.getId().getPath().startsWith("wrapped"))).collect(Collectors.toSet());
     }
 
     public static Set<RegistryEntry<Block>> getAllRegisteredMultiStateBlocks() {
-        return new HashSet<>(REGISTRATE.getAll(BuiltInRegistries.BLOCK.key())).stream().filter(entry -> entry.get() instanceof MultiStateCopycatBlock).collect(Collectors.toSet());
+        return new HashSet<>(REGISTRATE.getAll(Registry.BLOCK.key())).stream().filter(entry -> entry.get() instanceof MultiStateCopycatBlock).collect(Collectors.toSet());
     }
 }

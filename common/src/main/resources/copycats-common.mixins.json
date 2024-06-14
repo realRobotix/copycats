@@ -38,7 +38,8 @@
     "minecraft.CreativeModTabMixin"
   ],
   "client": [
-    "copycat.base.multistate.ModelBlockRendererMixin"
+    "copycat.base.multistate.ModelBlockRendererMixin",
+    "minecraft.TextureAtlasSpriteMixin"
   ],
   "injectors": {
     "defaultRequire": 1

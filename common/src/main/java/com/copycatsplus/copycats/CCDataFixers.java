@@ -27,11 +27,11 @@ public class CCDataFixers {
             return;
         }
 
-        DataFixesInternals api = DataFixesInternals.get();
+     /*   DataFixesInternals api = DataFixesInternals.get();
 
         DataFixerBuilder builder = new DataFixerBuilder(Copycats.DATA_FIXER_VERSION);
         addFixers(builder);
-        api.registerFixer(Copycats.DATA_FIXER_VERSION, builder.buildOptimized(Set.of(References.BLOCK_ENTITY), Util.backgroundExecutor()));
+        api.registerFixer(Copycats.DATA_FIXER_VERSION, builder.buildOptimized(Util.backgroundExecutor()));*/
     }
 
     private static void addFixers(DataFixerBuilder builder) {
