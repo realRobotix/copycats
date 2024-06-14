@@ -40,8 +40,6 @@ public class Copycats {
 		CCPackets.PACKETS.registerC2SListener();
 
 		finalizeRegistrate();
-
-		CCDataFixers.register();
 	}
 
 	public static void gatherData(DataGenerator gen) {

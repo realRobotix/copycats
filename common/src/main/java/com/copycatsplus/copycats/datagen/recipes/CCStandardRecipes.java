@@ -4,6 +4,7 @@ import com.copycatsplus.copycats.CCBlocks;
 import com.copycatsplus.copycats.CCItems;
 import com.copycatsplus.copycats.CCTags;
 import com.copycatsplus.copycats.Copycats;
+import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
 import com.copycatsplus.copycats.datagen.recipes.gen.CopycatsRecipeProvider;
 import com.copycatsplus.copycats.datagen.recipes.gen.GeneratedRecipeBuilder;
 import com.copycatsplus.copycats.multiloader.Platform;
@@ -12,6 +13,7 @@ import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.content.decoration.copycat.CopycatBlock;
 import com.tterrag.registrate.util.entry.ItemProviderEntry;
+import com.tterrag.registrate.util.entry.RegistryEntry;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.core.Registry;
 import net.minecraft.data.DataGenerator;
@@ -31,7 +33,7 @@ import static com.copycatsplus.copycats.datagen.recipes.gen.GeneratedRecipeBuild
 
 public class CCStandardRecipes extends CopycatsRecipeProvider {
 
-    private final Set<CopycatBlock> copycatsWithRecipes = new HashSet<>();
+    private final Set<Block> copycatsWithRecipes = new HashSet<>();
 
     private final Marker PALETTES = enterFolder("palettes");
 
@@ -200,6 +202,11 @@ public class CCStandardRecipes extends CopycatsRecipeProvider {
         if (result.get() instanceof CopycatBlock copycat) {
             copycatsWithRecipes.add(copycat);
         }
+
+        if (result.get() instanceof MultiStateCopycatBlock copycat) {
+            copycatsWithRecipes.add(copycat);
+        }
+
         return create(result)
                 .unlockedBy(AllItems.ZINC_INGOT::get)
                 .returns(resultCount)
@@ -225,10 +232,10 @@ public class CCStandardRecipes extends CopycatsRecipeProvider {
         super(output);
 
         List<ResourceLocation> missingRecipes = new LinkedList<>();
-        for (Map.Entry<ResourceKey<Block>, Block> entry : Registry.BLOCK.entrySet()) {
-            if (entry.getKey().location().getNamespace().equals(Copycats.MODID) && entry.getValue() instanceof CopycatBlock copycatBlock) {
-                if (!copycatsWithRecipes.contains(copycatBlock))
-                    missingRecipes.add(entry.getKey().location());
+        for (RegistryEntry<Block> entry : CCBlocks.getAllRegisteredBlocksWithoutWrapped()) {
+            if (!entry.equals(CCBlocks.COPYCAT_TEST_BLOCK)) {
+                if (!copycatsWithRecipes.contains(entry.get()))
+                    missingRecipes.add(entry.getId());
             }
         }
         if (!missingRecipes.isEmpty()) {

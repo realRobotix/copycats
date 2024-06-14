@@ -11,4 +11,9 @@ public class CCBuilderTransformers {
     public static <B extends MultiStateCopycatBlock, P> NonNullUnaryOperator<BlockBuilder<B, P>> multiCopycat() {
         throw new AssertionError("Shouldn't appear");
     }
+
+    @ExpectPlatform
+    public static <B extends MultiStateCopycatBlock, P> NonNullUnaryOperator<BlockBuilder<B, P>> testBlockMultiCopycat() {
+        throw new AssertionError("Shouldn't appear");
+    }
 }
