@@ -31,7 +31,7 @@ public class CCBuilderTransformersImpl {
                         .getExistingFile(p.mcLoc("air"))))
                 .initialProperties(SharedProperties::softMetal)
                 .properties(p -> p.noOcclusion()
-                        .mapColor(MapColor.NONE))
+                        .color(MaterialColor.NONE))
                 .addLayer(() -> RenderType::solid)
                 .addLayer(() -> RenderType::cutout)
                 .addLayer(() -> RenderType::cutoutMipped)
