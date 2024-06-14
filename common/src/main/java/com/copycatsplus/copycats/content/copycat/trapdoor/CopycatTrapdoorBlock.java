@@ -1,5 +1,6 @@
 package com.copycatsplus.copycats.content.copycat.trapdoor;
 
+import com.copycatsplus.copycats.content.copycat.base.IStateType;
 import com.copycatsplus.copycats.content.copycat.base.WaterloggedCopycatWrappedBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -18,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import static net.minecraft.world.level.block.TrapDoorBlock.*;
 
 @SuppressWarnings("deprecation")
-public class CopycatTrapdoorBlock extends WaterloggedCopycatWrappedBlock<WrappedTrapdoorBlock> {
+public class CopycatTrapdoorBlock extends WaterloggedCopycatWrappedBlock<WrappedTrapdoorBlock> implements IStateType {
 
     public static WrappedTrapdoorBlock trapdoor;
 

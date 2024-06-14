@@ -1,12 +1,20 @@
 package com.copycatsplus.copycats.forge;
 
+import com.copycatsplus.copycats.CCDataFixers;
 import com.copycatsplus.copycats.Copycats;
 import com.copycatsplus.copycats.CopycatsClient;
+import com.copycatsplus.copycats.datafixers.api.DataFixesInternals;
+import com.copycatsplus.copycats.datafixers.fixers.CopycatsBlockEntityConversionFixer;
 import com.copycatsplus.copycats.datagen.forge.CCDatagenImpl;
 import com.copycatsplus.copycats.datagen.recipes.forge.CCCraftingConditions;
 import com.copycatsplus.copycats.multiloader.LogicalSidedProvider;
 import com.copycatsplus.copycats.multiloader.Platform;
+import net.minecraft.client.telemetry.events.WorldLoadEvent;
+import net.minecraft.util.datafix.DataFixTypes;
+import net.minecraft.util.datafix.fixes.References;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.level.ChunkEvent;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;

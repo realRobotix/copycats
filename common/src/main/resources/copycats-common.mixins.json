@@ -10,9 +10,13 @@
     "compat.diagonalfences.FenceBlockMixin",
     "compat.radium.PathNodeDefaultsMixin",
     "compat.rubidium.BlockOcclusionCacheMixin",
+    "compat.rubidium.BlockRendererMixin",
     "copycat.TrackPlacementMixin",
     "copycat.base.ConnectedTextureBehaviourMixin",
     "copycat.base.CopycatBlockEntityMixin",
+    "copycat.base.CopycatBlockMixin",
+    "copycat.base.FilteredBlockAndTintGetterAccessor",
+    "copycat.base.multistate.LevelChunkMixin",
     "copycat.button.ButtonBlockMixin",
     "copycat.button.ContraptionMixin",
     "copycat.fence.FenceBlockMixin",
@@ -33,7 +37,9 @@
     "copycat.wall.WallBlockMixin",
     "minecraft.CreativeModTabMixin"
   ],
-  "client": [],
+  "client": [
+    "copycat.base.multistate.ModelBlockRendererMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

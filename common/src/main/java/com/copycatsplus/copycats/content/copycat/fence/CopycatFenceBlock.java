@@ -1,5 +1,6 @@
 package com.copycatsplus.copycats.content.copycat.fence;
 
+import com.copycatsplus.copycats.content.copycat.base.IStateType;
 import com.copycatsplus.copycats.content.copycat.base.WaterloggedCopycatWrappedBlock;
 import com.simibubi.create.content.decoration.copycat.CopycatBlock;
 import com.simibubi.create.foundation.utility.Iterate;
@@ -21,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import static net.minecraft.world.level.block.CrossCollisionBlock.*;
 
 @SuppressWarnings("deprecation")
-public class CopycatFenceBlock extends WaterloggedCopycatWrappedBlock<WrappedFenceBlock> {
+public class CopycatFenceBlock extends WaterloggedCopycatWrappedBlock<WrappedFenceBlock> implements IStateType {
 
     public static WrappedFenceBlock fence;
 
