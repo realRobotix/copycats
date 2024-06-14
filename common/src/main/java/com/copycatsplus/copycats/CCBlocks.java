@@ -474,7 +474,7 @@ public class CCBlocks {
     public static void register() {
         if (AbstractRegistrate.isDevEnvironment()) {
             COPYCAT_TEST_BLOCK = REGISTRATE.block("copycat_test_block", CopycatTestBlock::new)
-                    .transform(CCBuilderTransformers.multiCopycat())
+                    .transform(CCBuilderTransformers.testBlockMultiCopycat())
                     .transform(FeatureToggle.register())
                     .onRegister(CreateRegistrate.blockModel(() -> model -> SimpleMultiStateCopycatPart.create(model, new CopycatTestBlockModel())))
                     .item()
