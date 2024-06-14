@@ -259,11 +259,11 @@ public class CCBlocks {
 
     public static final BlockEntry<CopycatLadderBlock> COPYCAT_LADDER =
             REGISTRATE.block("copycat_ladder", CopycatLadderBlock::new)
-                    .transform(CCBuilderTransformers.multiCopycat())
+                    .transform(BuilderTransformers.copycat())
                     .properties(p -> p.isValidSpawn((state, level, pos, entity) -> false))
                     .tag(BlockTags.CLIMBABLE)
                     .transform(FeatureToggle.register())
-                    .onRegister(CreateRegistrate.blockModel(() -> model -> SimpleMultiStateCopycatPart.create(model, new CopycatMultiLadderModel())))
+                    .onRegister(CreateRegistrate.blockModel(() -> model -> SimpleCopycatPart.create(model, new CopycatLadderModel())))
                     .item()
                     .transform(customItemModel("copycat_base", "ladder"))
                     .register();

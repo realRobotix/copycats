@@ -4,8 +4,9 @@ import com.copycatsplus.copycats.CCBlockEntityTypes;
 import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.content.copycat.base.ICopycatWithWrappedBlock;
 import com.copycatsplus.copycats.content.copycat.base.IStateType;
-import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.StateType;
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlockEntity;
+import com.simibubi.create.content.decoration.copycat.CopycatBlock;
 import com.simibubi.create.content.equipment.extendoGrip.ExtendoGripItem;
 import com.simibubi.create.foundation.placement.IPlacementHelper;
 import com.simibubi.create.foundation.placement.PlacementHelpers;
@@ -14,7 +15,6 @@ import com.simibubi.create.infrastructure.config.AllConfigs;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Vec3i;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -22,7 +22,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.*;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LadderBlock;
 import net.minecraft.world.level.block.Mirror;
@@ -32,20 +35,17 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static net.minecraft.world.level.block.LadderBlock.FACING;
 import static net.minecraft.world.level.block.LadderBlock.WATERLOGGED;
 
-public class CopycatLadderBlock extends MultiStateCopycatBlock implements ICopycatWithWrappedBlock<WrappedLadderBlock>, IStateType {
+public class CopycatLadderBlock extends CopycatBlock implements ICopycatWithWrappedBlock<WrappedLadderBlock>, IStateType {
 
     private static final int placementHelperId = PlacementHelpers.register(new PlacementHelper());
     public static BooleanProperty RAILS = BooleanProperty.create("rails");
@@ -61,6 +61,7 @@ public class CopycatLadderBlock extends MultiStateCopycatBlock implements ICopyc
                 .setValue(WATERLOGGED, false));
     }
 
+    /* Undoing so i can merge multistate branch into multiloader.
     @Override
     public int maxMaterials() {
         return 2;
@@ -106,7 +107,7 @@ public class CopycatLadderBlock extends MultiStateCopycatBlock implements ICopyc
             return new Vec3i(1, 0, 0);
         }
         return Vec3i.ZERO;
-    }
+    }*/
 
     @Override
     public WrappedLadderBlock getWrappedBlock() {
@@ -127,7 +128,7 @@ public class CopycatLadderBlock extends MultiStateCopycatBlock implements ICopyc
     }
 
     @Override
-    public boolean canConnectTexturesToward(String key, BlockAndTintGetter blockAndTintGetter, BlockPos blockPos, BlockPos blockPos1, BlockState blockState) {
+    public boolean canConnectTexturesToward(BlockAndTintGetter blockAndTintGetter, BlockPos blockPos, BlockPos blockPos1, BlockState blockState) {
         return false;
     }
 
@@ -165,7 +166,7 @@ public class CopycatLadderBlock extends MultiStateCopycatBlock implements ICopyc
     }
 
     @Override
-    public boolean isIgnoredConnectivitySide(String key, BlockAndTintGetter reader, BlockState state, Direction face,
+    public boolean isIgnoredConnectivitySide(BlockAndTintGetter reader, BlockState state, Direction face,
                                              BlockPos fromPos, BlockPos toPos) {
         return true;
     }
@@ -194,10 +195,11 @@ public class CopycatLadderBlock extends MultiStateCopycatBlock implements ICopyc
         return result;
     }
 
-    @Override
+/* Undoing so i can merge multistate branch into multiloader
+   @Override
     public BlockEntityType<? extends MultiStateCopycatBlockEntity> getBlockEntityType() {
         return CCBlockEntityTypes.MULTI_STATE_COPYCAT_LADDER_BLOCK_ENTITY.get();
-    }
+    }*/
 
     @MethodsReturnNonnullByDefault
     private static class PlacementHelper implements IPlacementHelper {
