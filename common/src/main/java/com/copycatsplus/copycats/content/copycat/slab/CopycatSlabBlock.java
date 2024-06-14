@@ -43,6 +43,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -181,12 +182,6 @@ public class CopycatSlabBlock extends CTWaterloggedMultiStateCopycatBlock implem
             return !fromTruePos.equals(toTruePos) && toState.is(this);
         }
         return toState.is(this);
-    }
-
-    @Nullable
-    @Override
-    public BlockState getConnectiveMaterial(BlockAndTintGetter reader, BlockState otherState, Direction face, BlockPos fromPos, BlockPos toPos) {
-        return (canConnectTexturesToward(reader, fromPos, toPos, reader.getBlockState(fromPos)) ? getMaterial(reader, toPos) : null);
     }
 
     @Override

@@ -15,7 +15,6 @@
     "copycat.base.ConnectedTextureBehaviourMixin",
     "copycat.base.CopycatBlockEntityMixin",
     "copycat.base.CopycatBlockMixin",
-    "copycat.base.FilteredBlockAndTintGetterAccessor",
     "copycat.base.multistate.LevelChunkMixin",
     "copycat.button.ButtonBlockMixin",
     "copycat.button.ContraptionMixin",
@@ -38,7 +37,8 @@
     "minecraft.CreativeModTabMixin"
   ],
   "client": [
-    "copycat.base.multistate.ModelBlockRendererMixin"
+    "copycat.base.multistate.ModelBlockRendererMixin",
+    "minecraft.TextureAtlasSpriteMixin"
   ],
   "injectors": {
     "defaultRequire": 1

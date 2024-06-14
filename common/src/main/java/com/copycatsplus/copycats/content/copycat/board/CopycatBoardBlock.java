@@ -119,12 +119,6 @@ public class CopycatBoardBlock extends CTWaterloggedMultiStateCopycatBlock imple
         return reader.getBlockState(toPos).is(this);
     }
 
-    @Nullable
-    @Override
-    public BlockState getConnectiveMaterial(BlockAndTintGetter reader, BlockState otherState, Direction face, BlockPos fromPos, BlockPos toPos) {
-        return (canConnectTexturesToward(reader, fromPos, toPos, reader.getBlockState(fromPos)) ? getMaterial(reader, toPos) : null);
-    }
-
     @Override
     public Optional<Boolean> blockCTTowards(BlockAndTintGetter reader, BlockState state, BlockPos pos, BlockPos ctPos, BlockPos connectingPos, Direction face) {
         if (!reader.getBlockState(ctPos).is(this)) return Optional.empty();

@@ -136,12 +136,6 @@ public class CopycatByteBlock extends CTWaterloggedMultiStateCopycatBlock {
         return toState.is(this);
     }
 
-    @Nullable
-    @Override
-    public BlockState getConnectiveMaterial(BlockAndTintGetter reader, BlockState otherState, Direction face, BlockPos fromPos, BlockPos toPos) {
-        return (canConnectTexturesToward(reader, fromPos, toPos, reader.getBlockState(fromPos)) ? getMaterial(reader, toPos) : null);
-    }
-
     @Override
     public boolean canFaceBeOccluded(BlockState state, Direction face) {
         return false;

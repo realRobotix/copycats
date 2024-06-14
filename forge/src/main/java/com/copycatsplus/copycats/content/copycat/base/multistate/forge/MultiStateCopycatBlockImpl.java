@@ -20,7 +20,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.client.model.data.ModelDataManager;
+import net.minecraftforge.client.model.ModelDataManager;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -80,10 +80,8 @@ public class MultiStateCopycatBlockImpl {
         if (block.isIgnoredConnectivitySide(property, level, state, side, pos, queryPos))
             return state;
 
-        ModelDataManager modelDataManager = level.getModelDataManager();
         BlockState appearance = null;
-        if (modelDataManager != null)
-            appearance = MultiStateCopycatModel.getMaterials(modelDataManager.getAt(truePos == null ? pos : truePos)).get(property);
+            appearance = MultiStateCopycatModel.getMaterials(ModelDataManager.getModelData((Level) level, truePos == null ? pos : truePos)).get(property);
         if (appearance == null)
             appearance = MultiStateCopycatBlock.getMaterial(level, pos, property);
         return appearance;

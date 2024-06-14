@@ -6,12 +6,12 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.client.model.data.IModelData;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class SimpleMultiStateCopycatModel extends MultiStateCopycatModel {
 
@@ -22,9 +22,9 @@ public class SimpleMultiStateCopycatModel extends MultiStateCopycatModel {
     }
 
     @Override
-    protected List<BakedQuad> getCroppedQuads(String key, BlockState state, Direction side, RandomSource rand, BlockState material, ModelData wrappedData, RenderType renderType) {
+    protected List<BakedQuad> getCroppedQuads(String key, BlockState state, Direction side, Random rand, BlockState material, IModelData wrappedData, RenderType renderType) {
         List<BakedQuad> quads = new ArrayList<>();
-        List<BakedQuad> templateQuads = getModelOf(material).getQuads(material, side, rand, wrappedData, renderType);
+        List<BakedQuad> templateQuads = getModelOf(material).getQuads(material, side, rand, wrappedData);
         QuadHelper.CopycatRenderContext<List<BakedQuad>, List<BakedQuad>> context = new QuadHelper.CopycatRenderContext<>(templateQuads, quads);
 
         part.emitCopycatQuads(key, state, context, material);

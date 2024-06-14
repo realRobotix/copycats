@@ -6,14 +6,15 @@ import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MeshBuilder;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
+import net.fabricmc.fabric.api.renderer.v1.model.FabricBakedModel;
 import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Objects;
+import java.util.Random;
 import java.util.function.Supplier;
 
 import static com.copycatsplus.copycats.content.copycat.base.model.fabric.QuadHelperImpl.assembleQuad;
@@ -27,7 +28,7 @@ public class SimpleMultiStateCopycatModel extends MultiStateCopycatModel {
     }
 
     @Override
-    protected void emitBlockQuadsInner(String key, BlockAndTintGetter blockView, BlockState state, BlockPos pos, Supplier<RandomSource> randomSupplier, RenderContext renderContext, BlockState material, CullFaceRemovalData cullFaceRemovalData, OcclusionData occlusionData) {
+    protected void emitBlockQuadsInner(String key, BlockAndTintGetter blockView, BlockState state, BlockPos pos, Supplier<Random> randomSupplier, RenderContext renderContext, BlockState material, CullFaceRemovalData cullFaceRemovalData, OcclusionData occlusionData) {
         BakedModel model = getModelOf(material);
 
         // Use a mesh to defer quad emission since quads cannot be emitted inside a transform
@@ -47,10 +48,10 @@ public class SimpleMultiStateCopycatModel extends MultiStateCopycatModel {
             part.emitCopycatQuads(key, state, context, material);
             return false;
         });
-        model.emitBlockQuads(blockView, material, pos, randomSupplier, renderContext);
+        ((FabricBakedModel) model).emitBlockQuads(blockView, material, pos, randomSupplier, renderContext);
         renderContext.popTransform();
 
-        meshBuilder.build().outputTo(renderContext.getEmitter());
+        renderContext.meshConsumer().accept(meshBuilder.build());
     }
 
 

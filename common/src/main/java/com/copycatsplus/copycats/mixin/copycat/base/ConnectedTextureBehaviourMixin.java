@@ -22,9 +22,6 @@ public class ConnectedTextureBehaviourMixin {
             cancellable = true
     )
     private void isCopycatBlockable(BlockState state, BlockAndTintGetter reader, BlockPos pos, BlockPos otherPos, Direction face, CallbackInfoReturnable<Boolean> cir) {
-        if (reader instanceof FilteredBlockAndTintGetterAccessor accessor) {
-            reader = accessor.getWrapped(); // get the true reader, not the one filtered by copycats
-        }
         if (reader instanceof ScaledBlockAndTintGetter accessor) {
             reader = accessor.getWrapped();
         }

@@ -1,12 +1,11 @@
 package com.copycatsplus.copycats.content.copycat.base.model.multistate.fabric;
 
-import com.copycatsplus.copycats.Copycats;
-import com.copycatsplus.copycats.content.copycat.base.multistate.MaterialItemStorage;
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
 import com.copycatsplus.copycats.content.copycat.base.multistate.ScaledBlockAndTintGetter;
+import com.jozufozu.flywheel.fabric.model.FabricModelUtil;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.foundation.utility.Iterate;
-import io.github.fabricators_of_create.porting_lib.models.CustomParticleIconModel;
+import io.github.fabricators_of_create.porting_lib.model.CustomParticleIconModel;
 import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
 import net.fabricmc.fabric.api.renderer.v1.material.BlendMode;
 import net.fabricmc.fabric.api.renderer.v1.material.MaterialFinder;
@@ -23,7 +22,6 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -33,6 +31,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 import java.util.function.Supplier;
 
 public abstract class MultiStateCopycatModel extends ForwardingBakedModel implements CustomParticleIconModel {
@@ -70,7 +69,7 @@ public abstract class MultiStateCopycatModel extends ForwardingBakedModel implem
     }
 
     @Override
-    public void emitBlockQuads(BlockAndTintGetter blockView, BlockState state, BlockPos pos, Supplier<RandomSource> randomSupplier, RenderContext context) {
+    public void emitBlockQuads(BlockAndTintGetter blockView, BlockState state, BlockPos pos, Supplier<Random> randomSupplier, RenderContext context) {
         if (blockView instanceof RenderAttachedBlockView attachmentView
                 && attachmentView.getBlockEntityRenderAttachment(pos) instanceof Map<?, ?> mats) {
             materials = (Map<String, BlockState>) mats;
@@ -121,7 +120,7 @@ public abstract class MultiStateCopycatModel extends ForwardingBakedModel implem
         }
     }
 
-    protected abstract void emitBlockQuadsInner(String key, BlockAndTintGetter blockView, BlockState state, BlockPos pos, Supplier<RandomSource> randomSupplier, RenderContext context, BlockState material, CullFaceRemovalData cullFaceRemovalData, OcclusionData occlusionData);
+    protected abstract void emitBlockQuadsInner(String key, BlockAndTintGetter blockView, BlockState state, BlockPos pos, Supplier<Random> randomSupplier, RenderContext context, BlockState material, CullFaceRemovalData cullFaceRemovalData, OcclusionData occlusionData);
 
     @Override
     public @NotNull TextureAtlasSprite getParticleIcon(Object data) {
@@ -184,7 +183,8 @@ public abstract class MultiStateCopycatModel extends ForwardingBakedModel implem
     private record MaterialFixer(RenderMaterial materialDefault) implements RenderContext.QuadTransform {
         @Override
         public boolean transform(MutableQuadView quad) {
-            if (quad.material().blendMode() == BlendMode.DEFAULT) {
+            BlendMode quadBlendMode = FabricModelUtil.getBlendMode(quad);
+            if (quadBlendMode == BlendMode.DEFAULT) {
                 // default needs to be changed from the Copycat's default (cutout) to the wrapped material's default.
                 quad.material(materialDefault);
             }

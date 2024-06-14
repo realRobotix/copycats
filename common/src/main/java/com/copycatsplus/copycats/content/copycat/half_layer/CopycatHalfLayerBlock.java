@@ -253,12 +253,6 @@ public class CopycatHalfLayerBlock extends CTWaterloggedMultiStateCopycatBlock {
         return toState.is(this);
     }
 
-    @Nullable
-    @Override
-    public BlockState getConnectiveMaterial(BlockAndTintGetter reader, BlockState otherState, Direction face, BlockPos fromPos, BlockPos toPos) {
-        return (canConnectTexturesToward(reader, fromPos, toPos, reader.getBlockState(fromPos)) ? getMaterial(reader, toPos) : null);
-    }
-
     @SuppressWarnings("deprecation")
     @Override
     public @NotNull BlockState rotate(@NotNull BlockState state, Rotation rot) {
