@@ -17,6 +17,8 @@ public class CCommon extends SyncConfigBase {
 
     public final ConfigBool disableDataFixers = b(false, "disableDataFixers", Comments.dataFixers);
 
+    public final ConfigBool disableConversion = b(true, "disableConversion", Comments.multiStateConversion);
+
     public final CFeatures toggle = nested(0, CFeatures::new, Comments.toggle);
 
     public void register() {
@@ -25,6 +27,8 @@ public class CCommon extends SyncConfigBase {
     private static class Comments {
         static String toggle = "Enable/disable features. Values on server override clients";
 
-        static String dataFixers = "Enables/Disables the data fixers. (Currently the only fixer is the one that converts all copycats to the new block_entity that supports multiple materials";
+        static String dataFixers = "Enables/Disables the data fixers. (Currently none available)";
+
+        static String multiStateConversion = "Enables/Disables the conversion of placed copycats from the single material to the multi material(where applicable) block entity";
     }
 }

@@ -5,6 +5,7 @@ import com.copycatsplus.copycats.content.copycat.base.ICopycatWithWrappedBlock;
 import com.copycatsplus.copycats.content.copycat.base.model.SimpleCopycatPart;
 import com.copycatsplus.copycats.content.copycat.base.model.ToggleableCopycatModel;
 import com.copycatsplus.copycats.content.copycat.base.model.multistate.SimpleMultiStateCopycatPart;
+import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
 import com.copycatsplus.copycats.content.copycat.beam.CopycatBeamBlock;
 import com.copycatsplus.copycats.content.copycat.beam.CopycatBeamModel;
 import com.copycatsplus.copycats.content.copycat.block.CopycatBlockBlock;
@@ -488,5 +489,9 @@ public class CCBlocks {
 
     public static Set<RegistryEntry<Block>> getAllRegisteredBlocksWithoutWrapped() {
         return new HashSet<>(REGISTRATE.getAll(BuiltInRegistries.BLOCK.key())).stream().filter(entry -> !(entry.getId().getPath().startsWith("wrapped"))).collect(Collectors.toSet());
+    }
+
+    public static Set<RegistryEntry<Block>> getAllRegisteredMultiStateBlocks() {
+        return new HashSet<>(REGISTRATE.getAll(BuiltInRegistries.BLOCK.key())).stream().filter(entry -> entry.get() instanceof MultiStateCopycatBlock).collect(Collectors.toSet());
     }
 }

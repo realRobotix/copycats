@@ -31,7 +31,7 @@ public class MultiStateCopycatBlockImpl {
 
     public static boolean multiPlatformLandingEffects(BlockState state1, ServerLevel level, BlockPos pos, BlockState state2, LivingEntity entity, int numberOfParticles) {
         if (state1.getBlock() instanceof MultiStateCopycatBlock mscb) {
-            String property = mscb.getProperty(state1, pos, new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, true), true);
+            String property = mscb.getProperty(state1, level, pos, new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, true), true);
             AtomicReference<BlockState> mat = new AtomicReference<>(AllBlocks.COPYCAT_BASE.getDefaultState());
             mscb.withBlockEntityDo(level, pos, mscbe -> mat.set(mscbe.getMaterialItemStorage().getMaterialItem(property).material()));
             return ((CustomLandingEffectsBlock) mat.get().getBlock()).addLandingEffects(state1, level, pos, state2, entity, numberOfParticles);
@@ -41,7 +41,7 @@ public class MultiStateCopycatBlockImpl {
 
     public static boolean multiPlatformRunningEffects(BlockState state, Level level, BlockPos pos, Entity entity) {
         if (state.getBlock() instanceof MultiStateCopycatBlock mscb) {
-            String property = mscb.getProperty(state, pos, new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, true), true);
+            String property = mscb.getProperty(state, level, pos, new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, true), true);
             AtomicReference<BlockState> mat = new AtomicReference<>(AllBlocks.COPYCAT_BASE.getDefaultState());
             mscb.withBlockEntityDo(level, pos, mscbe -> mat.set(mscbe.getMaterialItemStorage().getMaterialItem(property).material()));
             return ((CustomRunningEffectsBlock) mat.get().getBlock()).addRunningEffects(state, level, pos, entity);
@@ -74,7 +74,7 @@ public class MultiStateCopycatBlockImpl {
         if (level instanceof ScaledBlockAndTintGetter scaledLevel) {
             truePos = scaledLevel.getTruePos(pos);
             Vec3i inner = scaledLevel.getInner(pos);
-            property = block.getPropertyFromInteraction(state, , inner, truePos, side, Vec3.atCenterOf(inner));
+            property = block.getPropertyFromInteraction(state, level, inner, truePos, side, Vec3.atCenterOf(inner));
         } else {
             property = block.storageProperties().stream().findFirst().get();
         }

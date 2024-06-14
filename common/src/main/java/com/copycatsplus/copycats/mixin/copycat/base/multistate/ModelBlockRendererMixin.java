@@ -1,4 +1,4 @@
-package com.copycatsplus.copycats.mixin.copycat.base;
+package com.copycatsplus.copycats.mixin.copycat.base.multistate;
 
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateRenderManager;
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateTextureAtlasSprite;

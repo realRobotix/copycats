@@ -1,7 +1,10 @@
 package com.copycatsplus.copycats.content.copycat.base.multistate;
 
+import com.copycatsplus.copycats.Copycats;
+import com.copycatsplus.copycats.config.CCConfigs;
 import com.simibubi.create.content.contraptions.ITransformableBlockEntity;
 import com.simibubi.create.content.contraptions.StructureTransform;
+import com.simibubi.create.content.decoration.copycat.CopycatBlockEntity;
 import com.simibubi.create.content.redstone.RoseQuartzLampBlock;
 import com.simibubi.create.content.schematics.requirement.ISpecialBlockEntityItemRequirement;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
@@ -12,6 +15,7 @@ import com.simibubi.create.foundation.utility.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -154,6 +158,29 @@ public abstract class MultiStateCopycatBlockEntity extends SmartBlockEntity impl
 
             if (clientPacket && anyUpdated)
                 redraw();
+        }
+    }
+
+    public void migrateData(CopycatBlockEntity copycatBlockEntity) {
+        if (getBlockState().getBlock() instanceof MultiStateCopycatBlock mscb) {
+            ResourceLocation blockId = copycatBlockEntity.getBlockState().getBlock().builtInRegistryHolder().key().location();
+            Copycats.LOGGER.debug("Converting block({}) at @{} to a multistate copycat", blockId.toString(), copycatBlockEntity.getBlockPos().toShortString());
+            //Set the first property available to have the item and mat.
+            MaterialItemStorage.MaterialItem materialItem = materialItemStorage.getMaterialItem(getMaterialItemStorage().getAllProperties().stream().filter(prop -> mscb.partExists(getBlockState(), prop)).findFirst().get());
+            materialItem.setMaterial(copycatBlockEntity.getMaterial());
+            materialItem.setConsumedItem(copycatBlockEntity.getConsumedItem());
+
+            //Sets only the material so that it looks the same as the old blocks but wont give you free items
+            for (String property : mscb.storageProperties()) {
+                if (mscb.partExists(getBlockState(), property)) {
+                    if (!getMaterialItemStorage().hasCustomMaterial(property)) {
+                        MaterialItemStorage.MaterialItem store = materialItemStorage.getMaterialItem(property);
+                        store.setMaterial(copycatBlockEntity.getMaterial());
+                        store.setConsumedItem(ItemStack.EMPTY);
+                    }
+                }
+            }
+            redraw();
         }
     }
 }
