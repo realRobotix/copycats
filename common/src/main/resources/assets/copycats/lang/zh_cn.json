@@ -107,6 +107,7 @@
   "block.copycats.copycat_stone_pressure_plate.tooltip.behaviour1": "如果可能，将根据_手持物品_改变_材质_。_再次点击_以循环切换_方向_或_充能_状态。使用_扳手_重置材质。",
   "block.copycats.copycat_stone_pressure_plate.tooltip.condition1": "右击时",
   "block.copycats.copycat_stone_pressure_plate.tooltip.summary": "将任意的_完整方块_转换为可交互的石头压力板。",
+  "block.copycats.copycat_test_block": "伪装测试方块",
   "block.copycats.copycat_trapdoor": "伪装活板门",
   "block.copycats.copycat_trapdoor.tooltip.behaviour1": "如果可能，将根据_手持物品_改变_材质_。_再次点击_以循环切换_方向_或_充能_状态。使用_扳手_重置材质。",
   "block.copycats.copycat_trapdoor.tooltip.behaviour2": "切换_材质_的_连接贴图_。",
