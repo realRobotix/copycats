@@ -2,9 +2,11 @@ package com.copycatsplus.copycats.content.copycat.base.model.assembly;
 
 
 public record Mutation(MutationType type, int value) {
-    public MutableVec3 mutate(MutableVec3 vec3) {
+    public <T extends GlobalTransform.Transformable<T>> T mutate(T vec3) {
         return switch (type) {
-            case ROTATE -> vec3.rotate(value);
+            case ROTATE_X -> vec3.rotateX(value);
+            case ROTATE_Y -> vec3.rotateY(value);
+            case ROTATE_Z -> vec3.rotateZ(value);
             case MIRROR -> {
                 if (value == 0) yield vec3.flipX(true);
                 else if (value == 1) yield vec3.flipY(true);
@@ -14,9 +16,11 @@ public record Mutation(MutationType type, int value) {
         };
     }
 
-    public MutableVec3 undoMutate(MutableVec3 vec3) {
+    public <T extends GlobalTransform.Transformable<T>> T undoMutate(T vec3) {
         return switch (type) {
-            case ROTATE -> vec3.rotate(-value);
+            case ROTATE_X -> vec3.rotateX(-value);
+            case ROTATE_Y -> vec3.rotateY(-value);
+            case ROTATE_Z -> vec3.rotateZ(-value);
             case MIRROR -> {
                 if (value == 0) yield vec3.flipX(true);
                 else if (value == 1) yield vec3.flipY(true);
@@ -27,7 +31,9 @@ public record Mutation(MutationType type, int value) {
     }
 
     public enum MutationType {
-        ROTATE,
+        ROTATE_X,
+        ROTATE_Y,
+        ROTATE_Z,
         MIRROR
     }
 }

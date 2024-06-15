@@ -20,7 +20,7 @@ public class CopycatVerticalStairsEnhancedModel implements SimpleCopycatPart {
 
         switch (shape) {
             case STRAIGHT -> {
-                GlobalTransform transform = t -> t.rotate(facing).flipY(top);
+                GlobalTransform transform = t -> t.rotateY(facing).flipY(top);
                 assemblePiece(
                         context,
                         transform,
@@ -80,7 +80,7 @@ public class CopycatVerticalStairsEnhancedModel implements SimpleCopycatPart {
             }
             case INNER_LEFT, INNER_RIGHT -> {
                 boolean flipX = shape == StairsShape.INNER_RIGHT;
-                GlobalTransform transform = t -> t.flipX(flipX).rotate(facing).flipY(top);
+                GlobalTransform transform = t -> t.flipX(flipX).rotateY(facing).flipY(top);
                 assemblePiece(
                         context,
                         transform,
@@ -189,7 +189,7 @@ public class CopycatVerticalStairsEnhancedModel implements SimpleCopycatPart {
             }
             case OUTER_LEFT, OUTER_RIGHT -> {
                 boolean flipX = shape == StairsShape.OUTER_RIGHT;
-                GlobalTransform transform = t -> t.flipX(flipX).rotate(facing).flipY(top);
+                GlobalTransform transform = t -> t.flipX(flipX).rotateY(facing).flipY(top);
                 assemblePiece(
                         context,
                         transform,

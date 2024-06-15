@@ -16,7 +16,7 @@ public class CopycatSliceModel implements SimpleCopycatPart {
         boolean flipY = state.getValue(HALF) == Half.TOP;
         int rot = (int) state.getValue(FACING).toYRot();
         int layers = state.getValue(LAYERS);
-        GlobalTransform transform = t -> t.rotate(rot).flipY(flipY);
+        GlobalTransform transform = t -> t.rotateY(rot).flipY(flipY);
         assemblePiece(
                 context,
                 transform,

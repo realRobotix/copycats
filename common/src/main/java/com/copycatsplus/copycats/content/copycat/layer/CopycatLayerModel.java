@@ -34,7 +34,7 @@ public class CopycatLayerModel implements SimpleCopycatPart {
             );
         } else {
             int rot = (int) facing.toYRot();
-            GlobalTransform transform = t -> t.rotate(rot);
+            GlobalTransform transform = t -> t.rotateY(rot);
             assemblePiece(
                     context,
                     transform,

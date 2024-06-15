@@ -6,14 +6,13 @@ import net.minecraft.world.level.block.LadderBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
 import static com.copycatsplus.copycats.content.copycat.base.model.assembly.Assembler.*;
-import static com.copycatsplus.copycats.content.copycat.base.model.assembly.MutableCullFace.*;
 
 public class CopycatLadderModel implements SimpleCopycatPart {
 
     @Override
     public void emitCopycatQuads(BlockState state, CopycatRenderContext<?, ?> context, BlockState material) {
         int rot = (int) state.getValue(LadderBlock.FACING).toYRot();
-        GlobalTransform transform = t -> t.rotate(rot);
+        GlobalTransform transform = t -> t.rotateY(rot);
         //Poles
         assemblePiece(context,
                 transform,

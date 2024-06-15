@@ -16,7 +16,7 @@ public class CopycatTrapdoorModel implements SimpleCopycatPart {
         int rot = (int) state.getValue(FACING).toYRot();
         boolean flipY = state.getValue(HALF) == Half.TOP;
         boolean open = state.getValue(OPEN);
-        GlobalTransform transform = t -> t.rotate(rot).flipY(flipY);
+        GlobalTransform transform = t -> t.rotateY(rot).flipY(flipY);
         if (!open) {
             assemblePiece(
                     context,

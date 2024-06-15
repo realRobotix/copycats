@@ -17,264 +17,169 @@ public class CopycatStairsModel implements SimpleCopycatPart {
         int facing = (int) state.getValue(StairBlock.FACING).toYRot();
         boolean top = state.getValue(StairBlock.HALF) == Half.TOP;
         StairsShape shape = state.getValue(StairBlock.SHAPE);
-        GlobalTransform transform = t -> t.rotate(facing).flipY(top);
+
         switch (shape) {
             case STRAIGHT -> {
-                assemblePiece(context,
-                        transform,
-                        vec3(0, 0, 0),
-                        aabb(16, 4, 8),
-                        cull(UP | SOUTH)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(0, 4, 0),
-                        aabb(16, 4, 8).move(0, 12, 0),
-                        cull(DOWN | SOUTH)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(0, 0, 8),
-                        aabb(16, 8, 8).move(0, 0, 8),
-                        cull(UP | NORTH)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(0, 8, 8),
-                        aabb(16, 8, 4).move(0, 8, 0),
-                        cull(DOWN | SOUTH)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(0, 8, 12),
-                        aabb(16, 8, 4).move(0, 8, 12),
-                        cull(DOWN | NORTH)
-                );
+                GlobalTransform transform = t -> t.rotateY(facing).flipY(top);
+                assembleStraight(context, transform);
             }
-            case INNER_LEFT -> {
-                assemblePiece(context,
-                        transform,
-                        vec3(0, 0, 0),
-                        aabb(8, 4, 8),
-                        cull(UP | SOUTH | EAST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(0, 4, 0),
-                        aabb(8, 4, 8).move(0, 12, 0),
-                        cull(DOWN | SOUTH | EAST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(0, 0, 8),
-                        aabb(16, 8, 8).move(0, 0, 8),
-                        cull(UP | NORTH)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(8, 8, 8),
-                        aabb(8, 8, 8).move(8, 8, 8),
-                        cull(DOWN | NORTH | WEST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(0, 8, 12),
-                        aabb(8, 8, 4).move(0, 8, 12),
-                        cull(DOWN | NORTH | EAST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(0, 8, 8),
-                        aabb(8, 8, 4).move(0, 8, 0),
-                        cull(DOWN | SOUTH | EAST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(12, 8, 0),
-                        aabb(4, 8, 8).move(12, 8, 0),
-                        cull(DOWN | SOUTH | WEST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(8, 8, 0),
-                        aabb(4, 8, 8).move(0, 8, 0),
-                        cull(DOWN | SOUTH | EAST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(8, 0, 0),
-                        aabb(8, 8, 8).move(8, 0, 0),
-                        cull(UP | SOUTH | WEST)
-                );
+            case INNER_LEFT, INNER_RIGHT -> {
+                boolean flipX = shape == StairsShape.INNER_RIGHT;
+                GlobalTransform transform = t -> t.flipX(flipX).rotateY(facing).flipY(top);
+                assembleInnerLeft(context, transform);
             }
-            case INNER_RIGHT -> {
-                assemblePiece(context,
-                        transform,
-                        vec3(8, 0, 0),
-                        aabb(8, 4, 8).move(8, 0, 0),
-                        cull(UP | SOUTH | WEST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(8, 4, 0),
-                        aabb(8, 4, 8).move(8, 12, 0),
-                        cull(DOWN | SOUTH | WEST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(0, 0, 8),
-                        aabb(16, 8, 8).move(0, 0, 8),
-                        cull(UP | NORTH)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(0, 8, 8),
-                        aabb(8, 8, 8).move(0, 8, 8),
-                        cull(DOWN | NORTH | EAST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(8, 8, 12),
-                        aabb(8, 8, 4).move(8, 8, 12),
-                        cull(DOWN | NORTH | WEST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(8, 8, 8),
-                        aabb(8, 8, 4).move(8, 8, 0),
-                        cull(DOWN | SOUTH | WEST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(4, 8, 0),
-                        aabb(4, 8, 8).move(12, 8, 0),
-                        cull(DOWN | SOUTH | WEST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(0, 8, 0),
-                        aabb(4, 8, 8).move(0, 8, 0),
-                        cull(DOWN | SOUTH | EAST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(0, 0, 0),
-                        aabb(8, 8, 8).move(0, 0, 0),
-                        cull(UP | SOUTH | EAST)
-                );
-            }
-            case OUTER_LEFT -> {
-                assemblePiece(context,
-                        transform,
-                        vec3(0, 0, 0),
-                        aabb(8, 4, 16).move(0, 0, 0),
-                        cull(UP | EAST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(0, 4, 0),
-                        aabb(8, 4, 16).move(0, 12, 0),
-                        cull(DOWN | EAST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(8, 0, 0),
-                        aabb(8, 4, 8).move(8, 0, 0),
-                        cull(UP | SOUTH | WEST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(8, 4, 0),
-                        aabb(8, 4, 8).move(8, 12, 0),
-                        cull(DOWN | SOUTH | WEST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(8, 0, 8),
-                        aabb(8, 8, 8).move(8, 0, 8),
-                        cull(UP | NORTH | WEST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(12, 8, 12),
-                        aabb(4, 8, 4).move(12, 8, 12),
-                        cull(DOWN | NORTH | WEST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(8, 8, 12),
-                        aabb(4, 8, 4).move(0, 8, 12),
-                        cull(DOWN | NORTH | EAST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(12, 8, 8),
-                        aabb(4, 8, 4).move(12, 8, 0),
-                        cull(DOWN | SOUTH | WEST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(8, 8, 8),
-                        aabb(4, 8, 4).move(0, 8, 0),
-                        cull(DOWN | SOUTH | EAST)
-                );
-            }
-            case OUTER_RIGHT -> {
-                assemblePiece(context,
-                        transform,
-                        vec3(8, 0, 0),
-                        aabb(8, 4, 16).move(8, 0, 0),
-                        cull(UP | WEST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(8, 4, 0),
-                        aabb(8, 4, 16).move(8, 12, 0),
-                        cull(DOWN | WEST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(0, 0, 0),
-                        aabb(8, 4, 8).move(0, 0, 0),
-                        cull(UP | EAST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(0, 4, 0),
-                        aabb(8, 4, 8).move(0, 12, 0),
-                        cull(DOWN | EAST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(0, 0, 8),
-                        aabb(8, 8, 8).move(0, 0, 8),
-                        cull(UP | NORTH | EAST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(4, 8, 12),
-                        aabb(4, 8, 4).move(12, 8, 12),
-                        cull(DOWN | NORTH | WEST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(0, 8, 12),
-                        aabb(4, 8, 4).move(0, 8, 12),
-                        cull(DOWN | NORTH | EAST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(4, 8, 8),
-                        aabb(4, 8, 4).move(12, 8, 0),
-                        cull(DOWN | SOUTH | WEST)
-                );
-                assemblePiece(context,
-                        transform,
-                        vec3(0, 8, 8),
-                        aabb(4, 8, 4).move(0, 8, 0),
-                        cull(DOWN | SOUTH | EAST)
-                );
+            case OUTER_LEFT, OUTER_RIGHT -> {
+                boolean flipX = shape == StairsShape.OUTER_RIGHT;
+                GlobalTransform transform = t -> t.flipX(flipX).rotateY(facing).flipY(top);
+                assembleOuterLeft(context, transform);
             }
         }
+    }
+
+    public static void assembleStraight(CopycatRenderContext<?, ?> context, GlobalTransform transform) {
+        assemblePiece(context,
+                transform,
+                vec3(0, 0, 0),
+                aabb(16, 4, 8),
+                cull(UP | SOUTH)
+        );
+        assemblePiece(context,
+                transform,
+                vec3(0, 4, 0),
+                aabb(16, 4, 8).move(0, 12, 0),
+                cull(DOWN | SOUTH)
+        );
+        assemblePiece(context,
+                transform,
+                vec3(0, 0, 8),
+                aabb(16, 8, 8).move(0, 0, 8),
+                cull(UP | NORTH)
+        );
+        assemblePiece(context,
+                transform,
+                vec3(0, 8, 8),
+                aabb(16, 8, 4).move(0, 8, 0),
+                cull(DOWN | SOUTH)
+        );
+        assemblePiece(context,
+                transform,
+                vec3(0, 8, 12),
+                aabb(16, 8, 4).move(0, 8, 12),
+                cull(DOWN | NORTH)
+        );
+    }
+
+    public static void assembleInnerLeft(CopycatRenderContext<?, ?> context, GlobalTransform transform) {
+        assemblePiece(context,
+                transform,
+                vec3(0, 0, 0),
+                aabb(8, 4, 8),
+                cull(UP | SOUTH | EAST)
+        );
+        assemblePiece(context,
+                transform,
+                vec3(0, 4, 0),
+                aabb(8, 4, 8).move(0, 12, 0),
+                cull(DOWN | SOUTH | EAST)
+        );
+        assemblePiece(context,
+                transform,
+                vec3(0, 0, 8),
+                aabb(16, 8, 8).move(0, 0, 8),
+                cull(UP | NORTH)
+        );
+        assemblePiece(context,
+                transform,
+                vec3(8, 8, 8),
+                aabb(8, 8, 8).move(8, 8, 8),
+                cull(DOWN | NORTH | WEST)
+        );
+        assemblePiece(context,
+                transform,
+                vec3(0, 8, 12),
+                aabb(8, 8, 4).move(0, 8, 12),
+                cull(DOWN | NORTH | EAST)
+        );
+        assemblePiece(context,
+                transform,
+                vec3(0, 8, 8),
+                aabb(8, 8, 4).move(0, 8, 0),
+                cull(DOWN | SOUTH | EAST)
+        );
+        assemblePiece(context,
+                transform,
+                vec3(12, 8, 0),
+                aabb(4, 8, 8).move(12, 8, 0),
+                cull(DOWN | SOUTH | WEST)
+        );
+        assemblePiece(context,
+                transform,
+                vec3(8, 8, 0),
+                aabb(4, 8, 8).move(0, 8, 0),
+                cull(DOWN | SOUTH | EAST)
+        );
+        assemblePiece(context,
+                transform,
+                vec3(8, 0, 0),
+                aabb(8, 8, 8).move(8, 0, 0),
+                cull(UP | SOUTH | WEST)
+        );
+    }
+
+    public static void assembleOuterLeft(CopycatRenderContext<?, ?> context, GlobalTransform transform) {
+        assemblePiece(context,
+                transform,
+                vec3(0, 0, 0),
+                aabb(8, 4, 16).move(0, 0, 0),
+                cull(UP | EAST)
+        );
+        assemblePiece(context,
+                transform,
+                vec3(0, 4, 0),
+                aabb(8, 4, 16).move(0, 12, 0),
+                cull(DOWN | EAST)
+        );
+        assemblePiece(context,
+                transform,
+                vec3(8, 0, 0),
+                aabb(8, 4, 8).move(8, 0, 0),
+                cull(UP | SOUTH | WEST)
+        );
+        assemblePiece(context,
+                transform,
+                vec3(8, 4, 0),
+                aabb(8, 4, 8).move(8, 12, 0),
+                cull(DOWN | SOUTH | WEST)
+        );
+        assemblePiece(context,
+                transform,
+                vec3(8, 0, 8),
+                aabb(8, 8, 8).move(8, 0, 8),
+                cull(UP | NORTH | WEST)
+        );
+        assemblePiece(context,
+                transform,
+                vec3(12, 8, 12),
+                aabb(4, 8, 4).move(12, 8, 12),
+                cull(DOWN | NORTH | WEST)
+        );
+        assemblePiece(context,
+                transform,
+                vec3(8, 8, 12),
+                aabb(4, 8, 4).move(0, 8, 12),
+                cull(DOWN | NORTH | EAST)
+        );
+        assemblePiece(context,
+                transform,
+                vec3(12, 8, 8),
+                aabb(4, 8, 4).move(12, 8, 0),
+                cull(DOWN | SOUTH | WEST)
+        );
+        assemblePiece(context,
+                transform,
+                vec3(8, 8, 8),
+                aabb(4, 8, 4).move(0, 8, 0),
+                cull(DOWN | SOUTH | EAST)
+        );
     }
 }

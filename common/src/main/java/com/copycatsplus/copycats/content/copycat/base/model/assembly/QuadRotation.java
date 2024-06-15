@@ -40,8 +40,20 @@ public class QuadRotation implements QuadTransform {
     }
 
     @Override
-    public QuadTransform rotate(int angle) {
-        mutations.add(new Mutation(MutationType.ROTATE, angle));
+    public QuadTransform rotateX(int angle) {
+        mutations.add(new Mutation(MutationType.ROTATE_X, angle));
+        return this;
+    }
+
+    @Override
+    public QuadTransform rotateY(int angle) {
+        mutations.add(new Mutation(MutationType.ROTATE_Y, angle));
+        return this;
+    }
+
+    @Override
+    public QuadTransform rotateZ(int angle) {
+        mutations.add(new Mutation(MutationType.ROTATE_Z, angle));
         return this;
     }
 

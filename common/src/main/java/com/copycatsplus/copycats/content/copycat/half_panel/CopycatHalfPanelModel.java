@@ -19,7 +19,7 @@ public class CopycatHalfPanelModel implements SimpleCopycatPart {
         if (facing.getAxis().isVertical()) {
             boolean flipY = facing == Direction.UP;
             int rot = (int) offset.toYRot();
-            GlobalTransform transform = t -> t.rotate(rot).flipY(flipY);
+            GlobalTransform transform = t -> t.rotateY(rot).flipY(flipY);
             assemblePiece(
                     context,
                     transform,
@@ -51,7 +51,7 @@ public class CopycatHalfPanelModel implements SimpleCopycatPart {
         } else if (offset.getAxis() == facing.getAxis()) {
             boolean flipY = offset.getAxisDirection() == Direction.AxisDirection.POSITIVE;
             int rot = (int) facing.toYRot();
-            GlobalTransform transform = t -> t.rotate(rot).flipY(flipY);
+            GlobalTransform transform = t -> t.rotateY(rot).flipY(flipY);
             assemblePiece(
                     context,
                     transform,
@@ -83,7 +83,7 @@ public class CopycatHalfPanelModel implements SimpleCopycatPart {
         } else {
             int leftOffset = offset == facing.getCounterClockWise() ? 8 : 0;
             int rot = (int) facing.toYRot();
-            GlobalTransform transform = t -> t.rotate(rot);
+            GlobalTransform transform = t -> t.rotateY(rot);
             assemblePiece(
                     context,
                     transform,

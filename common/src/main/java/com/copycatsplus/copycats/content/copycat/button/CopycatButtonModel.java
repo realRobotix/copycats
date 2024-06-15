@@ -18,7 +18,7 @@ public class CopycatButtonModel implements SimpleCopycatPart {
         boolean pressed = state.getValue(ButtonBlock.POWERED);
         switch (face) {
             case WALL -> {
-                GlobalTransform transform = t -> t.rotate(rot);
+                GlobalTransform transform = t -> t.rotateY(rot);
                 assemblePiece(context,
                         transform,
                         vec3(5, 6, (pressed ? 0 : 1)),
@@ -71,7 +71,7 @@ public class CopycatButtonModel implements SimpleCopycatPart {
                 }
             }
             case CEILING, FLOOR -> {
-                GlobalTransform transform = t -> t.rotate(rot).flipY(face != AttachFace.FLOOR);
+                GlobalTransform transform = t -> t.rotateY(rot).flipY(face != AttachFace.FLOOR);
                 assemblePiece(context,
                         transform,
                         vec3(5, (pressed ? 0 : 1), 6),

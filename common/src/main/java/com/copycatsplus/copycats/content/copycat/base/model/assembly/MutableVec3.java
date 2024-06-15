@@ -11,13 +11,38 @@ public class MutableVec3 implements GlobalTransform.Transformable<MutableVec3> {
         set(x, y, z);
     }
 
-    public MutableVec3 rotate(int angle) {
+    public MutableVec3 rotateY(int angle) {
+        // rotate around the Y axis counter-clockwise
         angle = angle % 360;
         if (angle < 0) angle += 360;
         return switch (angle) {
             case 90 -> set(16 - z, y, x);
             case 180 -> set(16 - x, y, 16 - z);
             case 270 -> set(z, y, 16 - x);
+            default -> this;
+        };
+    }
+
+    public MutableVec3 rotateX(int angle) {
+        // rotate around the X axis counter-clockwise
+        angle = angle % 360;
+        if (angle < 0) angle += 360;
+        return switch (angle) {
+            case 90 -> set(x, z, 16 - y);
+            case 180 -> set(x, 16 - y, 16 - z);
+            case 270 -> set(x, 16 - z, y);
+            default -> this;
+        };
+    }
+
+    public MutableVec3 rotateZ(int angle) {
+        // rotate around the Z axis counter-clockwise
+        angle = angle % 360;
+        if (angle < 0) angle += 360;
+        return switch (angle) {
+            case 90 -> set(y, 16 - x, z);
+            case 180 -> set(16 - x, 16 - y, z);
+            case 270 -> set(16 - y, x, z);
             default -> this;
         };
     }

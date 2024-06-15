@@ -8,7 +8,20 @@ public interface GlobalTransform {
     void apply(Transformable<?> t);
 
     public interface Transformable<Self extends Transformable<Self>> {
-        Self rotate(int angle);
+        /**
+         * Rotate in 90 degree increments around the X axis counter-clockwise
+         */
+        Self rotateX(int angle);
+
+        /**
+         * Rotate in 90 degree increments around the Y axis counter-clockwise
+         */
+        Self rotateY(int angle);
+
+        /**
+         * Rotate in 90 degree increments around the Z axis counter-clockwise
+         */
+        Self rotateZ(int angle);
 
         Self flipX(boolean flip);
 

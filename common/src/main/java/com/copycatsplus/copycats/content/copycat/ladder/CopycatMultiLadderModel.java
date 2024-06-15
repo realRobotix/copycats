@@ -21,7 +21,7 @@ public class CopycatMultiLadderModel implements SimpleMultiStateCopycatPart {
             return;
 
         int rot = (int) state.getValue(LadderBlock.FACING).toYRot();
-        GlobalTransform transform = t -> t.rotate(rot);
+        GlobalTransform transform = t -> t.rotateY(rot);
         if (state.getValue(RAILS)) {
             //Poles
             assemblePiece(context,

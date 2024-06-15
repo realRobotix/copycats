@@ -25,7 +25,7 @@ public class CopycatWallModel implements SimpleCopycatPart {
             // Assemble the central pole
             for (Direction direction : Iterate.horizontalDirections) {
                 assemblePiece(context,
-                        t -> t.rotate((int) direction.toYRot()),
+                        t -> t.rotateY((int) direction.toYRot()),
                         vec3(4, 0, 4),
                         aabb(4, 16, 4),
                         cull(SOUTH | EAST)
@@ -35,7 +35,7 @@ public class CopycatWallModel implements SimpleCopycatPart {
             // Assemble the sides
             for (Direction direction : Iterate.horizontalDirections) {
                 int rot = (int) direction.toYRot();
-                GlobalTransform transform = t -> t.rotate(rot);
+                GlobalTransform transform = t -> t.rotateY(rot);
                 switch (state.getValue(CopycatWallBlock.byDirection(direction))) {
                     case NONE -> {
                         continue;
@@ -99,7 +99,7 @@ public class CopycatWallModel implements SimpleCopycatPart {
                     (sides.get(Direction.NORTH) == WallSide.NONE || sides.get(Direction.EAST) == WallSide.NONE) &&
                     (sides.get(Direction.NORTH) != WallSide.NONE || sides.get(Direction.EAST) != WallSide.NONE)) {
                 int rot = sides.get(Direction.SOUTH) == WallSide.NONE ? 90 : 0;
-                GlobalTransform transform = t -> t.rotate(rot);
+                GlobalTransform transform = t -> t.rotateY(rot);
                 if (!tall) {
                     assemblePiece(context,
                             transform,
@@ -151,7 +151,7 @@ public class CopycatWallModel implements SimpleCopycatPart {
             } else {
                 for (Direction direction : Iterate.horizontalDirections) {
                     int rot = (int) direction.toYRot();
-                    GlobalTransform transform = t -> t.rotate(rot);
+                    GlobalTransform transform = t -> t.rotateY(rot);
                     if (tall) {
                         boolean cullCurrent = sides.get(direction.getOpposite()) == WallSide.TALL;
                         boolean cullAdjacent = sides.get(direction.getClockWise()) == WallSide.TALL;
@@ -186,7 +186,7 @@ public class CopycatWallModel implements SimpleCopycatPart {
                 int rot = (int) direction.toYRot();
                 boolean extend = extendSide == direction;
                 boolean cullEnd = !extend;
-                GlobalTransform transform = t -> t.rotate(rot);
+                GlobalTransform transform = t -> t.rotateY(rot);
                 switch (sides.get(direction)) {
                     case NONE -> {
                         continue;

@@ -20,7 +20,7 @@ public class CopycatHalfLayerModel implements SimpleCopycatPart {
         for (boolean positive : Iterate.falseAndTrue) {
             int layer = state.getValue(positive ? POSITIVE_LAYERS : NEGATIVE_LAYERS);
             if (layer == 0) continue;
-            GlobalTransform transform = t -> t.rotate(rot + (positive ? 180 : 0)).flipY(flipY);
+            GlobalTransform transform = t -> t.rotateY(rot + (positive ? 180 : 0)).flipY(flipY);
             assemblePiece(
                     context,
                     transform,

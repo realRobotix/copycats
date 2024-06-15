@@ -22,13 +22,38 @@ public class MutableCullFace implements GlobalTransform.Transformable<MutableCul
         set((mask & UP) > 0, (mask & DOWN) > 0, (mask & NORTH) > 0, (mask & SOUTH) > 0, (mask & EAST) > 0, (mask & WEST) > 0);
     }
 
-    public MutableCullFace rotate(int angle) {
+    public MutableCullFace rotateY(int angle) {
+        // rotate around the Y axis counter-clockwise
         angle = angle % 360;
         if (angle < 0) angle += 360;
         return switch (angle) {
             case 90 -> set(up, down, west, east, north, south);
             case 180 -> set(up, down, south, north, west, east);
             case 270 -> set(up, down, east, west, south, north);
+            default -> this;
+        };
+    }
+
+    public MutableCullFace rotateX(int angle) {
+        // rotate around the X axis counter-clockwise
+        angle = angle % 360;
+        if (angle < 0) angle += 360;
+        return switch (angle) {
+            case 90 -> set(south, north, up, down, east, west);
+            case 180 -> set(down, up, south, north, east, west);
+            case 270 -> set(north, south, down, up, east, west);
+            default -> this;
+        };
+    }
+
+    public MutableCullFace rotateZ(int angle) {
+        // rotate around the Z axis counter-clockwise
+        angle = angle % 360;
+        if (angle < 0) angle += 360;
+        return switch (angle) {
+            case 90 -> set(west, east, north, south, up, down);
+            case 180 -> set(down, up, north, south, west, east);
+            case 270 -> set(east, west, north, south, down, up);
             default -> this;
         };
     }

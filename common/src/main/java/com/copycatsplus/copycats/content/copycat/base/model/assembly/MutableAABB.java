@@ -24,13 +24,38 @@ public class MutableAABB implements GlobalTransform.Transformable<MutableAABB> {
         return this;
     }
 
-    public MutableAABB rotate(int angle) {
+    public MutableAABB rotateY(int angle) {
+        // rotate around the Y axis counter-clockwise
         angle = angle % 360;
         if (angle < 0) angle += 360;
         return switch (angle) {
             case 90 -> set(16 - minZ, minY, minX, 16 - maxZ, maxY, maxX);
             case 180 -> set(16 - minX, minY, 16 - minZ, 16 - maxX, maxY, 16 - maxZ);
             case 270 -> set(minZ, minY, 16 - minX, maxZ, maxY, 16 - maxX);
+            default -> this;
+        };
+    }
+
+    public MutableAABB rotateX(int angle) {
+        // rotate around the X axis counter-clockwise
+        angle = angle % 360;
+        if (angle < 0) angle += 360;
+        return switch (angle) {
+            case 90 -> set(minX, minZ, 16 - minY, maxX, maxZ, 16 - maxY);
+            case 180 -> set(minX, 16 - minY, 16 - minZ, maxX, 16 - maxY, 16 - maxZ);
+            case 270 -> set(minX, 16 - minZ, minY, maxX, 16 - maxZ, maxY);
+            default -> this;
+        };
+    }
+
+    public MutableAABB rotateZ(int angle) {
+        // rotate around the Z axis counter-clockwise
+        angle = angle % 360;
+        if (angle < 0) angle += 360;
+        return switch (angle) {
+            case 90 -> set(minY, 16 - minX, minZ, maxY, 16 - maxX, maxZ);
+            case 180 -> set(16 - minX, 16 - minY, minZ, 16 - maxX, 16 - maxY, maxZ);
+            case 270 -> set(16 - minY, minX, minZ, 16 - maxY, maxX, maxZ);
             default -> this;
         };
     }

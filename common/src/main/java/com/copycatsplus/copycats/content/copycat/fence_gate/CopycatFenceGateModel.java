@@ -14,7 +14,7 @@ public class CopycatFenceGateModel implements SimpleCopycatPart {
     public void emitCopycatQuads(BlockState state, CopycatRenderContext<?, ?> context, BlockState material) {
         int offsetWall = state.getValue(IN_WALL) ? -3 : 0;
         int rot = (int) state.getValue(FACING).toYRot();
-        GlobalTransform transform = t -> t.rotate(rot);
+        GlobalTransform transform = t -> t.rotateY(rot);
 
         // Assemble the poles
         for (boolean eastSide : Iterate.falseAndTrue) {
@@ -107,7 +107,7 @@ public class CopycatFenceGateModel implements SimpleCopycatPart {
         } else {
             for (boolean southSide : Iterate.falseAndTrue) {
                 int rot2 = rot + (southSide ? 180 : 0);
-                GlobalTransform transform2 = t -> t.rotate(rot2);
+                GlobalTransform transform2 = t -> t.rotateY(rot2);
                 assemblePiece(
                         context,
                         transform2,

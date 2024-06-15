@@ -15,7 +15,7 @@ public class CopycatFenceModel implements SimpleCopycatPart {
     public void emitCopycatQuads(BlockState state, CopycatRenderContext<?, ?> context, BlockState material) {
         for (Direction direction : Iterate.horizontalDirections) {
             assemblePiece(context,
-                    t -> t.rotate((int) direction.toYRot()),
+                    t -> t.rotateY((int) direction.toYRot()),
                     vec3(6, 0, 6),
                     aabb(2, 16, 2),
                     cull(SOUTH | EAST)
@@ -26,7 +26,7 @@ public class CopycatFenceModel implements SimpleCopycatPart {
             if (!state.getValue(CopycatFenceBlock.byDirection(direction))) continue;
 
             int rot = (int) direction.toYRot();
-            GlobalTransform transform = t -> t.rotate(rot);
+            GlobalTransform transform = t -> t.rotateY(rot);
             assemblePiece(context,
                     transform,
                     vec3(7, 6, 10),
