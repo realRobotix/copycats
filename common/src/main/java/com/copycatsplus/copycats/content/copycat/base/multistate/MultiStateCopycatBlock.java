@@ -129,7 +129,8 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
         return onBlockEntityUse(context.getLevel(), context.getClickedPos(), ufte -> {
             String property = getProperty(state, context.getLevel(), context.getClickedPos(), context.getClickLocation(), context.getClickedFace(), true);
             if (!partExists(state, property)) return InteractionResult.PASS;
-            ItemStack consumedItem = ufte.getMaterialItemStorage().getMaterialItem(property).consumedItem();
+            MaterialItemStorage.MaterialItem material = ufte.getMaterialItemStorage().getMaterialItem(property);
+            ItemStack consumedItem = material.consumedItem();
             if (!ufte.getMaterialItemStorage().hasCustomMaterial(property))
                 return InteractionResult.PASS;
             Player player = context.getPlayer();
@@ -137,7 +138,7 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
                 player.getInventory()
                         .placeItemBackInInventory(consumedItem);
             context.getLevel()
-                    .levelEvent(2001, context.getClickedPos(), Block.getId(ufte.getBlockState()));
+                    .levelEvent(2001, context.getClickedPos(), Block.getId(material.material()));
             ufte.setMaterial(property, AllBlocks.COPYCAT_BASE.getDefaultState());
             ufte.setConsumedItem(property, ItemStack.EMPTY);
             return InteractionResult.SUCCESS;
