@@ -42,7 +42,7 @@ public class CopycatLightWeightedPressurePlate extends ShimCopycatBlock implemen
         return true;
     }
 
-
+    @Override
     public boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos, BlockState state) {
         return false;
     }

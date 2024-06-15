@@ -113,11 +113,10 @@ public class CopycatFenceBlock extends WaterloggedCopycatWrappedBlock<WrappedFen
         return !canConnectTexturesToward(reader, toPos, fromPos, toState);
     }
 
-
+    @Override
     public boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos, BlockState state) {
         BlockState toState = reader.getBlockState(toPos);
-                if (!toState.is(this)) return false;
-        if (!state.is(this)) return false;
+        if (!toState.is(this)) return false;
         if (toPos.getX() == fromPos.getX() && toPos.getZ() == fromPos.getZ()) {
             if (toState.is(this)) {
                 return isPole(state) && isPole(toState);

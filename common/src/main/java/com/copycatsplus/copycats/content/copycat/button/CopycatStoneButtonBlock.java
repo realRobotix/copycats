@@ -62,6 +62,7 @@ public class CopycatStoneButtonBlock extends ShimCopycatBlock implements ICopyca
         return true;
     }
 
+    @Override
     public boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos, BlockState state) {
         return false;
     }

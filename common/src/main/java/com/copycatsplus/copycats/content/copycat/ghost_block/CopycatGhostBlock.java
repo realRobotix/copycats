@@ -27,6 +27,7 @@ public class CopycatGhostBlock extends CTCopycatBlock implements ICopycatWithWra
         return Blocks.STONE;
     }
 
+    @Override
     public boolean canConnectTexturesToward(BlockAndTintGetter blockAndTintGetter, BlockPos blockPos, BlockPos blockPos1, BlockState blockState) {
         return true;
     }

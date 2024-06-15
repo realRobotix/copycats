@@ -111,10 +111,10 @@ public class CopycatFenceGateBlock extends WaterloggedCopycatWrappedBlock<Wrappe
         return true;
     }
 
+    @Override
     public boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos, BlockState state) {
-                BlockState toState = reader.getBlockState(toPos);
-                if (!toState.is(this)) return false;
-        if (!state.is(this)) return false;
+        BlockState toState = reader.getBlockState(toPos);
+        if (!toState.is(this)) return false;
         return false;
     }
 

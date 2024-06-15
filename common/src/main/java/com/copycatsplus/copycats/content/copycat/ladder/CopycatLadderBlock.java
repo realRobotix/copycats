@@ -123,6 +123,7 @@ public class CopycatLadderBlock extends ShimCopycatBlock implements ICopycatWith
         return stateForPlacement.setValue(FACING, pContext.getHorizontalDirection().getOpposite());
     }
 
+    @Override
     public boolean canConnectTexturesToward(BlockAndTintGetter blockAndTintGetter, BlockPos blockPos, BlockPos blockPos1, BlockState blockState) {
         return false;
     }

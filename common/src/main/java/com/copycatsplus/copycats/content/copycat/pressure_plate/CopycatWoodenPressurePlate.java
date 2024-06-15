@@ -42,6 +42,7 @@ public class CopycatWoodenPressurePlate extends ShimCopycatBlock implements ICop
         return true;
     }
 
+    @Override
     public boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos, BlockState state) {
         return false;
     }
