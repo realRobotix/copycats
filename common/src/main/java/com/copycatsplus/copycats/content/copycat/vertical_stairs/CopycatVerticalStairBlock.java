@@ -3,7 +3,6 @@ package com.copycatsplus.copycats.content.copycat.vertical_stairs;
 import com.copycatsplus.copycats.CCBlockStateProperties;
 import com.copycatsplus.copycats.CCBlockStateProperties.VerticalStairShape;
 import com.copycatsplus.copycats.CCShapes;
-import com.copycatsplus.copycats.Copycats;
 import com.copycatsplus.copycats.content.copycat.base.CTWaterloggedCopycatBlock;
 import com.copycatsplus.copycats.content.copycat.stairs.CopycatStairsBlock;
 import com.copycatsplus.copycats.content.copycat.stairs.WrappedStairsBlock;
@@ -24,21 +23,20 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class CopycatVerticalStairBlock extends CTWaterloggedCopycatBlock {
 
+    // Facing refers to the opposite direction of the base of the stairs
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-    public static final EnumProperty<Half> HALF = BlockStateProperties.HALF;
-    public static final EnumProperty<VerticalStairShape> VERTICAL_STAIR_SHAPE = CCBlockStateProperties.VERTICAL_STAIR_SHAPE;
+    public static final EnumProperty<VerticalStairShape> SHAPE = CCBlockStateProperties.VERTICAL_STAIR_SHAPE;
 
     public CopycatVerticalStairBlock(Properties pProperties) {
         super(pProperties);
         registerDefaultState(defaultBlockState()
                 .setValue(FACING, Direction.NORTH)
-                .setValue(VERTICAL_STAIR_SHAPE, VerticalStairShape.STRAIGHT)
-                .setValue(HALF, Half.BOTTOM));
+                .setValue(SHAPE, VerticalStairShape.STRAIGHT);
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        super.createBlockStateDefinition(pBuilder.add(FACING, VERTICAL_STAIR_SHAPE, HALF));
+        super.createBlockStateDefinition(pBuilder.add(FACING, SHAPE));
     }
 
     @Override
@@ -50,15 +48,18 @@ public class CopycatVerticalStairBlock extends CTWaterloggedCopycatBlock {
             case Z -> context.getClickLocation().z - (double)blockPos.getZ() > 0.5 ? Half.TOP : Half.BOTTOM;
             default -> Half.BOTTOM;
         };
-        BlockState blockState = defaultBlockState().setValue(FACING, Direction.fromYRot(context.getRotation()-45)).setValue(HALF, half).setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);
-        return blockState.setValue(VERTICAL_STAIR_SHAPE, getStairsShape(blockState, context.getLevel(), blockPos));
+        BlockState blockState = defaultBlockState()
+                .setValue(FACING, Direction.fromYRot(context.getRotation()-45))
+                .setValue(HALF, half)
+                .setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);
+        return blockState.setValue(SHAPE, getStairsShape(blockState, context.getLevel(), blockPos));
     }
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         Direction facing = state.getValue(FACING);
         boolean flip = state.getValue(HALF).equals(Half.BOTTOM);
-        return switch (state.getValue(VERTICAL_STAIR_SHAPE)) {
+        return switch (state.getValue(SHAPE)) {
             case STRAIGHT ->
                     (flip ? CCShapes.VERTICAL_STAIR_STRAIGHT.get(facing) : CCShapes.VERTICAL_STAIR_STRAIGHT_FLIP.get(facing));
             case OUTER_LEFT ->

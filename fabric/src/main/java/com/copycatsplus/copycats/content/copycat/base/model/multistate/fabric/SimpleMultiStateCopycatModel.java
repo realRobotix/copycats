@@ -1,6 +1,6 @@
 package com.copycatsplus.copycats.content.copycat.base.model.multistate.fabric;
 
-import com.copycatsplus.copycats.content.copycat.base.model.QuadHelper;
+import com.copycatsplus.copycats.content.copycat.base.model.assembly.Assembler;
 import com.copycatsplus.copycats.content.copycat.base.model.multistate.SimpleMultiStateCopycatPart;
 import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MeshBuilder;
@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import static com.copycatsplus.copycats.content.copycat.base.model.fabric.QuadHelperImpl.assembleQuad;
+import static com.copycatsplus.copycats.content.copycat.base.model.assembly.fabric.AssemblerImpl.assembleQuad;
 
 public class SimpleMultiStateCopycatModel extends MultiStateCopycatModel {
 
@@ -35,7 +35,7 @@ public class SimpleMultiStateCopycatModel extends MultiStateCopycatModel {
         QuadEmitter emitter = meshBuilder.getEmitter();
 
         renderContext.pushTransform(quad -> {
-            QuadHelper.CopycatRenderContext<MutableQuadView, QuadEmitter> context = new QuadHelper.CopycatRenderContext<>(quad, emitter);
+            Assembler.CopycatRenderContext<MutableQuadView, QuadEmitter> context = new Assembler.CopycatRenderContext<>(quad, emitter);
             if (cullFaceRemovalData.shouldRemove(quad.cullFace())) {
                 quad.cullFace(null);
             } else if (occlusionData.isOccluded(quad.cullFace())) {

@@ -53,6 +53,7 @@ import com.copycatsplus.copycats.content.copycat.trapdoor.WrappedTrapdoorBlock;
 import com.copycatsplus.copycats.content.copycat.vertical_slice.CopycatVerticalSliceBlock;
 import com.copycatsplus.copycats.content.copycat.vertical_slice.CopycatVerticalSliceModel;
 import com.copycatsplus.copycats.content.copycat.vertical_stairs.CopycatVerticalStairBlock;
+import com.copycatsplus.copycats.content.copycat.vertical_stairs.CopycatVerticalStairsEnhancedModel;
 import com.copycatsplus.copycats.content.copycat.vertical_stairs.CopycatVerticalStairsModel;
 import com.copycatsplus.copycats.content.copycat.vertical_step.CopycatVerticalStepBlock;
 import com.copycatsplus.copycats.content.copycat.vertical_step.CopycatVerticalStepModel;
@@ -471,7 +472,7 @@ public class CCBlocks {
                     .transform(BuilderTransformers.copycat())
                     .tag(BlockTags.STAIRS)
                     .transform(FeatureToggle.register())
-                    .onRegister(CreateRegistrate.blockModel(() -> model -> SimpleCopycatPart.create(model, new CopycatVerticalStairsModel())))
+                    .onRegister(CreateRegistrate.blockModel(() -> ToggleableCopycatModel.with(new CopycatVerticalStairsModel(), new CopycatVerticalStairsEnhancedModel())))
                     .item()
                     .tag(CCTags.Items.COPYCAT_STAIRS.tag)
                     .transform(customItemModel("copycat_base", "vertical_stairs"))

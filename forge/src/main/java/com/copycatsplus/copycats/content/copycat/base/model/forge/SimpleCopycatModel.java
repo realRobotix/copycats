@@ -1,6 +1,6 @@
 package com.copycatsplus.copycats.content.copycat.base.model.forge;
 
-import com.copycatsplus.copycats.content.copycat.base.model.QuadHelper.CopycatRenderContext;
+import com.copycatsplus.copycats.content.copycat.base.model.assembly.Assembler.CopycatRenderContext;
 import com.copycatsplus.copycats.content.copycat.base.model.SimpleCopycatPart;
 import com.simibubi.create.content.decoration.copycat.CopycatModel;
 import net.minecraft.client.renderer.RenderType;
