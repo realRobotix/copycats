@@ -5,6 +5,45 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.3.1 - 2024-06-14
+
+### Fixed
+
+- Fixed tag issue breaking normal block breaking with pickaxes and axes
+
+## 1.3.0 - 2024-06-14
+### Changed
+
+- Bytes, boards, slabs and half layers are now MultiStates
+
+### Added
+
+- An easier way for mods adding compat to easily get a set of all our blocks and tell if they are multistates easily
+- Connected textures on the multistate blocks
+- Optional conversion system for blocks that have changed (newly placed blocks will only ever be multistates)
+- Made blocks that are now multistates retain their look when converting to a multistate (until wrenched or broken)
+
+## 1.2.7 - 2024-04-08
+
+### Added
+
+- Copycat Ladder - A ladder that can be made to look like any block and can be placed without needing a block behind it
+- Copycat Ghost Block - A full size block that has no collision meaning it can be walked/fallen through
+
+## 1.2.6 - 2024-03-30
+
+### Changed
+
+- Made the mod support version 0.5.1.d+ because im tired of people asking XD
+
+
+## 1.2.5 - 2024-03-27
+
+### Fixed
+- Fixed crashing issue with copycats on 1.18.2 Forge
+- Slab dupe issue with placement helper and double slabs
+
+
 ## 1.2.4 - 2024-03-16
 
 ### Fixed

@@ -1,6 +1,7 @@
 package com.copycatsplus.copycats.content.copycat.stairs;
 
 import com.copycatsplus.copycats.content.copycat.base.ICustomCTBlocking;
+import com.copycatsplus.copycats.content.copycat.base.IStateType;
 import com.copycatsplus.copycats.content.copycat.base.WaterloggedCopycatWrappedBlock;
 import com.firemerald.additionalplacements.block.VerticalStairBlock;
 import com.simibubi.create.content.decoration.copycat.CopycatBlock;
@@ -29,7 +30,7 @@ import static net.minecraft.world.level.block.StairBlock.HALF;
 import static net.minecraft.world.level.block.StairBlock.SHAPE;
 
 @SuppressWarnings("deprecation")
-public class CopycatStairsBlock extends WaterloggedCopycatWrappedBlock<WrappedStairsBlock> implements ICustomCTBlocking {
+public class CopycatStairsBlock extends WaterloggedCopycatWrappedBlock<WrappedStairsBlock> implements ICustomCTBlocking, IStateType {
 
     public static WrappedStairsBlock stairs;
 
@@ -191,6 +192,7 @@ public class CopycatStairsBlock extends WaterloggedCopycatWrappedBlock<WrappedSt
     @Override
     public boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos, BlockState state) {
         BlockState toState = reader.getBlockState(toPos);
+        if (!toState.is(this)) return false;
         BlockPos diff = toPos.subtract(fromPos);
         if (diff.equals(Vec3i.ZERO)) {
             return true;
