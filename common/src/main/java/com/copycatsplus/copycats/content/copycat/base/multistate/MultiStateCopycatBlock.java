@@ -39,6 +39,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -105,17 +106,6 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
     @Override
     public <S extends BlockEntity> BlockEntityTicker<S> getTicker(Level p_153212_, BlockState p_153213_, BlockEntityType<S> p_153214_) {
         return null;
-    }
-
-    @Override
-    public ItemRequirement getRequiredItems(BlockState state, BlockEntity blockEntity) {
-        if (state.getBlock() instanceof MultiStateCopycatBlock msb) {
-            List<ItemStack> stacks = new ArrayList<>(msb.storageProperties().stream()
-                    .filter(prop -> msb.partExists(state, prop))
-                    .map(prop -> new ItemStack(state.getBlock().asItem())).toList());
-            return new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, stacks);
-        }
-        return ItemRequirement.INVALID;
     }
 
     @Override
@@ -413,6 +403,28 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
             });
         });
         return explosionResistance.get();
+    }
+
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos,
+                                       Player player) {
+        String property = target == null
+                ? null
+                : getProperty(state, level, pos, target.getLocation(), target instanceof BlockHitResult blockHit ? blockHit.getDirection() : Direction.UP, true);
+        BlockState material = property == null ? getMaterial(level, pos) : getMaterial(level, pos, property);
+        if (AllBlocks.COPYCAT_BASE.has(material) || player != null && player.isSteppingCarefully())
+            return new ItemStack(this);
+        return material.getBlock().getCloneItemStack(level, pos, material);
+    }
+
+    @Override
+    public ItemRequirement getRequiredItems(BlockState state, BlockEntity blockEntity) {
+        if (state.getBlock() instanceof MultiStateCopycatBlock msb) {
+            List<ItemStack> stacks = new ArrayList<>(msb.storageProperties().stream()
+                    .filter(prop -> msb.partExists(state, prop))
+                    .map(prop -> new ItemStack(state.getBlock().asItem())).toList());
+            return new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, stacks);
+        }
+        return ItemRequirement.INVALID;
     }
 
     public boolean addLandingEffects(BlockState state1, ServerLevel level, BlockPos pos, BlockState state2, LivingEntity entity, int numberOfParticles) {
