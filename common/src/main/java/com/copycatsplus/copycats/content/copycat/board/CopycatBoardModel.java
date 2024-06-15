@@ -40,13 +40,15 @@ public class CopycatBoardModel implements SimpleCopycatPart {
                         )
                 );
             } else {
+                Direction right = direction.getClockWise();
+                Direction left = direction.getCounterClockWise();
                 assemblePiece(context, (int) direction.toYRot() + 180, false,
                         vec3(0, 0, 0),
                         aabb(16, 16, 1),
                         cull((UP * i(sides.get(Direction.UP))) |
                                 (DOWN * i(sides.get(Direction.DOWN))) |
-                                (EAST * i(sides.get(Direction.EAST))) |
-                                (WEST * i(sides.get(Direction.WEST)))
+                                (EAST * i(sides.get(right))) |
+                                (WEST * i(sides.get(left)))
                         )
                 );
             }
