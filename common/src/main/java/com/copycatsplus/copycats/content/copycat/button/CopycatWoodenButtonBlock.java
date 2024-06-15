@@ -2,8 +2,8 @@ package com.copycatsplus.copycats.content.copycat.button;
 
 import com.copycatsplus.copycats.content.copycat.base.ICopycatWithWrappedBlock;
 import com.copycatsplus.copycats.content.copycat.base.IStateType;
+import com.copycatsplus.copycats.content.copycat.base.ShimCopycatBlock;
 import com.simibubi.create.AllTags;
-import com.simibubi.create.content.decoration.copycat.CopycatBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -30,7 +30,7 @@ import java.util.Random;
 import static net.minecraft.world.level.block.ButtonBlock.*;
 
 @SuppressWarnings("deprecation")
-public class CopycatWoodenButtonBlock extends CopycatBlock implements ICopycatWithWrappedBlock<WrappedButton.Wood>, IStateType {
+public class CopycatWoodenButtonBlock extends ShimCopycatBlock implements ICopycatWithWrappedBlock<WrappedButton.Wood>, IStateType {
 
     public static WrappedButton.Wood button;
 
@@ -64,12 +64,6 @@ public class CopycatWoodenButtonBlock extends CopycatBlock implements ICopycatWi
 
     public boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos, BlockState state) {
         return false;
-    }
-
-    @Nullable
-    @Override
-    public BlockState getConnectiveMaterial(BlockAndTintGetter reader, BlockState otherState, Direction face, BlockPos fromPos, BlockPos toPos) {
-        return (canConnectTexturesToward(reader, fromPos, toPos, reader.getBlockState(fromPos)) ? getMaterial(reader, toPos) : null);
     }
 
     @Override

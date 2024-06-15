@@ -2,7 +2,7 @@ package com.copycatsplus.copycats.content.copycat.pressure_plate;
 
 import com.copycatsplus.copycats.content.copycat.base.ICopycatWithWrappedBlock;
 import com.copycatsplus.copycats.content.copycat.base.IStateType;
-import com.simibubi.create.content.decoration.copycat.CopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.ShimCopycatBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -17,14 +17,13 @@ import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 
 import static net.minecraft.world.level.block.PressurePlateBlock.POWERED;
 
 @SuppressWarnings("deprecation")
-public class CopycatWoodenPressurePlate extends CopycatBlock implements ICopycatWithWrappedBlock<WrappedPressurePlate.Wooden>, IStateType {
+public class CopycatWoodenPressurePlate extends ShimCopycatBlock implements ICopycatWithWrappedBlock<WrappedPressurePlate.Wooden>, IStateType {
 
     public static WrappedPressurePlate.Wooden pressurePlate;
 
@@ -45,12 +44,6 @@ public class CopycatWoodenPressurePlate extends CopycatBlock implements ICopycat
 
     public boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos, BlockState state) {
         return false;
-    }
-
-    @Nullable
-    @Override
-    public BlockState getConnectiveMaterial(BlockAndTintGetter reader, BlockState otherState, Direction face, BlockPos fromPos, BlockPos toPos) {
-        return (canConnectTexturesToward(reader, fromPos, toPos, reader.getBlockState(fromPos)) ? getMaterial(reader, toPos) : null);
     }
 
     @Override

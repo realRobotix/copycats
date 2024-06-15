@@ -15,7 +15,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class CopycatBlockBlock extends CTCopycatBlock implements ICopycatWithWrappedBlock<Block>, IStateType {
 
@@ -33,12 +32,6 @@ public class CopycatBlockBlock extends CTCopycatBlock implements ICopycatWithWra
                 if (!toState.is(this)) return false;
         if (!state.is(this)) return false;
         return true;
-    }
-
-    @Nullable
-    @Override
-    public BlockState getConnectiveMaterial(BlockAndTintGetter reader, BlockState otherState, Direction face, BlockPos fromPos, BlockPos toPos) {
-        return (canConnectTexturesToward(reader, fromPos, toPos, otherState) ? getMaterial(reader, toPos) : null);
     }
 
     @Override

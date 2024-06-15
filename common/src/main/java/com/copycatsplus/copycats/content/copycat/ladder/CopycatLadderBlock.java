@@ -1,12 +1,9 @@
 package com.copycatsplus.copycats.content.copycat.ladder;
 
-import com.copycatsplus.copycats.CCBlockEntityTypes;
 import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.content.copycat.base.ICopycatWithWrappedBlock;
 import com.copycatsplus.copycats.content.copycat.base.IStateType;
-import com.copycatsplus.copycats.content.copycat.base.StateType;
-import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlockEntity;
-import com.simibubi.create.content.decoration.copycat.CopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.ShimCopycatBlock;
 import com.simibubi.create.content.equipment.extendoGrip.ExtendoGripItem;
 import com.simibubi.create.foundation.placement.IPlacementHelper;
 import com.simibubi.create.foundation.placement.PlacementHelpers;
@@ -30,7 +27,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LadderBlock;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -45,7 +41,7 @@ import java.util.function.Predicate;
 import static net.minecraft.world.level.block.LadderBlock.FACING;
 import static net.minecraft.world.level.block.LadderBlock.WATERLOGGED;
 
-public class CopycatLadderBlock extends CopycatBlock implements ICopycatWithWrappedBlock<WrappedLadderBlock>, IStateType {
+public class CopycatLadderBlock extends ShimCopycatBlock implements ICopycatWithWrappedBlock<WrappedLadderBlock>, IStateType {
 
     private static final int placementHelperId = PlacementHelpers.register(new PlacementHelper());
     public static BooleanProperty RAILS = BooleanProperty.create("rails");
@@ -129,12 +125,6 @@ public class CopycatLadderBlock extends CopycatBlock implements ICopycatWithWrap
 
     public boolean canConnectTexturesToward(BlockAndTintGetter blockAndTintGetter, BlockPos blockPos, BlockPos blockPos1, BlockState blockState) {
         return false;
-    }
-
-    @Nullable
-    @Override
-    public BlockState getConnectiveMaterial(BlockAndTintGetter reader, BlockState otherState, Direction face, BlockPos fromPos, BlockPos toPos) {
-        return (canConnectTexturesToward(reader, fromPos, toPos, reader.getBlockState(fromPos)) ? getMaterial(reader, toPos) : null);
     }
 
     @Override

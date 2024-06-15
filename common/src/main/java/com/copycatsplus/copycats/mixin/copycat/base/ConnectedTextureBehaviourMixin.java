@@ -1,7 +1,11 @@
 package com.copycatsplus.copycats.mixin.copycat.base;
 
 import com.copycatsplus.copycats.content.copycat.base.ICustomCTBlocking;
+import com.copycatsplus.copycats.content.copycat.base.IShimCopycatBlock;
 import com.copycatsplus.copycats.content.copycat.base.multistate.ScaledBlockAndTintGetter;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.simibubi.create.content.decoration.copycat.CopycatBlock;
 import com.simibubi.create.foundation.block.connected.ConnectedTextureBehaviour;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -39,5 +43,17 @@ public class ConnectedTextureBehaviourMixin {
             Optional<Boolean> blocking = customBlocker.blockCTTowards(reader, blockingState, blockingPos, pos, otherPos, face.getOpposite());
             blocking.ifPresent(cir::setReturnValue);
         }
+    }
+
+    @WrapOperation(
+            method = "testConnection(Lnet/minecraft/world/level/BlockAndTintGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/Direction;Lnet/minecraft/core/Direction;Lnet/minecraft/core/Direction;II)Z",
+            at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/decoration/copycat/CopycatBlock;isIgnoredConnectivitySide(Lnet/minecraft/world/level/BlockAndTintGetter;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/Direction;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/BlockPos;)Z")
+    )
+    private boolean bypassIfShim(CopycatBlock instance, BlockAndTintGetter reader, BlockState state, Direction face, BlockPos fromPos, BlockPos toPos, Operation<Boolean> original) {
+        if (instance instanceof IShimCopycatBlock shim) {
+            return !shim.canConnectTexturesToward(reader, fromPos, toPos, state);
+        }
+
+        return original.call(instance, reader, state, face, fromPos, toPos);
     }
 }
