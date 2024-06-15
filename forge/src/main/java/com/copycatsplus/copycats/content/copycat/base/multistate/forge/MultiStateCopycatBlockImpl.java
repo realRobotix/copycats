@@ -1,16 +1,13 @@
 package com.copycatsplus.copycats.content.copycat.base.multistate.forge;
 
-import com.copycatsplus.copycats.content.copycat.base.model.multistate.forge.MultiStateCopycatModel;
-import com.copycatsplus.copycats.content.copycat.base.multistate.ScaledBlockAndTintGetter;
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.multistate.ScaledBlockAndTintGetter;
 import com.simibubi.create.AllBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -20,7 +17,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.client.model.ModelDataManager;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -63,27 +59,5 @@ public class MultiStateCopycatBlockImpl {
             return Shapes.block(); // todo: patch the blocking check to consider multistates properly
         }
         return null;
-    }
-
-    @SuppressWarnings("UnstableApiUsage")
-    public static BlockState multiPlatformGetAppearance(MultiStateCopycatBlock block, BlockState state, BlockAndTintGetter level, BlockPos pos, Direction side,
-                                                        BlockState queryState, BlockPos queryPos) {
-        String property;
-        BlockPos truePos = null;
-        if (level instanceof ScaledBlockAndTintGetter scaledLevel) {
-            truePos = scaledLevel.getTruePos(pos);
-            Vec3i inner = scaledLevel.getInner(pos);
-            property = block.getPropertyFromInteraction(state, level, inner, truePos, side, Vec3.atCenterOf(inner));
-        } else {
-            property = block.storageProperties().stream().findFirst().get();
-        }
-        if (block.isIgnoredConnectivitySide(property, level, state, side, pos, queryPos))
-            return state;
-
-        BlockState appearance = null;
-            appearance = MultiStateCopycatModel.getMaterials(ModelDataManager.getModelData((Level) level, truePos == null ? pos : truePos)).get(property);
-        if (appearance == null)
-            appearance = MultiStateCopycatBlock.getMaterial(level, pos, property);
-        return appearance;
     }
 }

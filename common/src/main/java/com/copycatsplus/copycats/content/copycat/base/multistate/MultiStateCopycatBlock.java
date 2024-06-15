@@ -313,19 +313,6 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
         return StateType.MULTI;
     }
 
-    @ExpectPlatform
-    public static BlockState multiPlatformGetAppearance(MultiStateCopycatBlock block, BlockState state, BlockAndTintGetter level, BlockPos pos, Direction side,
-                                                        BlockState queryState, BlockPos queryPos) {
-        throw new AssertionError("This should never appear");
-    }
-
-    @Environment(EnvType.CLIENT)
-    public BlockState getAppearance(BlockState state, BlockAndTintGetter level, BlockPos pos, Direction side,
-                                    BlockState queryState, BlockPos queryPos) {
-
-        return multiPlatformGetAppearance(this, state, level, pos, side, queryState, queryPos);
-    }
-
     public boolean isIgnoredConnectivitySide(String property, BlockAndTintGetter reader, BlockState state, Direction face,
                                              BlockPos fromPos, BlockPos toPos) {
         BlockState toState = reader.getBlockState(toPos);
@@ -352,6 +339,39 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
         } else {
             return toState.is(getMaterial(reader, fromPos, property).getBlock());
         }
+    }
+
+    /**
+     * The wrapped blockstate at toPos. Wrapper guaranteed to be a block of this
+     * type <br>
+     * Return null if the 'from' state shouldn't connect to this block/face
+     */
+    @Nullable
+    public BlockState getConnectiveMaterial(BlockAndTintGetter reader, BlockState fromState, Direction face,
+                                            BlockPos fromPos, BlockPos toPos) {
+        BlockState toState = reader.getBlockState(toPos); // toPos is the position with copycat
+
+        if (!(reader instanceof ScaledBlockAndTintGetter scaledReader)) {
+            return null;
+        }
+
+        if (fromState.getBlock() instanceof MultiStateCopycatBlock fromCopycat) {
+            Vec3i fromInner = scaledReader.getInner(fromPos);
+            String property = fromCopycat.getPropertyFromInteraction(fromState, reader, fromInner, fromPos, face, Vec3.atCenterOf(fromInner));
+            if (!fromCopycat.canConnectTexturesToward(property, reader, fromPos, toPos, fromState))
+                return null;
+        }
+
+        if (toState.getBlock() instanceof MultiStateCopycatBlock toCopycat) {
+            Vec3i toInner = scaledReader.getInner(toPos);
+            String property = toCopycat.getPropertyFromInteraction(toState, reader, toInner, toPos, face, Vec3.atCenterOf(toInner));
+            if (toCopycat.isIgnoredConnectivitySide(property, reader, toState, face, toPos, fromPos))
+                return null;
+            else
+                return MultiStateCopycatBlock.getMaterial(reader, toPos, property);
+        }
+
+        return null;
     }
 
     /**

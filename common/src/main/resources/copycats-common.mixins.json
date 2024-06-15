@@ -15,6 +15,7 @@
     "copycat.base.ConnectedTextureBehaviourMixin",
     "copycat.base.CopycatBlockEntityMixin",
     "copycat.base.CopycatBlockMixin",
+    "copycat.base.multistate.ConnectedTextureBehaviourMixin",
     "copycat.base.multistate.LevelChunkMixin",
     "copycat.button.ButtonBlockMixin",
     "copycat.button.ContraptionMixin",
