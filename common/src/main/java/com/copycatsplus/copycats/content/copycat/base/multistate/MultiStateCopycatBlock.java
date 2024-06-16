@@ -87,7 +87,7 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
     /**
      * @param targetingSolid Whether the interaction is targeting the solid part behind the block face or the air in front of the block face.
      */
-    protected String getProperty(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, Vec3 hitVec, Direction face, boolean targetingSolid) {
+    public String getProperty(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, Vec3 hitVec, Direction face, boolean targetingSolid) {
         // Relativize the hit vector around the player position
         if (targetingSolid) {
             hitVec = hitVec.subtract(Vec3.atLowerCornerOf(face.getNormal()).scale(0.05));
@@ -377,33 +377,6 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
     // Wrapped properties
     //Copied From CopycatBlock and of course edited to work
 
-    public SoundType getSoundType(BlockState state, LevelReader level, BlockPos pos, Entity entity) {
-        return getMaterial(level, pos).getSoundType();
-    }
-
-    public float getFriction(BlockState state, LevelReader level, BlockPos pos, Entity entity) {
-        return getMaterial(level, pos).getBlock().getFriction();
-    }
-
-    public int getLightEmission(BlockState state, BlockGetter level, BlockPos pos) {
-        AtomicInteger light = new AtomicInteger(0);
-        withBlockEntityDo(level, pos, mscbe -> {
-            mscbe.getMaterialItemStorage().getAllMaterials().forEach(bs -> {
-                light.accumulateAndGet(bs.getLightEmission(), Math::max);
-            });
-        });
-        return light.get();
-    }
-
-    public float getExplosionResistance(BlockState state, BlockGetter level, BlockPos pos, Explosion explosion) {
-        AtomicReference<Float> explosionResistance = new AtomicReference<>(0.0f);
-        withBlockEntityDo(level, pos, mscbe -> {
-            mscbe.getMaterialItemStorage().getAllMaterials().forEach(bs -> {
-                explosionResistance.accumulateAndGet(bs.getBlock().getExplosionResistance(), Math::max);
-            });
-        });
-        return explosionResistance.get();
-    }
 
     public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos,
                                        Player player) {
@@ -427,32 +400,6 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
         return ItemRequirement.INVALID;
     }
 
-    public boolean addLandingEffects(BlockState state1, ServerLevel level, BlockPos pos, BlockState state2, LivingEntity entity, int numberOfParticles) {
-        return multiPlatformLandingEffects(state1, level, pos, state2, entity, numberOfParticles);
-    }
-
-    @ExpectPlatform
-    public static boolean multiPlatformLandingEffects(BlockState state1, ServerLevel level, BlockPos pos, BlockState state2, LivingEntity entity, int numberOfParticles) {
-        throw new AssertionError("This should never appear");
-    }
-
-    public boolean addRunningEffects(BlockState state, Level level, BlockPos pos, Entity entity) {
-        return multiPlatformRunningEffects(state, level, pos, entity);
-    }
-
-    @ExpectPlatform
-    public static boolean multiPlatformRunningEffects(BlockState state, Level level, BlockPos pos, Entity entity) {
-        throw new AssertionError("This should never appear");
-    }
-
-    public float getEnchantPowerBonus(BlockState state, LevelReader level, BlockPos pos) {
-        return multiPlatformEnchantPowerBonus(state, level, pos);
-    }
-
-    @ExpectPlatform
-    public static float multiPlatformEnchantPowerBonus(BlockState state, LevelReader level, BlockPos pos) {
-        throw new AssertionError("This should never appear!");
-    }
 
     public boolean isValidSpawn(BlockState state, BlockGetter level, BlockPos pos, SpawnPlacements.Type type,
                                 EntityType<?> entityType) {
@@ -464,23 +411,6 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
     public static VoxelShape multiPlatformGetShape(@NotNull BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull CollisionContext pContext) {
         // intentionally left empty so intellij doesn't complain about unreachable paths
         return null;
-    }
-
-    @Override
-    public void fallOn(@NotNull Level pLevel, @NotNull BlockState pState, @NotNull BlockPos pPos, @NotNull Entity pEntity, float p_152430_) {
-        String property = getProperty(pState, pLevel, pPos, new BlockHitResult(Vec3.atCenterOf(pPos), Direction.UP, pPos, true), true);
-        AtomicReference<BlockState> material = new AtomicReference<>(AllBlocks.COPYCAT_BASE.getDefaultState());
-        withBlockEntityDo(pLevel, pPos, mscbe -> material.set(mscbe.getMaterialItemStorage().getMaterialItem(property).material()));
-        material.get().getBlock()
-                .fallOn(pLevel, material.get(), pPos, pEntity, p_152430_);
-    }
-
-    @Override
-    public float getDestroyProgress(@NotNull BlockState pState, @NotNull Player pPlayer, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos) {
-        String property = getProperty(pState, pLevel, pPos, new BlockHitResult(Vec3.atCenterOf(pPos), Direction.UP, pPos, true), true);
-        AtomicReference<BlockState> material = new AtomicReference<>(AllBlocks.COPYCAT_BASE.getDefaultState());
-        withBlockEntityDo(pLevel, pPos, mscbe -> material.set(mscbe.getMaterialItemStorage().getMaterialItem(property).material()));
-        return material.get().getDestroyProgress(pPlayer, pLevel, pPos);
     }
 
     @Environment(EnvType.CLIENT)

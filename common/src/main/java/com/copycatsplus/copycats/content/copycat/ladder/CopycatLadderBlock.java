@@ -1,11 +1,8 @@
 package com.copycatsplus.copycats.content.copycat.ladder;
 
-import com.copycatsplus.copycats.CCBlockEntityTypes;
 import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.content.copycat.base.ICopycatWithWrappedBlock;
 import com.copycatsplus.copycats.content.copycat.base.IStateType;
-import com.copycatsplus.copycats.content.copycat.base.StateType;
-import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlockEntity;
 import com.simibubi.create.content.decoration.copycat.CopycatBlock;
 import com.simibubi.create.content.equipment.extendoGrip.ExtendoGripItem;
 import com.simibubi.create.foundation.placement.IPlacementHelper;
@@ -30,7 +27,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LadderBlock;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -197,7 +193,7 @@ public class CopycatLadderBlock extends CopycatBlock implements ICopycatWithWrap
 
 /* Undoing so i can merge multistate branch into multiloader
    @Override
-    public BlockEntityType<? extends MultiStateCopycatBlockEntity> getBlockEntityType() {
+    public BlockEntityType<? extends MultiStateCopycatBlockCommonEntity> getBlockEntityType() {
         return CCBlockEntityTypes.MULTI_STATE_COPYCAT_LADDER_BLOCK_ENTITY.get();
     }*/
 

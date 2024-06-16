@@ -34,11 +34,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public abstract class MultiStateCopycatBlockImpl extends MultiStateCopycatBlock implements BlockPickInteractionAware {
-
-    public MultiStateCopycatBlockImpl(Properties properties) {
-        super(properties);
-    }
+public class MultiStateCopycatBlockImpl {
 
     public static boolean multiPlatformLandingEffects(BlockState state1, ServerLevel level, BlockPos pos, BlockState state2, LivingEntity entity, int numberOfParticles) {
         if (state1.getBlock() instanceof MultiStateCopycatBlock mscb) {
@@ -96,8 +92,7 @@ public abstract class MultiStateCopycatBlockImpl extends MultiStateCopycatBlock 
         return MultiStateCopycatBlock.getMaterial(level, pos, property);
     }
 
-    @Override
-    public ItemStack getPickedStack(BlockState state, BlockGetter level, BlockPos pos, @Nullable Player player, @Nullable HitResult result) {
+/*    public ItemStack getPickedStack(BlockState state, BlockGetter level, BlockPos pos, @Nullable Player player, @Nullable HitResult result) {
         String property = result == null
                 ? null
                 : getProperty(state, level, pos, result.getLocation(), result instanceof BlockHitResult blockHit ? blockHit.getDirection() : Direction.UP, true);
@@ -109,7 +104,7 @@ public abstract class MultiStateCopycatBlockImpl extends MultiStateCopycatBlock 
                 (mat, block) -> block.getPickedStack(mat, level, pos, player, result),
                 mat -> mat.getBlock().getCloneItemStack(level, pos, mat)
         );
-    }
+    }*/
 
     private static <T, R> R maybeMaterialAs(BlockGetter level, BlockPos pos, Class<T> clazz, BlockState material,
                                             BiFunction<BlockState, T, R> ifType, Function<BlockState, R> ifNot) {
