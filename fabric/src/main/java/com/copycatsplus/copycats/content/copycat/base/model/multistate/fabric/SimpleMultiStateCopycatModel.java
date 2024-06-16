@@ -1,6 +1,8 @@
 package com.copycatsplus.copycats.content.copycat.base.model.multistate.fabric;
 
 import com.copycatsplus.copycats.content.copycat.base.model.assembly.Assembler;
+import com.copycatsplus.copycats.content.copycat.base.model.assembly.fabric.AssemblerImpl;
+import com.copycatsplus.copycats.content.copycat.base.model.assembly.fabric.AssemblerImpl.CopycatRenderContextFabric;
 import com.copycatsplus.copycats.content.copycat.base.model.multistate.SimpleMultiStateCopycatPart;
 import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MeshBuilder;
@@ -35,7 +37,7 @@ public class SimpleMultiStateCopycatModel extends MultiStateCopycatModel {
         QuadEmitter emitter = meshBuilder.getEmitter();
 
         renderContext.pushTransform(quad -> {
-            Assembler.CopycatRenderContext<MutableQuadView, QuadEmitter> context = new Assembler.CopycatRenderContext<>(quad, emitter);
+            CopycatRenderContextFabric context = new CopycatRenderContextFabric(quad, emitter);
             if (cullFaceRemovalData.shouldRemove(quad.cullFace())) {
                 quad.cullFace(null);
             } else if (occlusionData.isOccluded(quad.cullFace())) {

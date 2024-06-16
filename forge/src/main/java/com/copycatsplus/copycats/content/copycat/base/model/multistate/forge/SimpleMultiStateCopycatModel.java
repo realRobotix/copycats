@@ -1,6 +1,8 @@
 package com.copycatsplus.copycats.content.copycat.base.model.multistate.forge;
 
 import com.copycatsplus.copycats.content.copycat.base.model.assembly.Assembler;
+import com.copycatsplus.copycats.content.copycat.base.model.assembly.forge.AssemblerImpl;
+import com.copycatsplus.copycats.content.copycat.base.model.assembly.forge.AssemblerImpl.CopycatRenderContextForge;
 import com.copycatsplus.copycats.content.copycat.base.model.multistate.SimpleMultiStateCopycatPart;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -25,7 +27,7 @@ public class SimpleMultiStateCopycatModel extends MultiStateCopycatModel {
     protected List<BakedQuad> getCroppedQuads(String key, BlockState state, Direction side, RandomSource rand, BlockState material, ModelData wrappedData, RenderType renderType) {
         List<BakedQuad> quads = new ArrayList<>();
         List<BakedQuad> templateQuads = getModelOf(material).getQuads(material, side, rand, wrappedData, renderType);
-        Assembler.CopycatRenderContext<List<BakedQuad>, List<BakedQuad>> context = new Assembler.CopycatRenderContext<>(templateQuads, quads);
+        CopycatRenderContextForge context = new CopycatRenderContextForge(templateQuads, quads);
 
         part.emitCopycatQuads(key, state, context, material);
 

@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QuadRotation implements QuadTransform {
-    protected final Vec3 pivot;
-    protected final Vec3 rotation;
+    public final Vec3 pivot;
+    public final Vec3 rotation;
     List<Mutation> mutations = new ArrayList<>(2);
 
     public QuadRotation(MutableVec3.AsPivot pivot, MutableVec3 rotation) {
@@ -18,20 +18,24 @@ public class QuadRotation implements QuadTransform {
         this.rotation = rotation.toVec3Unscaled();
     }
 
-    @ExpectPlatform
     @Override
     public <T> T transformVertices(T vertexData, TextureAtlasSprite sprite) {
+        return transformVertices(this, vertexData, sprite);
+    }
+
+    @ExpectPlatform
+    public static <T> T transformVertices(QuadRotation self, T vertexData, TextureAtlasSprite sprite) {
         return null;
     }
 
-    protected MutableVec3 mutate(MutableVec3 vec3) {
+    public MutableVec3 mutate(MutableVec3 vec3) {
         for (Mutation mutation : mutations) {
             mutation.mutate(vec3);
         }
         return vec3;
     }
 
-    protected MutableVec3 undoMutate(MutableVec3 vec3) {
+    public MutableVec3 undoMutate(MutableVec3 vec3) {
         for (int i = mutations.size() - 1; i >= 0; i--) {
             Mutation mutation = mutations.get(i);
             mutation.undoMutate(vec3);
