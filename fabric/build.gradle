@@ -47,6 +47,7 @@ dependencies {
     // because create fabric is a bit broken I think
     modImplementation("net.minecraftforge:forgeconfigapiport-fabric:${config_port_version}")
 
+    modLocalRuntime "curse.maven:jade-324717:${jade_fabric_curse_id}"
     modLocalRuntime("mezz.jei:jei-${minecraft_version}-fabric:${jei_fabric_version}")
 
     modImplementation "curse.maven:continuity-531351:${continuity_curse_version}"
