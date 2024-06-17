@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.state.properties.Half;
 
 import static com.copycatsplus.copycats.content.copycat.base.model.assembly.Assembler.*;
 import static com.copycatsplus.copycats.content.copycat.base.model.assembly.MutableCullFace.*;
-import static com.copycatsplus.copycats.content.copycat.base.model.assembly.QuadSlope.map;
+import static com.copycatsplus.copycats.content.copycat.base.model.assembly.quad.QuadSlope.map;
 
 public class CopycatSlopeEnhancedModel implements SimpleCopycatPart {
 

@@ -1,6 +1,6 @@
-package com.copycatsplus.copycats.content.copycat.base.model.assembly.fabric;
+package com.copycatsplus.copycats.content.copycat.base.model.assembly.quad.fabric;
 
-import com.copycatsplus.copycats.content.copycat.base.model.assembly.UVHelper;
+import com.copycatsplus.copycats.content.copycat.base.model.assembly.quad.UVHelper;
 import com.simibubi.create.foundation.model.BakedQuadHelper;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;

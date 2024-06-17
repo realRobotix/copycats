@@ -1,11 +1,13 @@
 package com.copycatsplus.copycats.content.copycat.base.model.assembly;
 
+import com.copycatsplus.copycats.content.copycat.base.model.assembly.quad.*;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Assembler {
@@ -98,6 +100,11 @@ public class Assembler {
     @ExpectPlatform
     public static <Source, Destination> void assembleQuad(Source src, Destination dest, AABB crop, Vec3 move, QuadTransform... transforms) {
 
+    }
+
+    @ExpectPlatform
+    public static <T> MutableQuad getMutableQuad(T vertexData) {
+        return null;
     }
 
     public static MutableCullFace cull(int mask) {

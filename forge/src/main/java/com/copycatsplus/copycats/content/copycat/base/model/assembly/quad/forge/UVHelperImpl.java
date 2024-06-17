@@ -1,6 +1,6 @@
-package com.copycatsplus.copycats.content.copycat.base.model.assembly.forge;
+package com.copycatsplus.copycats.content.copycat.base.model.assembly.quad.forge;
 
-import com.copycatsplus.copycats.content.copycat.base.model.assembly.UVHelper;
+import com.copycatsplus.copycats.content.copycat.base.model.assembly.quad.UVHelper;
 import com.simibubi.create.foundation.model.BakedQuadHelper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.phys.Vec3;

@@ -1,4 +1,4 @@
-package com.copycatsplus.copycats.content.copycat.base.model.assembly;
+package com.copycatsplus.copycats.content.copycat.base.model.assembly.quad;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;

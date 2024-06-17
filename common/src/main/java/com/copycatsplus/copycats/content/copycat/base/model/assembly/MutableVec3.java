@@ -10,6 +10,10 @@ public class MutableVec3 implements GlobalTransform.Transformable<MutableVec3>, 
     public double y;
     public double z;
 
+    public MutableVec3(Position position) {
+        this(position.x(), position.y(), position.z());
+    }
+
     public MutableVec3(double x, double y, double z) {
         set(x, y, z);
     }

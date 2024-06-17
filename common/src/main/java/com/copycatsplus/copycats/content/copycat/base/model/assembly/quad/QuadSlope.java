@@ -1,39 +1,32 @@
-package com.copycatsplus.copycats.content.copycat.base.model.assembly;
+package com.copycatsplus.copycats.content.copycat.base.model.assembly.quad;
 
+import com.copycatsplus.copycats.content.copycat.base.model.assembly.MutableQuad;
+import com.copycatsplus.copycats.content.copycat.base.model.assembly.MutableVec3;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 
-public class QuadSlope extends TrackingQuadTransform {
-
-    public final Direction face;
-    public final QuadSlopeFunction func;
-
-    public QuadSlope(Direction face, QuadSlopeFunction func) {
-        this.face = face;
-        this.func = func;
-    }
+public record QuadSlope(Direction face, QuadSlopeFunction func) implements QuadTransform {
 
     @Override
-    public <T> T transformVertices(T vertexData, TextureAtlasSprite sprite) {
-        MutableVec3 mutableVertex = new MutableVec3(0, 0, 0);
-        return (T) UVHelper.mapWithUV(vertexData, sprite, (vertex, i) -> {
-            this.undoMutate(mutableVertex.set(vertex.x, vertex.y, vertex.z));
+    public void transformVertices(MutableQuad quad, TextureAtlasSprite sprite) {
+        for (int i = 0; i < 4; i++) {
+            MutableVec3 vertex = quad.vertices.get(i).xyz;
 
             double a;
             double b;
 
             switch (this.face.getAxis()) {
                 case X:
-                    a = mutableVertex.y;
-                    b = mutableVertex.z;
+                    a = vertex.y;
+                    b = vertex.z;
                     break;
                 case Y:
-                    a = mutableVertex.x;
-                    b = mutableVertex.z;
+                    a = vertex.x;
+                    b = vertex.z;
                     break;
                 case Z:
-                    a = mutableVertex.x;
-                    b = mutableVertex.y;
+                    a = vertex.x;
+                    b = vertex.y;
                     break;
                 default:
                     throw new RuntimeException("Unexpected value: " + this.face.getAxis());
@@ -44,31 +37,29 @@ public class QuadSlope extends TrackingQuadTransform {
             switch (this.face.getAxis()) {
                 case X:
                     if (this.face.getAxisDirection() == Direction.AxisDirection.POSITIVE) {
-                        mutableVertex.x *= output;
+                        vertex.x *= output;
                     } else {
-                        mutableVertex.x = 1 - output * (1 - mutableVertex.x);
+                        vertex.x = 1 - output * (1 - vertex.x);
                     }
                     break;
                 case Y:
                     if (this.face.getAxisDirection() == Direction.AxisDirection.POSITIVE) {
-                        mutableVertex.y *= output;
+                        vertex.y *= output;
                     } else {
-                        mutableVertex.y = 1 - output * (1 - mutableVertex.y);
+                        vertex.y = 1 - output * (1 - vertex.y);
                     }
                     break;
                 case Z:
                     if (this.face.getAxisDirection() == Direction.AxisDirection.POSITIVE) {
-                        mutableVertex.z *= output;
+                        vertex.z *= output;
                     } else {
-                        mutableVertex.z = 1 - output * (1 - mutableVertex.z);
+                        vertex.z = 1 - output * (1 - vertex.z);
                     }
                     break;
                 default:
                     throw new RuntimeException("Unexpected value: " + this.face.getAxis());
             }
-
-            return this.mutate(mutableVertex).toVec3();
-        });
+        }
     }
 
     public static double map(double fromStart, double fromEnd, double toStart, double toEnd, double value) {
