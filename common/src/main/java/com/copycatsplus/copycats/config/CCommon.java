@@ -17,7 +17,7 @@ public class CCommon extends SyncConfigBase {
 
     public final ConfigBool disableDataFixers = b(false, "disableDataFixers", Comments.dataFixers);
 
-    public final ConfigBool disableConversion = b(true, "disableConversion", Comments.multiStateConversion);
+    public final ConfigBool disableConversion = b(false, "disableConversion", Comments.multiStateConversion);
 
     public final CFeatures toggle = nested(0, CFeatures::new, Comments.toggle);
 
