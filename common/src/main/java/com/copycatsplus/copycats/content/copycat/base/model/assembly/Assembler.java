@@ -1,11 +1,11 @@
 package com.copycatsplus.copycats.content.copycat.base.model.assembly;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
+import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
 import java.util.Objects;
 
 public class Assembler {
@@ -116,8 +116,24 @@ public class Assembler {
         return new MutableAABB(sizeX, sizeY, sizeZ);
     }
 
-    public static QuadRotation rot(MutableVec3.AsPivot pivot, MutableVec3 rot) {
-        return new QuadRotation(pivot, rot);
+    public static QuadRotate rotate(MutableVec3.AsPivot pivot, MutableVec3 rot) {
+        return new QuadRotate(pivot, rot);
+    }
+
+    public static QuadScale scale(MutableVec3.AsPivot pivot, MutableVec3 scale) {
+        return new QuadScale(pivot, scale);
+    }
+
+    public static QuadTranslate translate(double x, double y, double z) {
+        return new QuadTranslate(x, y, z);
+    }
+
+    public static QuadSlope slope(Direction face, QuadSlope.QuadSlopeFunction func) {
+        return new QuadSlope(face, func);
+    }
+
+    public static QuadShear shear(Direction.Axis axis, Direction direction, double amount) {
+        return new QuadShear(axis, direction, amount);
     }
 
     public static class CopycatRenderContext<Source, Destination> {

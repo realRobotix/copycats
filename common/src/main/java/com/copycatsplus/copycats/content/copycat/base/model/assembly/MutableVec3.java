@@ -1,5 +1,6 @@
 package com.copycatsplus.copycats.content.copycat.base.model.assembly;
 
+import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 
 public class MutableVec3 implements GlobalTransform.Transformable<MutableVec3> {
@@ -74,6 +75,23 @@ public class MutableVec3 implements GlobalTransform.Transformable<MutableVec3> {
         this.x = x;
         this.y = y;
         this.z = z;
+        return this;
+    }
+
+    public double get(Direction.Axis axis) {
+        return switch (axis) {
+            case X -> x;
+            case Y -> y;
+            case Z -> z;
+        };
+    }
+
+    public MutableVec3 set(Direction.Axis axis, double value) {
+        switch (axis) {
+            case X -> x = value;
+            case Y -> y = value;
+            case Z -> z = value;
+        }
         return this;
     }
 

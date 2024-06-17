@@ -2,7 +2,6 @@ package com.copycatsplus.copycats.content.copycat.base.model.assembly.fabric;
 
 import com.copycatsplus.copycats.content.copycat.base.model.assembly.*;
 import com.simibubi.create.foundation.model.BakedModelHelper;
-import com.simibubi.create.foundation.model.BakedQuadHelper;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
 import net.fabricmc.fabric.api.renderer.v1.model.SpriteFinder;
@@ -12,10 +11,7 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.copycatsplus.copycats.content.copycat.base.model.assembly.Assembler.*;
+import static com.copycatsplus.copycats.content.copycat.base.model.assembly.Assembler.CopycatRenderContext;
 
 public class AssemblerImpl {
 
@@ -77,18 +73,9 @@ public class AssemblerImpl {
         dest.copyFrom(src);
         TextureAtlasSprite sprite = spriteFinder.find(src);
         BakedModelHelper.cropAndMove(dest, sprite, crop, move);
-        List<Vec3> vertices = new ArrayList<>(4);
-        vertices.add(BakedQuadHelper.getXYZ(dest, 0));
-        vertices.add(BakedQuadHelper.getXYZ(dest, 1));
-        vertices.add(BakedQuadHelper.getXYZ(dest, 2));
-        vertices.add(BakedQuadHelper.getXYZ(dest, 3));
         for (QuadTransform transform : transforms) {
-            vertices = transform.transformVertices(vertices, sprite);
+            src = transform.transformVertices(src, sprite);
         }
-        BakedQuadHelper.setXYZ(dest, 0, vertices.get(0));
-        BakedQuadHelper.setXYZ(dest, 1, vertices.get(1));
-        BakedQuadHelper.setXYZ(dest, 2, vertices.get(2));
-        BakedQuadHelper.setXYZ(dest, 3, vertices.get(3));
     }
 
     public static class CopycatRenderContextFabric extends CopycatRenderContext<MutableQuadView, QuadEmitter> {

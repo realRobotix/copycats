@@ -1,32 +1,12 @@
 package com.copycatsplus.copycats.content.copycat.base.model.assembly;
 
 import com.copycatsplus.copycats.content.copycat.base.model.assembly.Mutation.MutationType;
-import dev.architectury.injectables.annotations.ExpectPlatform;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class QuadRotation implements QuadTransform {
-    public final Vec3 pivot;
-    public final Vec3 rotation;
+public abstract class TrackingQuadTransform implements QuadTransform {
     List<Mutation> mutations = new ArrayList<>(2);
-
-    public QuadRotation(MutableVec3.AsPivot pivot, MutableVec3 rotation) {
-        this.pivot = pivot.toVec3Unscaled();
-        this.rotation = rotation.toVec3Unscaled();
-    }
-
-    @Override
-    public <T> T transformVertices(T vertexData, TextureAtlasSprite sprite) {
-        return transformVertices(this, vertexData, sprite);
-    }
-
-    @ExpectPlatform
-    public static <T> T transformVertices(QuadRotation self, T vertexData, TextureAtlasSprite sprite) {
-        return null;
-    }
 
     public MutableVec3 mutate(MutableVec3 vec3) {
         for (Mutation mutation : mutations) {
