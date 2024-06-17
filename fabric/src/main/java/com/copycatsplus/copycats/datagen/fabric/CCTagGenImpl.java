@@ -19,5 +19,7 @@ public class CCTagGenImpl {
         provIn.tag(TagKey.create(Registry.BLOCK.key(), Mods.DIAGONAL_FENCES.rl("non_diagonal_fences")))
                 .add(CCBlocks.COPYCAT_FENCE.get())
                 .add(CCBlocks.WRAPPED_COPYCAT_FENCE.get());
+//        provIn.tag(AllTags.AllBlockTags.COPYCAT_DENY.tag)
+//                .addTag(AllTags.AllBlockTags.TRACKS.tag);
     }
 }
