@@ -52,7 +52,7 @@ public class AssemblerImpl {
     }
 
     public static <Source extends MutableQuadView, Destination extends QuadEmitter> void assembleQuad(Source src, Destination dest) {
-        dest.copyFrom(src);
+        src.copyTo(dest);
         dest.emit();
     }
 
@@ -68,14 +68,14 @@ public class AssemblerImpl {
 
 
     public static <Source extends MutableQuadView, Destination extends QuadEmitter> void assembleQuad(Source src, Destination dest, AABB crop, Vec3 move) {
-        dest.copyFrom(src);
-        BakedModelHelper.cropAndMove(dest, spriteFinder.find(src), crop, move);
+        src.copyTo(dest);
+        BakedModelHelper.cropAndMove(dest, spriteFinder.find(src, 0), crop, move);
         dest.emit();
     }
 
     public static <Source extends MutableQuadView, Destination extends QuadEmitter> void assembleQuad(Source src, Destination dest, AABB crop, Vec3 move, QuadTransform... transforms) {
-        dest.copyFrom(src);
-        TextureAtlasSprite sprite = spriteFinder.find(src);
+        src.copyTo(dest);
+        TextureAtlasSprite sprite = spriteFinder.find(src, 0);
         BakedModelHelper.cropAndMove(dest, sprite, crop, move);
         List<Vec3> vertices = new ArrayList<>(4);
         vertices.add(BakedQuadHelper.getXYZ(dest, 0));

@@ -7,9 +7,7 @@ import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.decoration.copycat.CopycatBlockEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderGetter;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.HashMapPalette;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -35,16 +33,16 @@ public class ContraptionMixin {
             at = @At("RETURN"),
             cancellable = true
     )
-    private static void legacyReadStructureBlockInfo(CompoundTag blockListEntry, HolderGetter<Block> holderGetter, CallbackInfoReturnable<StructureTemplate.StructureBlockInfo> cir) {
+    private static void legacyReadStructureBlockInfo(CompoundTag blockListEntry, CallbackInfoReturnable<StructureTemplate.StructureBlockInfo> cir) {
         copycats$migrateStructureBlockInfo(cir);
     }
 
     @Unique
     private static void copycats$migrateStructureBlockInfo(CallbackInfoReturnable<StructureTemplate.StructureBlockInfo> cir) {
-        BlockState state = cir.getReturnValue().state();
-        CompoundTag nbt = cir.getReturnValue().nbt();
+        BlockState state = cir.getReturnValue().state;
+        CompoundTag nbt = cir.getReturnValue().nbt;
         if (state.getBlock() instanceof MultiStateCopycatBlock && nbt != null && nbt.contains("Material")) {
-            BlockPos pos = cir.getReturnValue().pos();
+            BlockPos pos = cir.getReturnValue().pos;
             CopycatBlockEntity be = new CopycatBlockEntity(AllBlockEntityTypes.COPYCAT.get(), pos, state);
             be.load(nbt);
             MultiStateCopycatBlockEntity multiBe = MultiStateCopycatBlockEntity.create(CCBlockEntityTypes.MULTI_STATE_COPYCAT_BLOCK_ENTITY.get(), pos, state);

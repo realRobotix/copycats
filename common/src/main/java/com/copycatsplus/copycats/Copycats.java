@@ -33,7 +33,6 @@ public class Copycats {
 
 		CCBlocks.register();
 		CCBlockEntityTypes.register();
-		CCCatVariants.register();
 		CCItems.register();
 
 		CCConfigs.register();
