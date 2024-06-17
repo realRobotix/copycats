@@ -14,8 +14,8 @@ public class QuadRotateImpl {
         MutableVec3 mutableVertex = new MutableVec3(0, 0, 0);
         for (int i = 0; i < 4; i++) {
             Vec3 vertex = BakedQuadHelper.getXYZ(vertexData, i);
-            self.undoMutate(mutableVertex.set(vertex.x * 16, vertex.y * 16, vertex.z * 16));
-            Vec3 rotated = VecHelper.rotate(mutableVertex.toVec3Unscaled().subtract(self.pivot), self.rotation).add(self.pivot);
+            self.undoMutate(mutableVertex.set(vertex.x, vertex.y, vertex.z));
+            Vec3 rotated = VecHelper.rotate(mutableVertex.toVec3().subtract(self.pivot), self.rotation).add(self.pivot);
             BakedQuadHelper.setXYZ(vertexData, i, self.mutate(mutableVertex.set(rotated.x, rotated.y, rotated.z)).toVec3());
         }
         return (T) vertexData;

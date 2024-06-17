@@ -8,9 +8,9 @@ public class QuadRotate extends TrackingQuadTransform {
     public final Vec3 pivot;
     public final Vec3 rotation;
 
-    public QuadRotate(MutableVec3.AsPivot pivot, MutableVec3 rotation) {
-        this.pivot = pivot.toVec3Unscaled();
-        this.rotation = rotation.toVec3Unscaled();
+    public QuadRotate(MutableVec3.AsPivot pivot, MutableVec3.AsAngle rotation) {
+        this.pivot = pivot.toVec3();
+        this.rotation = rotation.toVec3();
     }
 
     @Override

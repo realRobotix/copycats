@@ -25,7 +25,7 @@ public class AssemblerImpl {
         if (cull.isCulled(context.source().lightFace())) {
             return;
         }
-        assembleQuad(context, select.toAABB(), offset.toVec3().subtract(select.minX / 16f, select.minY / 16f, select.minZ / 16f));
+        assembleQuad(context, select.toAABB(), offset.toVec3().subtract(select.minX, select.minY, select.minZ));
     }
 
     public static void assemblePiece(CopycatRenderContext<?, ?> ctx, GlobalTransform globalTransform, MutableVec3 offset, MutableAABB select, MutableCullFace cull, QuadTransform... transforms) {
@@ -39,7 +39,7 @@ public class AssemblerImpl {
         if (cull.isCulled(context.source().lightFace())) {
             return;
         }
-        assembleQuad(context, select.toAABB(), offset.toVec3().subtract(select.minX / 16f, select.minY / 16f, select.minZ / 16f), transforms);
+        assembleQuad(context, select.toAABB(), offset.toVec3().subtract(select.minX, select.minY, select.minZ), transforms);
     }
 
     public static void assembleQuad(CopycatRenderContext<?, ?> ctx) {

@@ -17,9 +17,9 @@ public class MutableVec3 implements GlobalTransform.Transformable<MutableVec3> {
         angle = angle % 360;
         if (angle < 0) angle += 360;
         return switch (angle) {
-            case 90 -> set(16 - z, y, x);
-            case 180 -> set(16 - x, y, 16 - z);
-            case 270 -> set(z, y, 16 - x);
+            case 90 -> set(1 - z, y, x);
+            case 180 -> set(1 - x, y, 1 - z);
+            case 270 -> set(z, y, 1 - x);
             default -> this;
         };
     }
@@ -29,9 +29,9 @@ public class MutableVec3 implements GlobalTransform.Transformable<MutableVec3> {
         angle = angle % 360;
         if (angle < 0) angle += 360;
         return switch (angle) {
-            case 90 -> set(x, z, 16 - y);
-            case 180 -> set(x, 16 - y, 16 - z);
-            case 270 -> set(x, 16 - z, y);
+            case 90 -> set(x, z, 1 - y);
+            case 180 -> set(x, 1 - y, 1 - z);
+            case 270 -> set(x, 1 - z, y);
             default -> this;
         };
     }
@@ -41,33 +41,29 @@ public class MutableVec3 implements GlobalTransform.Transformable<MutableVec3> {
         angle = angle % 360;
         if (angle < 0) angle += 360;
         return switch (angle) {
-            case 90 -> set(y, 16 - x, z);
-            case 180 -> set(16 - x, 16 - y, z);
-            case 270 -> set(16 - y, x, z);
+            case 90 -> set(y, 1 - x, z);
+            case 180 -> set(1 - x, 1 - y, z);
+            case 270 -> set(1 - y, x, z);
             default -> this;
         };
     }
 
     public MutableVec3 flipX(boolean flip) {
         if (!flip) return this;
-        return set(16 - x, y, z);
+        return set(1 - x, y, z);
     }
 
     public MutableVec3 flipY(boolean flip) {
         if (!flip) return this;
-        return set(x, 16 - y, z);
+        return set(x, 1 - y, z);
     }
 
     public MutableVec3 flipZ(boolean flip) {
         if (!flip) return this;
-        return set(x, y, 16 - z);
+        return set(x, y, 1 - z);
     }
 
     public Vec3 toVec3() {
-        return new Vec3(x / 16f, y / 16f, z / 16f);
-    }
-
-    public Vec3 toVec3Unscaled() {
         return new Vec3(x, y, z);
     }
 
@@ -100,6 +96,24 @@ public class MutableVec3 implements GlobalTransform.Transformable<MutableVec3> {
      */
     public static class AsPivot extends MutableVec3 {
         public AsPivot(double x, double y, double z) {
+            super(x, y, z);
+        }
+    }
+
+    /**
+     * Marker subclass for when a Vec3 is used as axis-angle rotation
+     */
+    public static class AsAngle extends MutableVec3 {
+        public AsAngle(double x, double y, double z) {
+            super(x, y, z);
+        }
+    }
+
+    /**
+     * Marker subclass for when a Vec3 is used as a scale factor
+     */
+    public static class AsScale extends MutableVec3 {
+        public AsScale(double x, double y, double z) {
             super(x, y, z);
         }
     }

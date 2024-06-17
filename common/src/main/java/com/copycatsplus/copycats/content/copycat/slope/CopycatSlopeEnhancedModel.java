@@ -54,7 +54,7 @@ public class CopycatSlopeEnhancedModel implements SimpleCopycatPart {
                 translate(0, -16, 0),
                 rotate(
                         pivot(0, 0, 0),
-                        vec3(-45, 0, 0)
+                        angle(-45, 0, 0)
                 )
         );
         assemblePiece(context,
@@ -64,12 +64,12 @@ public class CopycatSlopeEnhancedModel implements SimpleCopycatPart {
                 cull(DOWN | NORTH | SOUTH),
                 scale(
                         pivot(16, 16, 16),
-                        vec3(1, 1, MID_LENGTH / ALIGNED_LENGTH)
+                        scale(1, 1, MID_LENGTH / ALIGNED_LENGTH)
                 ),
                 translate(0, 0, -MARGIN_ADJ - MID_LENGTH / 2),
                 rotate(
                         pivot(16, 16, 16),
-                        vec3(-45, 0, 0)
+                        angle(-45, 0, 0)
                 )
         );
         assemblePiece(context,
@@ -79,12 +79,12 @@ public class CopycatSlopeEnhancedModel implements SimpleCopycatPart {
                 cull(DOWN | NORTH | SOUTH),
                 scale(
                         pivot(16, 16, 16),
-                        vec3(1, 1, MID_LENGTH / ALIGNED_LENGTH)
+                        scale(1, 1, MID_LENGTH / ALIGNED_LENGTH)
                 ),
                 translate(0, 0, -MARGIN_ADJ),
                 rotate(
                         pivot(16, 16, 16),
-                        vec3(-45, 0, 0)
+                        angle(-45, 0, 0)
                 )
         );
         assemblePiece(context,
@@ -95,7 +95,7 @@ public class CopycatSlopeEnhancedModel implements SimpleCopycatPart {
                 slope(Direction.DOWN, (a, b) -> map(16 - MARGIN_ADJ, 16, MARGIN, 0, b)),
                 rotate(
                         pivot(16, 16, 16),
-                        vec3(-45, 0, 0)
+                        angle(-45, 0, 0)
                 )
         );
     }

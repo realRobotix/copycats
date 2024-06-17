@@ -8,9 +8,9 @@ public class QuadScale extends TrackingQuadTransform {
     public final Vec3 pivot;
     public final Vec3 scale;
 
-    public QuadScale(MutableVec3.AsPivot pivot, MutableVec3 scale) {
-        this.pivot = pivot.toVec3Unscaled();
-        this.scale = scale.toVec3Unscaled();
+    public QuadScale(MutableVec3.AsPivot pivot, MutableVec3.AsScale scale) {
+        this.pivot = pivot.toVec3();
+        this.scale = scale.toVec3();
     }
 
     @Override

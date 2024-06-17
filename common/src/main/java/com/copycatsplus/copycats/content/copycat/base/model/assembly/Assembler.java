@@ -105,35 +105,43 @@ public class Assembler {
     }
 
     public static MutableVec3 vec3(double x, double y, double z) {
-        return new MutableVec3(x, y, z);
+        return new MutableVec3(x / 16, y / 16, z / 16);
     }
 
     public static MutableVec3.AsPivot pivot(double x, double y, double z) {
-        return new MutableVec3.AsPivot(x, y, z);
+        return new MutableVec3.AsPivot(x / 16, y / 16, z / 16);
+    }
+
+    public static MutableVec3.AsAngle angle(double x, double y, double z) {
+        return new MutableVec3.AsAngle(x, y, z);
+    }
+
+    public static MutableVec3.AsScale scale(double x, double y, double z) {
+        return new MutableVec3.AsScale(x, y, z);
     }
 
     public static MutableAABB aabb(double sizeX, double sizeY, double sizeZ) {
-        return new MutableAABB(sizeX, sizeY, sizeZ);
+        return new MutableAABB(sizeX / 16, sizeY / 16, sizeZ / 16);
     }
 
-    public static QuadRotate rotate(MutableVec3.AsPivot pivot, MutableVec3 rot) {
+    public static QuadRotate rotate(MutableVec3.AsPivot pivot, MutableVec3.AsAngle rot) {
         return new QuadRotate(pivot, rot);
     }
 
-    public static QuadScale scale(MutableVec3.AsPivot pivot, MutableVec3 scale) {
+    public static QuadScale scale(MutableVec3.AsPivot pivot, MutableVec3.AsScale scale) {
         return new QuadScale(pivot, scale);
     }
 
     public static QuadTranslate translate(double x, double y, double z) {
-        return new QuadTranslate(x, y, z);
+        return new QuadTranslate(x / 16, y / 16, z / 16);
     }
 
     public static QuadSlope slope(Direction face, QuadSlope.QuadSlopeFunction func) {
-        return new QuadSlope(face, func);
+        return new QuadSlope(face, (a, b) -> func.apply(a * 16, b * 16) / 16);
     }
 
     public static QuadShear shear(Direction.Axis axis, Direction direction, double amount) {
-        return new QuadShear(axis, direction, amount);
+        return new QuadShear(axis, direction, amount / 16);
     }
 
     public static class CopycatRenderContext<Source, Destination> {

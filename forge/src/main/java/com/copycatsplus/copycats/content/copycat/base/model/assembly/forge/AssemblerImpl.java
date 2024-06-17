@@ -22,7 +22,7 @@ public class AssemblerImpl {
             if (cull.isCulled(quad.getDirection())) {
                 continue;
             }
-            assembleQuad(quad, context.destination(), select.toAABB(), offset.toVec3().subtract(select.minX / 16f, select.minY / 16f, select.minZ / 16f));
+            assembleQuad(quad, context.destination(), select.toAABB(), offset.toVec3().subtract(select.minX, select.minY, select.minZ));
         }
     }
 
@@ -38,7 +38,7 @@ public class AssemblerImpl {
             if (cull.isCulled(quad.getDirection())) {
                 continue;
             }
-            assembleQuad(quad, context.destination(), select.toAABB(), offset.toVec3().subtract(select.minX / 16f, select.minY / 16f, select.minZ / 16f), transforms);
+            assembleQuad(quad, context.destination(), select.toAABB(), offset.toVec3().subtract(select.minX, select.minY, select.minZ), transforms);
         }
     }
 

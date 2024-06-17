@@ -17,7 +17,7 @@ public class QuadSlope extends TrackingQuadTransform {
     public <T> T transformVertices(T vertexData, TextureAtlasSprite sprite) {
         MutableVec3 mutableVertex = new MutableVec3(0, 0, 0);
         return (T) UVHelper.mapWithUV(vertexData, sprite, (vertex, i) -> {
-            this.undoMutate(mutableVertex.set(vertex.x * 16, vertex.y * 16, vertex.z * 16));
+            this.undoMutate(mutableVertex.set(vertex.x, vertex.y, vertex.z));
 
             double a;
             double b;
@@ -44,23 +44,23 @@ public class QuadSlope extends TrackingQuadTransform {
             switch (this.face.getAxis()) {
                 case X:
                     if (this.face.getAxisDirection() == Direction.AxisDirection.POSITIVE) {
-                        mutableVertex.x *= output / 16;
+                        mutableVertex.x *= output;
                     } else {
-                        mutableVertex.x = 16 - output * (16 - mutableVertex.x) / 16;
+                        mutableVertex.x = 1 - output * (1 - mutableVertex.x);
                     }
                     break;
                 case Y:
                     if (this.face.getAxisDirection() == Direction.AxisDirection.POSITIVE) {
-                        mutableVertex.y *= output / 16;
+                        mutableVertex.y *= output;
                     } else {
-                        mutableVertex.y = 16 - output * (16 - mutableVertex.y) / 16;
+                        mutableVertex.y = 1 - output * (1 - mutableVertex.y);
                     }
                     break;
                 case Z:
                     if (this.face.getAxisDirection() == Direction.AxisDirection.POSITIVE) {
-                        mutableVertex.z *= output / 16;
+                        mutableVertex.z *= output;
                     } else {
-                        mutableVertex.z = 16 - output * (16 - mutableVertex.z) / 16;
+                        mutableVertex.z = 1 - output * (1 - mutableVertex.z);
                     }
                     break;
                 default:

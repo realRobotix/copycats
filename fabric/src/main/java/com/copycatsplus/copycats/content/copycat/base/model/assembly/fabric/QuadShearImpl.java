@@ -16,11 +16,11 @@ public class QuadShearImpl {
         MutableVec3 mutableVertex = new MutableVec3(0, 0, 0);
         for (int i = 0; i < 4; i++) {
             Vec3 vertex = BakedQuadHelper.getXYZ(vertexData, i);
-            self.undoMutate(mutableVertex.set(vertex.x * 16, vertex.y * 16, vertex.z * 16));
+            self.undoMutate(mutableVertex.set(vertex.x, vertex.y, vertex.z));
 
             double shearAxis = mutableVertex.get(self.axis);
             double amount = self.amount * (self.direction.getAxisDirection() == Direction.AxisDirection.POSITIVE ? 1 : -1);
-            mutableVertex.set(self.direction.getAxis(), mutableVertex.get(self.direction.getAxis()) + shearAxis / 16 * amount);
+            mutableVertex.set(self.direction.getAxis(), mutableVertex.get(self.direction.getAxis()) + shearAxis * amount);
 
             BakedQuadHelper.setXYZ(vertexData, i, self.mutate(mutableVertex).toVec3());
         }
