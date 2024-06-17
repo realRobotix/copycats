@@ -1,6 +1,7 @@
 package com.copycatsplus.copycats.content.copycat.slope;
 
 import com.copycatsplus.copycats.CCBlocks;
+import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.content.copycat.base.CTWaterloggedCopycatBlock;
 import com.copycatsplus.copycats.content.copycat.base.IStateType;
 import com.simibubi.create.content.equipment.extendoGrip.ExtendoGripItem;
@@ -34,6 +35,7 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -163,7 +165,7 @@ public class CopycatSlopeBlock extends CTWaterloggedCopycatBlock implements ISta
     @SuppressWarnings("deprecation")
     @Override
     public @NotNull VoxelShape getShape(BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull CollisionContext pContext) {
-        return Shapes.block(); // todo: slope shape
+        return CCShapes.SLOPE.get(pState.getValue(FACING)); // todo: slope shape
     }
 
 
