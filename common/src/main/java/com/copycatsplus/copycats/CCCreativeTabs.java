@@ -30,6 +30,7 @@ public class CCCreativeTabs {
             CCBlocks.COPYCAT_SLAB,
             CCBlocks.COPYCAT_SLICE,
             CCBlocks.COPYCAT_STAIRS,
+            CCBlocks.COPYCAT_VERTICAL_STAIRS,
             CCBlocks.COPYCAT_STONE_BUTTON,
             CCBlocks.COPYCAT_STONE_PRESSURE_PLATE,
             CCBlocks.COPYCAT_TRAPDOOR,
@@ -55,7 +56,8 @@ public class CCCreativeTabs {
         throw new AssertionError();
     }
 
-    public record DisplayItemsGenerator(List<ItemProviderEntry<?>> items) implements CreativeModeTab.DisplayItemsGenerator {
+    public record DisplayItemsGenerator(
+            List<ItemProviderEntry<?>> items) implements CreativeModeTab.DisplayItemsGenerator {
         @Override
         public void accept(@NotNull CreativeModeTab.ItemDisplayParameters params, @NotNull CreativeModeTab.Output output) {
             for (ItemProviderEntry<?> item : items) {

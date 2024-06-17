@@ -1,7 +1,6 @@
 package com.copycatsplus.copycats;
 
 import com.copycatsplus.copycats.config.FeatureToggle;
-import com.copycatsplus.copycats.content.copycat.base.ICopycatWithWrappedBlock;
 import com.copycatsplus.copycats.content.copycat.base.model.SimpleCopycatPart;
 import com.copycatsplus.copycats.content.copycat.base.model.ToggleableCopycatModel;
 import com.copycatsplus.copycats.content.copycat.base.model.multistate.SimpleMultiStateCopycatPart;
@@ -32,7 +31,6 @@ import com.copycatsplus.copycats.content.copycat.half_panel.CopycatHalfPanelBloc
 import com.copycatsplus.copycats.content.copycat.half_panel.CopycatHalfPanelModel;
 import com.copycatsplus.copycats.content.copycat.ladder.CopycatLadderBlock;
 import com.copycatsplus.copycats.content.copycat.ladder.CopycatLadderModel;
-import com.copycatsplus.copycats.content.copycat.ladder.CopycatMultiLadderModel;
 import com.copycatsplus.copycats.content.copycat.ladder.WrappedLadderBlock;
 import com.copycatsplus.copycats.content.copycat.layer.CopycatLayerBlock;
 import com.copycatsplus.copycats.content.copycat.layer.CopycatLayerModel;
@@ -52,6 +50,9 @@ import com.copycatsplus.copycats.content.copycat.trapdoor.CopycatTrapdoorModel;
 import com.copycatsplus.copycats.content.copycat.trapdoor.WrappedTrapdoorBlock;
 import com.copycatsplus.copycats.content.copycat.vertical_slice.CopycatVerticalSliceBlock;
 import com.copycatsplus.copycats.content.copycat.vertical_slice.CopycatVerticalSliceModel;
+import com.copycatsplus.copycats.content.copycat.vertical_stairs.CopycatVerticalStairBlock;
+import com.copycatsplus.copycats.content.copycat.vertical_stairs.CopycatVerticalStairsEnhancedModel;
+import com.copycatsplus.copycats.content.copycat.vertical_stairs.CopycatVerticalStairsModel;
 import com.copycatsplus.copycats.content.copycat.vertical_step.CopycatVerticalStepBlock;
 import com.copycatsplus.copycats.content.copycat.vertical_step.CopycatVerticalStepModel;
 import com.copycatsplus.copycats.content.copycat.wall.CopycatWallBlock;
@@ -77,9 +78,7 @@ import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.WoodType;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -395,6 +394,17 @@ public class CCBlocks {
                     .transform(customItemModel("copycat_base", "stairs"))
                     .register();
 
+    public static final BlockEntry<CopycatVerticalStairBlock> COPYCAT_VERTICAL_STAIRS =
+            REGISTRATE.block("copycat_vertical_stairs", CopycatVerticalStairBlock::new)
+                    .transform(BuilderTransformers.copycat())
+                    .tag(BlockTags.STAIRS)
+                    .transform(FeatureToggle.register())
+                    .onRegister(CreateRegistrate.blockModel(() -> ToggleableCopycatModel.with(new CopycatVerticalStairsModel(), new CopycatVerticalStairsEnhancedModel())))
+                    .item()
+                    .tag(CCTags.Items.COPYCAT_STAIRS.tag)
+                    .transform(customItemModel("copycat_base", "vertical_stairs"))
+                    .register();
+
     public static final BlockEntry<WrappedStairsBlock> WRAPPED_COPYCAT_STAIRS =
             REGISTRATE.block("wrapped_copycat_stairs", p -> new WrappedStairsBlock(Blocks.STONE.defaultBlockState(), p))
                     .initialProperties(() -> Blocks.STONE_STAIRS)
@@ -484,7 +494,7 @@ public class CCBlocks {
     }
 
     public static Set<RegistryEntry<Block>> getAllRegisteredBlocks() {
-       return new HashSet<>(REGISTRATE.getAll(BuiltInRegistries.BLOCK.key()));
+        return new HashSet<>(REGISTRATE.getAll(BuiltInRegistries.BLOCK.key()));
     }
 
     public static Set<RegistryEntry<Block>> getAllRegisteredBlocksWithoutWrapped() {
