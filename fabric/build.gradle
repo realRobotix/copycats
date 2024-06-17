@@ -128,6 +128,7 @@ publishMods {
     changelog = "Check out the detailed changelog at https://github.com/copycats-plus/copycats/blob/multiloader/CHANGELOG.md"
     type = STABLE
     file = tasks.remapJar.archiveFile
+    displayName = file.map { it.asFile.name.substring(0, it.asFile.name.lastIndexOf('.')) }
     modLoaders.add("fabric")
 
     modrinth {
