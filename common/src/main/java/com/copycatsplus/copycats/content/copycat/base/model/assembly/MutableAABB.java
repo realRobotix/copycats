@@ -25,7 +25,7 @@ public class MutableAABB implements GlobalTransform.Transformable<MutableAABB> {
     }
 
     public MutableAABB rotateY(int angle) {
-        // rotate around the Y axis counter-clockwise
+        // rotate around the Y axis clockwise
         angle = angle % 360;
         if (angle < 0) angle += 360;
         return switch (angle) {
@@ -37,7 +37,7 @@ public class MutableAABB implements GlobalTransform.Transformable<MutableAABB> {
     }
 
     public MutableAABB rotateX(int angle) {
-        // rotate around the X axis counter-clockwise
+        // rotate around the X axis clockwise
         angle = angle % 360;
         if (angle < 0) angle += 360;
         return switch (angle) {
@@ -49,7 +49,7 @@ public class MutableAABB implements GlobalTransform.Transformable<MutableAABB> {
     }
 
     public MutableAABB rotateZ(int angle) {
-        // rotate around the Z axis counter-clockwise
+        // rotate around the Z axis clockwise
         angle = angle % 360;
         if (angle < 0) angle += 360;
         return switch (angle) {

@@ -9,17 +9,17 @@ public interface GlobalTransform {
 
     public interface Transformable<Self extends Transformable<Self>> {
         /**
-         * Rotate in 90 degree increments around the X axis counter-clockwise
+         * Rotate in 90 degree increments around the X axis clockwise
          */
         Self rotateX(int angle);
 
         /**
-         * Rotate in 90 degree increments around the Y axis counter-clockwise
+         * Rotate in 90 degree increments around the Y axis clockwise
          */
         Self rotateY(int angle);
 
         /**
-         * Rotate in 90 degree increments around the Z axis counter-clockwise
+         * Rotate in 90 degree increments around the Z axis clockwise
          */
         Self rotateZ(int angle);
 
