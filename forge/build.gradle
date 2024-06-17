@@ -62,8 +62,8 @@ dependencies {
 
     modLocalRuntime("mezz.jei:jei-${minecraft_version}-forge:${jei_forge_version}")
 
-    modLocalRuntime("curse.maven:rubidium-574856:4952685")
-    modImplementation("curse.maven:additional-placements-674852:5142065")
+    modLocalRuntime("curse.maven:rubidium-574856:${rubidium_forge_curse_id}")
+    modImplementation("curse.maven:additional-placements-674852:${additionalplacements_forge_curse_id}")
 
     modCompileOnly("curse.maven:double-slabs-350179:${double_slabs_curse_id}")
 
