@@ -20,10 +20,10 @@
     "copycats:copycat_slab",
     "copycats:copycat_slice",
     "copycats:copycat_stairs",
+    "copycats:copycat_vertical_stairs",
     "copycats:copycat_trapdoor",
     "copycats:copycat_vertical_slice",
     "copycats:copycat_vertical_step",
-    "copycats:copycat_wall",
-    "copycats:copycat_vertical_stairs"
+    "copycats:copycat_wall"
   ]
 }
