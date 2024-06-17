@@ -6,18 +6,23 @@ import com.simibubi.create.AllBlocks;
 import io.github.fabricators_of_create.porting_lib.block.CustomLandingEffectsBlock;
 import io.github.fabricators_of_create.porting_lib.block.CustomRunningEffectsBlock;
 import io.github.fabricators_of_create.porting_lib.enchant.EnchantmentBonusBlock;
+import net.fabricmc.fabric.api.block.BlockPickInteractionAware;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -26,6 +31,8 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class MultiStateCopycatBlockImpl {
 
@@ -83,5 +90,27 @@ public class MultiStateCopycatBlockImpl {
 
 
         return MultiStateCopycatBlock.getMaterial(level, pos, property);
+    }
+
+/*    public ItemStack getPickedStack(BlockState state, BlockGetter level, BlockPos pos, @Nullable Player player, @Nullable HitResult result) {
+        String property = result == null
+                ? null
+                : getProperty(state, level, pos, result.getLocation(), result instanceof BlockHitResult blockHit ? blockHit.getDirection() : Direction.UP, true);
+        BlockState material = property == null ? getMaterial(level, pos) : getMaterial(level, pos, property);
+        if (AllBlocks.COPYCAT_BASE.has(material) || player != null && player.isShiftKeyDown())
+            return new ItemStack(this);
+        return maybeMaterialAs(
+                level, pos, BlockPickInteractionAware.class, material,
+                (mat, block) -> block.getPickedStack(mat, level, pos, player, result),
+                mat -> mat.getBlock().getCloneItemStack(level, pos, mat)
+        );
+    }*/
+
+    private static <T, R> R maybeMaterialAs(BlockGetter level, BlockPos pos, Class<T> clazz, BlockState material,
+                                            BiFunction<BlockState, T, R> ifType, Function<BlockState, R> ifNot) {
+        Block block = material.getBlock();
+        if (clazz.isInstance(block))
+            return ifType.apply(material, clazz.cast(block));
+        return ifNot.apply(material);
     }
 }
