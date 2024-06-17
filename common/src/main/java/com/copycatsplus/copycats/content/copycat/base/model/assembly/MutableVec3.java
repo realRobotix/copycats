@@ -1,9 +1,11 @@
 package com.copycatsplus.copycats.content.copycat.base.model.assembly;
 
-import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
+import net.minecraft.core.Position;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
-public class MutableVec3 implements GlobalTransform.Transformable<MutableVec3> {
+public class MutableVec3 implements GlobalTransform.Transformable<MutableVec3>, Position {
     public double x;
     public double y;
     public double z;
@@ -74,7 +76,7 @@ public class MutableVec3 implements GlobalTransform.Transformable<MutableVec3> {
         return this;
     }
 
-    public double get(Direction.Axis axis) {
+    public double get(Axis axis) {
         return switch (axis) {
             case X -> x;
             case Y -> y;
@@ -82,13 +84,89 @@ public class MutableVec3 implements GlobalTransform.Transformable<MutableVec3> {
         };
     }
 
-    public MutableVec3 set(Direction.Axis axis, double value) {
+    public MutableVec3 set(Axis axis, double value) {
         switch (axis) {
             case X -> x = value;
             case Y -> y = value;
             case Z -> z = value;
         }
         return this;
+    }
+
+    public boolean isZero() {
+        return x == 0 && y == 0 && z == 0;
+    }
+
+    public MutableVec3 add(Position vec) {
+        return add(vec.x(), vec.y(), vec.z());
+    }
+
+    public MutableVec3 add(double x, double y, double z) {
+        return set(this.x + x, this.y + y, this.z + z);
+    }
+
+    public MutableVec3 subtract(Position vec) {
+        return set(x - vec.x(), y - vec.y(), z - vec.z());
+    }
+
+    public MutableVec3 scale(double scale) {
+        return set(x * scale, y * scale, z * scale);
+    }
+
+    public MutableVec3 multiply(Position vec) {
+        return set(x * vec.x(), y * vec.y(), z * vec.z());
+    }
+
+    public MutableVec3 rotate(Position rotationVec) {
+        return rotate(rotationVec.x(), rotationVec.y(), rotationVec.z());
+    }
+
+    public MutableVec3 rotate(double xRot, double yRot, double zRot) {
+        rotate(xRot, Axis.X);
+        rotate(yRot, Axis.Y);
+        rotate(zRot, Axis.Z);
+        return this;
+    }
+
+    public MutableVec3 rotate(double deg, Axis axis) {
+        if (deg == 0)
+            return this;
+        if (this.isZero())
+            return this;
+
+        float angle = (float) (deg / 180f * Math.PI);
+        double sin = Mth.sin(angle);
+        double cos = Mth.cos(angle);
+        double x = this.x;
+        double y = this.y;
+        double z = this.z;
+
+        if (axis == Axis.X){
+            this.y = y * cos - z * sin;
+            this.z = z * cos + y * sin;
+        } else if (axis == Axis.Y){
+            this.x = x * cos + z * sin;
+            this.z = z * cos - x * sin;
+        } else if (axis == Axis.Z){
+            this.x = x * cos - y * sin;
+            this.y = y * cos + x * sin;
+        }
+        return this;
+    }
+
+    @Override
+    public double x() {
+        return x;
+    }
+
+    @Override
+    public double y() {
+        return y;
+    }
+
+    @Override
+    public double z() {
+        return z;
     }
 
     /**

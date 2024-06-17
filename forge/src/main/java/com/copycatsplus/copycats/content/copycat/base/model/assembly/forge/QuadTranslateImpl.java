@@ -14,11 +14,7 @@ public class QuadTranslateImpl {
         for (int i = 0; i < 4; i++) {
             Vec3 vertex = BakedQuadHelper.getXYZ(vertexData, i);
             self.undoMutate(mutableVertex.set(vertex.x, vertex.y, vertex.z));
-
-            mutableVertex.x += self.x;
-            mutableVertex.y += self.y;
-            mutableVertex.z += self.z;
-
+            mutableVertex.add(self.x, self.y, self.z);
             BakedQuadHelper.setXYZ(vertexData, i, self.mutate(mutableVertex).toVec3());
         }
         return (T) vertexData;

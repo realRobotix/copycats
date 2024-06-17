@@ -14,11 +14,7 @@ public class QuadScaleImpl {
         for (int i = 0; i < 4; i++) {
             Vec3 vertex = BakedQuadHelper.getXYZ(vertexData, i);
             self.undoMutate(mutableVertex.set(vertex.x, vertex.y, vertex.z));
-
-            mutableVertex.x = (mutableVertex.x - self.pivot.x) * self.scale.x + self.pivot.x;
-            mutableVertex.y = (mutableVertex.y - self.pivot.y) * self.scale.y + self.pivot.y;
-            mutableVertex.z = (mutableVertex.z - self.pivot.z) * self.scale.z + self.pivot.z;
-
+            mutableVertex.subtract(self.pivot).multiply(self.scale).add(self.pivot);
             BakedQuadHelper.setXYZ(vertexData, i, self.mutate(mutableVertex).toVec3());
         }
         return (T) vertexData;
