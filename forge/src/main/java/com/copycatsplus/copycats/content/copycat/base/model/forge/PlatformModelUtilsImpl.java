@@ -9,8 +9,8 @@ import net.minecraft.world.phys.Vec3;
 import java.util.List;
 
 //Not sure why but if both aren't imported it errors
-import static com.copycatsplus.copycats.content.copycat.base.model.QuadHelper.*;
-import static com.copycatsplus.copycats.content.copycat.base.model.forge.QuadHelperImpl.*;
+import static com.copycatsplus.copycats.content.copycat.base.model.assembly.Assembler.*;
+import static com.copycatsplus.copycats.content.copycat.base.model.assembly.forge.AssemblerImpl.*;
 
 public class PlatformModelUtilsImpl {
 
