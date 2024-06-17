@@ -2,16 +2,13 @@ package com.copycatsplus.copycats.content.copycat.base.model.fabric;
 
 import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
-import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.List;
-
-import static com.copycatsplus.copycats.content.copycat.base.model.QuadHelper.CopycatRenderContext;
-import static com.copycatsplus.copycats.content.copycat.base.model.QuadHelper.assembleQuad;
+import static com.copycatsplus.copycats.content.copycat.base.model.assembly.Assembler.CopycatRenderContext;
+import static com.copycatsplus.copycats.content.copycat.base.model.assembly.Assembler.assembleQuad;
 
 public class PlatformModelUtilsImpl {
 

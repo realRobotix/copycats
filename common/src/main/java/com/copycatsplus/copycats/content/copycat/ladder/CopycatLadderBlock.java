@@ -2,8 +2,8 @@ package com.copycatsplus.copycats.content.copycat.ladder;
 
 import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.content.copycat.base.ICopycatWithWrappedBlock;
-import com.copycatsplus.copycats.content.copycat.base.IStateType;
 import com.copycatsplus.copycats.content.copycat.base.ShimCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.IStateType;
 import com.simibubi.create.content.equipment.extendoGrip.ExtendoGripItem;
 import com.simibubi.create.foundation.placement.IPlacementHelper;
 import com.simibubi.create.foundation.placement.PlacementHelpers;
@@ -193,7 +193,7 @@ public class CopycatLadderBlock extends ShimCopycatBlock implements ICopycatWith
 
 /* Undoing so i can merge multistate branch into multiloader
    @Override
-    public BlockEntityType<? extends MultiStateCopycatBlockEntity> getBlockEntityType() {
+    public BlockEntityType<? extends MultiStateCopycatBlockCommonEntity> getBlockEntityType() {
         return CCBlockEntityTypes.MULTI_STATE_COPYCAT_LADDER_BLOCK_ENTITY.get();
     }*/
 

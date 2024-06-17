@@ -9,13 +9,15 @@ import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-import static com.copycatsplus.copycats.content.copycat.base.model.QuadHelper.*;
+import static com.copycatsplus.copycats.content.copycat.base.model.assembly.Assembler.*;
 import static com.copycatsplus.copycats.content.copycat.base.model.PlatformModelUtils.*;
 
 public class CopycatSlabModel implements SimpleCopycatPart {
 
+    static final AABB CUBE_AABB = new AABB(BlockPos.ZERO);
+
     @Override
-    public void emitCopycatQuads(BlockState state, CopycatRenderContext context, BlockState material) {
+    public void emitCopycatQuads(BlockState state, CopycatRenderContext<?, ?> context, BlockState material) {
         Direction facing = state.getOptionalValue(CopycatSlabBlock.SLAB_TYPE).isPresent() ? CopycatSlabBlock.getApparentDirection(state) : Direction.UP;
         boolean isDouble = state.getOptionalValue(CopycatSlabBlock.SLAB_TYPE).orElse(SlabType.BOTTOM) == SlabType.DOUBLE;
 
@@ -32,7 +34,7 @@ public class CopycatSlabModel implements SimpleCopycatPart {
         }
     }
 
-    private void assemblePiece(Direction facing, CopycatRenderContext context, boolean front, boolean topSlab, boolean isDouble) {
+    private void assemblePiece(Direction facing, CopycatRenderContext<?, ?> context, boolean front, boolean topSlab, boolean isDouble) {
         Vec3 normal = Vec3.atLowerCornerOf(facing.getNormal());
         Vec3 normalScaled12 = normal.scale(12 / 16f);
         Vec3 normalScaledN8 = topSlab ? normal.scale((front ? 0 : -8) / 16f) : normal.scale((front ? 8 : 0) / 16f);
