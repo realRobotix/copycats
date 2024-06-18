@@ -32,9 +32,13 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @Mixin(MultiStateCopycatBlock.class)
-public abstract class MultiStateCopycatBlockCombinerMixin implements BlockPickInteractionAware,
+public abstract class MultiStateCopycatBlockCombinerMixin extends Block implements BlockPickInteractionAware,
         EnchantmentBonusBlock, LightEmissiveBlock, CustomFrictionBlock, ExplosionResistanceBlock, CustomLandingEffectsBlock, CustomRunningEffectsBlock,
         CustomSoundTypeBlock {
+
+    public MultiStateCopycatBlockCombinerMixin(Properties properties) {
+        super(properties);
+    }
 
     @Override
     public float getEnchantPowerBonus(BlockState state, LevelReader level, BlockPos pos) {

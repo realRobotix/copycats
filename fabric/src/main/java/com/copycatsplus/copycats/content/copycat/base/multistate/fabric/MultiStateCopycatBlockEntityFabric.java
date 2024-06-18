@@ -8,6 +8,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +29,6 @@ public class MultiStateCopycatBlockEntityFabric extends MultiStateCopycatBlockEn
 
     @Override
     public @Nullable Map<String, BlockState> getRenderAttachmentData() {
-        return getMaterialItemStorage().getMaterialMap();
+        return Collections.synchronizedMap(getMaterialItemStorage().getMaterialMap());
     }
 }
