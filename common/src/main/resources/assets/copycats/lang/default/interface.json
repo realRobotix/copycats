@@ -1,3 +1,5 @@
 {
-  "itemGroup.copycats.main": "Create: Copycats+"
+  "itemGroup.copycats.main": "Create: Copycats+",
+  "key.categories.copycats": "Create: Copycats+",
+  "copycats.key.state_switcher_menu": "Open State Switcher Menu"
 }

@@ -65,7 +65,9 @@ public class CCTags {
         COPYCAT_SLAB,
         COPYCAT_STAIRS,
         COPYCAT_VERTICAL_STEP,
-        COPYCAT_WALL;
+        COPYCAT_WALL,
+
+        CAN_BE_SWITCHED;
 
         public final TagKey<Item> tag;
         public final boolean alwaysDatagen;

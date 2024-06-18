@@ -17,6 +17,7 @@ public class CCItems {
                     .model(AssetLookup.customBlockItemModel("copycat_base", "box"))
                     .transform(FeatureToggle.registerDependent(CCBlocks.COPYCAT_BOARD))
                     .tag(CCTags.Items.COPYCAT_BOX.tag)
+                    .tag(CCTags.Items.CAN_BE_SWITCHED.tag)
                     .register();
 
     public static final ItemEntry<CopycatCatwalkItem> COPYCAT_CATWALK =

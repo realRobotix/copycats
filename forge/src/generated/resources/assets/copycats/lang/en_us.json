@@ -162,6 +162,7 @@
   "block.copycats.wrapped_copycat_wall": "Wrapped Copycat Wall",
   "block.copycats.wrapped_copycat_wooden_button": "Wrapped Copycat Wooden Button",
   "block.copycats.wrapped_copycat_wooden_pressure_plate": "Wrapped Copycat Wooden Pressure Plate",
+  "copycats.key.state_switcher_menu": "Open State Switcher Menu",
   "item.copycats.copycat_box": "Copycat Box",
   "item.copycats.copycat_box.tooltip.behaviour1": "Applies _held item_ as its _material_ if possible. _Click again_ to cycle _orientation_ or _powered_ state. Use a _Wrench_ to _reset_ the material.",
   "item.copycats.copycat_box.tooltip.behaviour2": "Toggles _connected textures_ on its _material_.",
@@ -178,5 +179,6 @@
   "item.copycats.copycat_catwalk.tooltip.condition2": "When Sneak-R-Clicked with Empty Hand",
   "item.copycats.copycat_catwalk.tooltip.condition3": "When Wrenched while Sneaking",
   "item.copycats.copycat_catwalk.tooltip.summary": "_Copycat boards_ pre-assembled into a catwalk for convenient placement.",
-  "itemGroup.copycats.main": "Create: Copycats+"
+  "itemGroup.copycats.main": "Create: Copycats+",
+  "key.categories.copycats": "Create: Copycats+"
 }
