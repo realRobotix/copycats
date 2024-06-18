@@ -7,6 +7,8 @@ import net.minecraft.core.Direction;
 
 public record QuadSlope(Direction face, QuadSlopeFunction func) implements QuadTransform {
 
+    private static final double EPSILON = 0.02 / 16;
+
     @Override
     public void transformVertices(MutableQuad quad, TextureAtlasSprite sprite) {
         for (int i = 0; i < 4; i++) {
@@ -33,6 +35,10 @@ public record QuadSlope(Direction face, QuadSlopeFunction func) implements QuadT
             }
 
             double output = this.func.apply(a, b);
+            // prevent texture UVs from messing up due to loss of precision
+            if (Math.abs(output) < EPSILON) {
+                output = EPSILON;
+            }
 
             switch (this.face.getAxis()) {
                 case X:
