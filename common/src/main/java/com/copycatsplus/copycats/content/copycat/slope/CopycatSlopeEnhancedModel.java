@@ -29,28 +29,28 @@ public class CopycatSlopeEnhancedModel implements SimpleCopycatPart {
                 vec3(0, 0, 0),
                 aabb(16, 16, MARGIN_ADJ),
                 cull(UP | NORTH | SOUTH),
-                slope(Direction.UP, (a, b) -> map(0, MARGIN_ADJ, 0, MARGIN, b))
+                updateUV(slope(Direction.UP, (a, b) -> map(0, MARGIN_ADJ, 0, MARGIN, b)))
         );
         assemblePiece(context,
                 transform,
                 vec3(0, 0, MARGIN_ADJ),
                 aabb(16, 16, 16 - MARGIN - MARGIN_ADJ).move(0, 0, MARGIN_ADJ),
                 cull(UP | NORTH | SOUTH),
-                slope(Direction.UP, (a, b) -> map(MARGIN_ADJ, 16 - MARGIN, MARGIN, 16 - MARGIN_ADJ, b))
+                updateUV(slope(Direction.UP, (a, b) -> map(MARGIN_ADJ, 16 - MARGIN, MARGIN, 16 - MARGIN_ADJ, b)))
         );
         assemblePiece(context,
                 transform,
                 vec3(0, 0, 16 - MARGIN),
                 aabb(16, 16, MARGIN).move(0, 0, 16 - MARGIN),
                 cull(UP | NORTH),
-                slope(Direction.UP, (a, b) -> map(16 - MARGIN, 16, 16 - MARGIN_ADJ, 16, b))
+                updateUV(slope(Direction.UP, (a, b) -> map(16 - MARGIN, 16, 16 - MARGIN_ADJ, 16, b)))
         );
         assemblePiece(context,
                 transform,
                 vec3(0, 0, 0),
                 aabb(16, 16, MARGIN_ADJ),
                 cull(DOWN | NORTH | SOUTH),
-                slope(Direction.DOWN, (a, b) -> map(0, MARGIN_ADJ, 0, MARGIN, b)),
+                updateUV(slope(Direction.DOWN, (a, b) -> map(0, MARGIN_ADJ, 0, MARGIN, b))),
                 translate(0, -16, 0),
                 rotate(
                         pivot(0, 0, 0),
@@ -92,7 +92,7 @@ public class CopycatSlopeEnhancedModel implements SimpleCopycatPart {
                 vec3(0, 0, 16 - MARGIN_ADJ),
                 aabb(16, 16, MARGIN_ADJ).move(0, 0, 16 - MARGIN_ADJ),
                 cull(DOWN | NORTH | SOUTH),
-                slope(Direction.DOWN, (a, b) -> map(16 - MARGIN_ADJ, 16, MARGIN, 0, b)),
+                updateUV(slope(Direction.DOWN, (a, b) -> map(16 - MARGIN_ADJ, 16, MARGIN, 0, b))),
                 rotate(
                         pivot(16, 16, 16),
                         angle(-45, 0, 0)

@@ -145,17 +145,90 @@ public class MutableVec3 implements GlobalTransform.Transformable<MutableVec3>, 
         double y = this.y;
         double z = this.z;
 
-        if (axis == Axis.X){
+        if (axis == Axis.X) {
             this.y = y * cos - z * sin;
             this.z = z * cos + y * sin;
-        } else if (axis == Axis.Y){
+        } else if (axis == Axis.Y) {
             this.x = x * cos + z * sin;
             this.z = z * cos - x * sin;
-        } else if (axis == Axis.Z){
+        } else if (axis == Axis.Z) {
             this.x = x * cos - y * sin;
             this.y = y * cos + x * sin;
         }
         return this;
+    }
+
+    public double dot(Position vec) {
+        return this.x * vec.x() + this.y * vec.y() + this.z * vec.z();
+    }
+
+    /**
+     * Returns a new vector with the result of this vector x the specified vector.
+     */
+    public MutableVec3 cross(Position vec) {
+        return set(this.y * vec.z() - this.z * vec.y(), this.z * vec.x() - this.x * vec.z(), this.x * vec.y() - this.y * vec.x());
+    }
+
+
+    /**
+     * Euclidean distance between this and the specified vector, returned as double.
+     */
+    public double distanceTo(Position vec) {
+        double d = vec.x() - this.x;
+        double e = vec.y() - this.y;
+        double f = vec.z() - this.z;
+        return Math.sqrt(d * d + e * e + f * f);
+    }
+
+    /**
+     * The square of the Euclidean distance between this and the specified vector.
+     */
+    public double distanceToSqr(Position vec) {
+        double d = vec.x() - this.x;
+        double e = vec.y() - this.y;
+        double f = vec.z() - this.z;
+        return d * d + e * e + f * f;
+    }
+
+    public double distanceToSqr(double x, double y, double z) {
+        double d = x - this.x;
+        double e = y - this.y;
+        double f = z - this.z;
+        return d * d + e * e + f * f;
+    }
+
+    /**
+     * Returns the length of the vector.
+     */
+    public double length() {
+        return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+    }
+
+    public double lengthSqr() {
+        return this.x * this.x + this.y * this.y + this.z * this.z;
+    }
+
+    public double horizontalDistance() {
+        return Math.sqrt(this.x * this.x + this.z * this.z);
+    }
+
+    public double horizontalDistanceSqr() {
+        return this.x * this.x + this.z * this.z;
+    }
+
+    /**
+     * Normalizes the vector to a length of 1 (except if it is the zero vector)
+     */
+    public MutableVec3 normalize() {
+        double d = Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+        if (d < 1.0E-4) {
+            return set(0, 0, 0);
+        }
+        return set(this.x / d, this.y / d, this.z / d);
+    }
+
+    public MutableVec3 copy() {
+        return new MutableVec3(x, y, z);
     }
 
     @Override

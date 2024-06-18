@@ -23,7 +23,7 @@ public class CopycatSlopeModel implements SimpleCopycatPart {
                 vec3(0, 0, 0),
                 aabb(16, 16, 16),
                 cull(NORTH),
-                slope(Direction.UP, (a, b) -> b)
+                updateUV(slope(Direction.UP, (a, b) -> b))
         );
     }
 }

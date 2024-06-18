@@ -151,6 +151,10 @@ public class Assembler {
         return new QuadShear(axis, direction, amount / 16);
     }
 
+    public static QuadUVUpdate updateUV(QuadTransform... transforms) {
+        return new QuadUVUpdate(transforms);
+    }
+
     public static class CopycatRenderContext<Source, Destination> {
         private final Source source;
         private final Destination destination;
