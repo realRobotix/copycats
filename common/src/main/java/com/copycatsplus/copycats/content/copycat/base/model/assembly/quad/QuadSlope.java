@@ -68,6 +68,18 @@ public record QuadSlope(Direction face, QuadSlopeFunction func) implements QuadT
 
     @FunctionalInterface
     public interface QuadSlopeFunction {
+        /**
+         * Given the two coordinates of a vertex, return a scaling factor for the height in the remaining axis.
+         * <ul>
+         * <li>If the X axis is being mapped, the first parameter is the Y coordinate and the second parameter is the Z coordinate.</li>
+         * <li>If the Y axis is being mapped, the first parameter is the X coordinate and the second parameter is the Z coordinate.</li>
+         * <li>If the Z axis is being mapped, the first parameter is the X coordinate and the second parameter is the Y coordinate.</li>
+         * </ul>
+         *
+         * @param a The first coordinate
+         * @param b The second coordinate
+         * @return The scaling factor for the height in the remaining axis
+         */
         double apply(double a, double b);
     }
 }
