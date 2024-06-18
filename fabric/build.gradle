@@ -150,4 +150,6 @@ publishMods {
         projectId = "968398"
         minecraftVersions.add(minecraft_version)
     }
+
+    dryRun = Boolean.parseBoolean(doDryRun)
 }
