@@ -10,6 +10,7 @@ import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.List;
 
 public class MultiStateCopycatBlockEntityForge extends MultiStateCopycatBlockEntity {
@@ -30,7 +31,7 @@ public class MultiStateCopycatBlockEntityForge extends MultiStateCopycatBlockEnt
     @Override
     public @NotNull IModelData getModelData() {
          return new ModelDataMap.Builder()
-                .withInitial(MultiStateCopycatModel.MATERIALS_PROPERTY, getMaterialItemStorage().getMaterialMap())
+                .withInitial(MultiStateCopycatModel.MATERIALS_PROPERTY, Collections.synchronizedMap(getMaterialItemStorage().getMaterialMap()))
                 .build();
     }
 }

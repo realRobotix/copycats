@@ -33,9 +33,13 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @Mixin(MultiStateCopycatBlock.class)
-public abstract class MultiStateCopycatBlockCombinerMixin implements BlockPickInteractionAware,
+public abstract class MultiStateCopycatBlockCombinerMixin extends Block implements BlockPickInteractionAware,
         EnchantmentBonusBlock, LightEmissiveBlock, CustomFrictionBlock, ExplosionResistanceBlock, CustomLandingEffectsBlock, CustomRunningEffectsBlock,
         CustomSoundTypeBlock {
+
+    public MultiStateCopycatBlockCombinerMixin(Properties properties) {
+        super(properties);
+    }
 
     @Override
     public float getEnchantPowerBonus(BlockState state, LevelReader level, BlockPos pos) {
@@ -69,7 +73,7 @@ public abstract class MultiStateCopycatBlockCombinerMixin implements BlockPickIn
     @Override
     public float getFriction(BlockState state, LevelReader level, BlockPos pos, Entity entity) {
         if (state.getBlock() instanceof MultiStateCopycatBlock mscb) {
-            AtomicReference<Float> bonus = new AtomicReference<>(0f);
+            AtomicReference<Float> bonus = new AtomicReference<>(state.getBlock().getFriction());
             mscb.withBlockEntityDo(level, pos, mscbe -> mscbe.getMaterialItemStorage()
                     .getAllMaterials().forEach(mat -> {
                         bonus.set(bonus.get() + maybeMaterialAs(level, pos, CustomFrictionBlock.class,
@@ -78,13 +82,13 @@ public abstract class MultiStateCopycatBlockCombinerMixin implements BlockPickIn
                     }));
             return bonus.get();
         }
-        return 0f;
+        return state.getBlock().getFriction();
     }
 
     @Override
     public float getExplosionResistance(BlockState state, BlockGetter level, BlockPos pos, Explosion explosion) {
         if (state.getBlock() instanceof MultiStateCopycatBlock mscb) {
-            AtomicReference<Float> explosionResistance = new AtomicReference<>(0.0f);
+            AtomicReference<Float> explosionResistance = new AtomicReference<>(state.getBlock().getExplosionResistance());
             mscb.withBlockEntityDo(level, pos, mscbe -> {
                 mscbe.getMaterialItemStorage().getAllMaterials().forEach(bs -> {
                     explosionResistance.accumulateAndGet(bs.getBlock().getExplosionResistance(), Math::max);
@@ -92,7 +96,7 @@ public abstract class MultiStateCopycatBlockCombinerMixin implements BlockPickIn
             });
             return explosionResistance.get();
         }
-        return 0f;
+        return state.getBlock().getExplosionResistance();
     }
 
     @Override
