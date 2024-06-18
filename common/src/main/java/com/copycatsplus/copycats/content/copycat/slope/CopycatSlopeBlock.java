@@ -49,31 +49,12 @@ public class CopycatSlopeBlock extends CTWaterloggedCopycatBlock implements ISta
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<Half> HALF = BlockStateProperties.HALF;
 
-    private static final int placementHelperId = PlacementHelpers.register(new PlacementHelper());
-
     public CopycatSlopeBlock(Properties pProperties) {
         super(pProperties);
         registerDefaultState(defaultBlockState()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(HALF, Half.BOTTOM)
         );
-    }
-
-    @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand,
-                                 BlockHitResult ray) {
-
-        if (!player.isShiftKeyDown() && player.mayBuild()) {
-            ItemStack heldItem = player.getItemInHand(hand);
-            IPlacementHelper placementHelper = PlacementHelpers.get(placementHelperId);
-            if (placementHelper.matchesItem(heldItem)) {
-                placementHelper.getOffset(player, world, state, pos, ray)
-                        .placeInWorld(world, (BlockItem) heldItem.getItem(), player, hand, ray);
-                return InteractionResult.SUCCESS;
-            }
-        }
-
-        return super.use(state, world, pos, player, hand, ray);
     }
 
     @Override
@@ -84,11 +65,20 @@ public class CopycatSlopeBlock extends CTWaterloggedCopycatBlock implements ISta
         BlockState toState = reader.getBlockState(toPos);
 
         if (toState.is(this)) {
-            // connecting to another copycat beam
-            return toState.getValue(FACING) != direction || toState.getValue(HALF) != half;
+            if (toState.getValue(FACING) == direction && toState.getValue(HALF)== half) return false;
+
+            BlockPos diff = toPos.subtract(fromPos);
+            if (diff.equals(Vec3i.ZERO)) {
+                return false;
+            }
+            Direction connectFace = Direction.fromDelta(diff.getX(), diff.getY(), diff.getZ());
+            if (connectFace == null) {
+                return true;
+            }
+
+            return !(direction == connectFace && connectFace == toState.getValue(FACING).getOpposite());
         } else {
-            // doesn't connect to any other blocks
-            return true;
+            return false;
         }
     }
 
@@ -111,8 +101,10 @@ public class CopycatSlopeBlock extends CTWaterloggedCopycatBlock implements ISta
 
         if (toState.is(this)) {
             try {
-                return toState.getValue(FACING) == facing && toState.getValue(HALF) == half &&
-                        face.getAxis().isHorizontal() && face.getAxis() != facing.getAxis();
+                return toState.getValue(FACING) == facing &&
+                        toState.getValue(HALF) == half &&
+                        face.getAxis().isHorizontal() && face.getAxis() != facing.getAxis() ||
+                        face == facing && face == toState.getValue(FACING).getOpposite();
             } catch (IllegalStateException ignored) {
                 return false;
             }
@@ -165,7 +157,7 @@ public class CopycatSlopeBlock extends CTWaterloggedCopycatBlock implements ISta
     @SuppressWarnings("deprecation")
     @Override
     public @NotNull VoxelShape getShape(BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull CollisionContext pContext) {
-        return CCShapes.SLOPE.get(pState.getValue(FACING)); // todo: slope shape
+        return (pState.getValue(HALF) == Half.TOP ? CCShapes.SLOPE_TOP : CCShapes.SLOPE_BOTTOM).get(pState.getValue(FACING));
     }
 
 
@@ -199,45 +191,5 @@ public class CopycatSlopeBlock extends CTWaterloggedCopycatBlock implements ISta
     @Override
     public @NotNull BlockState mirror(@NotNull BlockState pState, @NotNull Mirror pMirror) {
         return pState.setValue(FACING, pMirror.mirror(pState.getValue(FACING)));
-    }
-
-    @MethodsReturnNonnullByDefault
-    private static class PlacementHelper extends PoleHelper<Direction> {
-
-        private PlacementHelper() {
-            super(CCBlocks.COPYCAT_HALF_PANEL::has, state -> state.getValue(FACING).getClockWise().getAxis(), FACING);
-        }
-
-        @Override
-        public Predicate<ItemStack> getItemPredicate() {
-            return i -> i.getItem() instanceof BlockItem
-                    && (((BlockItem) i.getItem()).getBlock() instanceof CopycatSlopeBlock);
-        }
-
-        @Override
-        public PlacementOffset getOffset(Player player, Level world, BlockState state, BlockPos pos, BlockHitResult ray) {
-            List<Direction> directions = IPlacementHelper.orderedByDistance(pos, ray.getLocation(), dir -> dir.getAxis() == axisFunction.apply(state));
-            for (Direction dir : directions) {
-                int range = AllConfigs.server().equipment.placementAssistRange.get();
-                if (player != null) {
-                    //TODO: Add way to get reach attribute from platform
-                    AttributeInstance reach = null;
-                    if (reach != null && reach.hasModifier(ExtendoGripItem.singleRangeAttributeModifier))
-                        range += 4;
-                }
-                int poles = attachedPoles(world, pos, dir);
-                if (poles >= range)
-                    continue;
-
-                BlockPos newPos = pos.relative(dir, poles + 1);
-                BlockState newState = world.getBlockState(newPos);
-
-                if (newState.canBeReplaced())
-                    return PlacementOffset.success(newPos, bState -> bState.setValue(property, state.getValue(property)).setValue(HALF, state.getValue(HALF)));
-
-            }
-
-            return PlacementOffset.fail();
-        }
     }
 }
