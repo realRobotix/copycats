@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.ModelData;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.List;
 
 public class MultiStateCopycatBlockEntityForge extends MultiStateCopycatBlockEntity {
@@ -29,7 +30,7 @@ public class MultiStateCopycatBlockEntityForge extends MultiStateCopycatBlockEnt
     @Override
     public @NotNull ModelData getModelData() {
          return ModelData.builder()
-                .with(MultiStateCopycatModel.MATERIALS_PROPERTY, getMaterialItemStorage().getMaterialMap())
+                .with(MultiStateCopycatModel.MATERIALS_PROPERTY, Collections.synchronizedMap(getMaterialItemStorage().getMaterialMap()))
                 .build();
     }
 }
