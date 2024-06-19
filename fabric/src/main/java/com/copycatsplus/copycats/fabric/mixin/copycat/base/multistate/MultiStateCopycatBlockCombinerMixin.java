@@ -17,6 +17,7 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -72,14 +73,18 @@ public abstract class MultiStateCopycatBlockCombinerMixin extends Block implemen
     @Override
     public float getFriction(BlockState state, LevelReader level, BlockPos pos, Entity entity) {
         if (state.getBlock() instanceof MultiStateCopycatBlock mscb) {
-            AtomicReference<Float> bonus = new AtomicReference<>(state.getBlock().getFriction());
+            AtomicReference<Float> bonus = new AtomicReference<>(0f);
+            AtomicInteger count = new AtomicInteger(0);
             mscb.withBlockEntityDo(level, pos, mscbe -> mscbe.getMaterialItemStorage()
                     .getAllMaterials().forEach(mat -> {
-                        bonus.set(bonus.get() + maybeMaterialAs(level, pos, CustomFrictionBlock.class,
+                        count.getAndIncrement();
+                        bonus.accumulateAndGet(maybeMaterialAs(level, pos, CustomFrictionBlock.class,
                                 mat, (material, frictionBlock) -> frictionBlock.getFriction(material, level, pos, entity),
-                                (material) -> 0f));
+                                (material) -> material.is(Blocks.AIR)
+                                        ? state.getBlock().getFriction()
+                                        : material.getBlock().getFriction()), Float::sum);
                     }));
-            return bonus.get();
+            return bonus.get() / count.get();
         }
         return state.getBlock().getFriction();
     }
