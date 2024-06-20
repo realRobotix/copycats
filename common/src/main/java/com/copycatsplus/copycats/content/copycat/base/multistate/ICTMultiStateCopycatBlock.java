@@ -27,7 +27,7 @@ public interface ICTMultiStateCopycatBlock extends IBE<MultiStateCopycatBlockEnt
     }
 
     default InteractionResult toggleCT(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        if (pPlayer.isCrouching() && pPlayer.getItemInHand(pHand).equals(ItemStack.EMPTY)) {
+        if (pPlayer.isShiftKeyDown() && pPlayer.getItemInHand(pHand).equals(ItemStack.EMPTY)) {
             MultiStateCopycatBlockEntity be = getBlockEntity(pLevel, pPos);
             if (be instanceof CTCopycatBlockEntity ctbe) {
                 ctbe.setCTEnabled(!ctbe.isCTEnabled());
