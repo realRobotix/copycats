@@ -14,7 +14,6 @@ public class CCBlockEntityTypes {
             REGISTRATE.blockEntity("copycat", CopycatBlockEntity::new)
                     .validBlocks(
                             CCBlocks.COPYCAT_BLOCK,
-                            /*                            CCBlocks.COPYCAT_SLAB,*/
                             CCBlocks.COPYCAT_BEAM,
                             CCBlocks.COPYCAT_VERTICAL_STEP,
                             CCBlocks.COPYCAT_HALF_PANEL,
@@ -23,12 +22,9 @@ public class CCBlockEntityTypes {
                             CCBlocks.COPYCAT_FENCE_GATE,
                             CCBlocks.COPYCAT_TRAPDOOR,
                             CCBlocks.COPYCAT_WALL,
-/*                            CCBlocks.COPYCAT_BOARD,*/
-                            /*                            CCBlocks.COPYCAT_BYTE,*/
                             CCBlocks.COPYCAT_GHOST_BLOCK,
                             CCBlocks.COPYCAT_LADDER,
                             CCBlocks.COPYCAT_LAYER,
-/*                            CCBlocks.COPYCAT_HALF_LAYER,*/
                             CCBlocks.COPYCAT_SLICE,
                             CCBlocks.COPYCAT_VERTICAL_SLICE,
                             CCBlocks.COPYCAT_WOODEN_BUTTON,

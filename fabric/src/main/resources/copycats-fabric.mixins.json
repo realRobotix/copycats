@@ -7,7 +7,6 @@
   "mixins": [
     "HolderReferenceInvoker",
     "compat.registrate.CreateRegistrateMixin",
-    "copycat.base.CopycatModelMixin",
     "copycat.base.multistate.MultiStateCopycatBlockCombinerMixin"
   ],
   "client": [

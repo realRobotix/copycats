@@ -77,7 +77,7 @@ public abstract class MultiStateCopycatModel extends ForwardingBakedModel implem
                 materials = new HashMap<>((Map<? extends String, ? extends BlockState>) mats);
             }
         } else {
-            materials = Map.of();
+            materials = new HashMap<>();
         }
         if (materials.isEmpty()) {
             if (state.getBlock() instanceof MultiStateCopycatBlock copycatBlock) {
@@ -127,7 +127,7 @@ public abstract class MultiStateCopycatModel extends ForwardingBakedModel implem
 
     @Override
     public @NotNull TextureAtlasSprite getParticleIcon(Object data) {
-        if (data instanceof Map<?,?> mats) {
+        if (data instanceof Map<?, ?> mats) {
             if (mats.isEmpty())
                 return super.getParticleIcon();
             Map.Entry<String, BlockState> key = (Map.Entry<String, BlockState>) mats.entrySet().stream().findFirst().get();

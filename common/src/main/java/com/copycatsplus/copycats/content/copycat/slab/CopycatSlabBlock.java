@@ -3,9 +3,9 @@ package com.copycatsplus.copycats.content.copycat.slab;
 import com.copycatsplus.copycats.CCBlocks;
 import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.content.copycat.base.ICopycatWithWrappedBlock;
-import com.copycatsplus.copycats.content.copycat.base.multistate.CTWaterloggedMultiStateCopycatBlock;
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlockEntity;
 import com.copycatsplus.copycats.content.copycat.base.multistate.ScaledBlockAndTintGetter;
+import com.copycatsplus.copycats.content.copycat.base.multistate.WaterloggedMultiStateCopycatBlock;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.decoration.copycat.CopycatBlock;
 import com.simibubi.create.foundation.placement.IPlacementHelper;
@@ -47,7 +47,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public class CopycatSlabBlock extends CTWaterloggedMultiStateCopycatBlock implements ICopycatWithWrappedBlock<Block> {
+public class CopycatSlabBlock extends WaterloggedMultiStateCopycatBlock implements ICopycatWithWrappedBlock<Block> {
 
     public static final EnumProperty<Axis> AXIS = BlockStateProperties.AXIS;
     public static final EnumProperty<SlabType> SLAB_TYPE = BlockStateProperties.SLAB_TYPE;

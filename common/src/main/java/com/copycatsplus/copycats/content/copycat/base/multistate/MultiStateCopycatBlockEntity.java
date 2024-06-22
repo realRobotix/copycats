@@ -121,10 +121,14 @@ public abstract class MultiStateCopycatBlockEntity extends SmartBlockEntity impl
     public void setConsumedItem(String property, ItemStack itemStack) {
         getMaterialItemStorage().getMaterialItem(property).setConsumedItem(itemStack);
         setChanged();
-
     }
 
-    private void redraw() {
+    public void setEnableCT(String property, boolean value) {
+        getMaterialItemStorage().getMaterialItem(property).setEnableCT(value);
+        notifyUpdate();
+    }
+
+    public void redraw() {
         if (!isVirtual())
             requestModelUpdate();
         if (hasLevel()) {
