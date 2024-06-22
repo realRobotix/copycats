@@ -37,8 +37,6 @@ import java.util.function.Supplier;
 
 public abstract class MultiStateCopycatModel extends ForwardingBakedModel implements CustomParticleIconModel {
 
-    @NotNull Map<String, BlockState> materials = new HashMap<>();
-
     public MultiStateCopycatModel(BakedModel originalModel) {
         wrapped = originalModel;
     }
@@ -69,13 +67,17 @@ public abstract class MultiStateCopycatModel extends ForwardingBakedModel implem
         }
     }
 
+    @SuppressWarnings({"deprecation", "unchecked"})
     @Override
     public void emitBlockQuads(BlockAndTintGetter blockView, BlockState state, BlockPos pos, Supplier<RandomSource> randomSupplier, RenderContext context) {
+        Map<String, BlockState> materials;
         if (blockView instanceof RenderAttachedBlockView attachmentView
                 && attachmentView.getBlockEntityRenderAttachment(pos) instanceof Map<?, ?> mats) {
-            materials = (Map<String, BlockState>) mats;
+            synchronized (mats) {
+                materials = new HashMap<>((Map<? extends String, ? extends BlockState>) mats);
+            }
         } else {
-            materials = new HashMap<>();
+            materials = Map.of();
         }
         if (materials.isEmpty()) {
             if (state.getBlock() instanceof MultiStateCopycatBlock copycatBlock) {
