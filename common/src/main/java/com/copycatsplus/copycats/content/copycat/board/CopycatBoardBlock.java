@@ -5,6 +5,7 @@ import com.copycatsplus.copycats.content.copycat.base.ICustomCTBlocking;
 import com.copycatsplus.copycats.content.copycat.base.multistate.CTWaterloggedMultiStateCopycatBlock;
 import com.copycatsplus.copycats.content.copycat.base.multistate.MaterialItemStorage;
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlockEntity;
+import com.copycatsplus.copycats.content.copycat.base.multistate.ScaledBlockAndTintGetter;
 import com.google.common.collect.ImmutableMap;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.foundation.utility.Iterate;
@@ -96,6 +97,11 @@ public class CopycatBoardBlock extends CTWaterloggedMultiStateCopycatBlock imple
         facing = Direction.fromAxisAndDirection(facing.getAxis(), unscaledHit.get(facing.getAxis()) > 0.5 ? Direction.AxisDirection.POSITIVE : Direction.AxisDirection.NEGATIVE);
         BooleanProperty face = byDirection(facing);
         return face.getName();
+    }
+
+    @Override
+    public String getPropertyFromRender(String renderingProperty, BlockState state, ScaledBlockAndTintGetter level, Vec3i vector, BlockPos blockPos, Direction side, BlockState queryState, BlockPos queryPos) {
+        return renderingProperty;
     }
 
     @Override

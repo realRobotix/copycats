@@ -89,6 +89,10 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
 
     public abstract String getPropertyFromInteraction(BlockState state, BlockGetter level, Vec3i hitLocation, BlockPos blockPos, Direction facing, Vec3 unscaledHit);
 
+    public String getPropertyFromRender(String renderingProperty, BlockState state, ScaledBlockAndTintGetter level, Vec3i vector, BlockPos blockPos, Direction side, BlockState queryState, BlockPos queryPos) {
+        return getPropertyFromInteraction(state, level, vector, blockPos, side, Vec3.atCenterOf(vector));
+    }
+
     public abstract Vec3i getVectorFromProperty(BlockState state, String property);
 
     /**

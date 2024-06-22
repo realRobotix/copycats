@@ -111,8 +111,8 @@ public abstract class MultiStateCopycatModel extends ForwardingBakedModel implem
             BlockAndTintGetter innerBlockView = blockView;
             if (state.getBlock() instanceof MultiStateCopycatBlock copycatBlock) {
                 Vec3i inner = copycatBlock.getVectorFromProperty(state, entry.getKey());
-                ScaledBlockAndTintGetter scaledWorld = new ScaledBlockAndTintGetter(blockView, pos, inner, copycatBlock.vectorScale(state), p -> true);
-                innerBlockView = new ScaledBlockAndTintGetter(blockView, pos, inner, copycatBlock.vectorScale(state),
+                ScaledBlockAndTintGetter scaledWorld = new ScaledBlockAndTintGetter(entry.getKey(), blockView, pos, inner, copycatBlock.vectorScale(state), p -> true);
+                innerBlockView = new ScaledBlockAndTintGetter(entry.getKey(), blockView, pos, inner, copycatBlock.vectorScale(state),
                         targetPos -> copycatBlock.canConnectTexturesToward(entry.getKey(), scaledWorld, pos, targetPos, state));
             }
             emitBlockQuadsInner(entry.getKey(), innerBlockView, state, pos, randomSupplier, context, entry.getValue(), cullFaceRemovalData, occlusionData);
