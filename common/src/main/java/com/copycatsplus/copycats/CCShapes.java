@@ -137,6 +137,23 @@ public class CCShapes {
             .add(0, 0, 8, 8, 8, 16)
             .add(8, 0, 8, 16, 16, 16)
             .forDirectional(Direction.NORTH);
+    private static final int SLOPE_SUBDIVISIONS = 16;
+    public static final VoxelShaper SLOPE_BOTTOM = shape(Shapes.empty()).build((voxelShape, direction) -> {
+        VoxelShape shape = Shapes.empty();
+        for (int i = 0; i < SLOPE_SUBDIVISIONS; i++) {
+            shape = Shapes.joinUnoptimized(shape, Shapes.box(0, 0, 0, 1, 1 - 1d / SLOPE_SUBDIVISIONS * i, 1d / SLOPE_SUBDIVISIONS * (i + 1)), BooleanOp.OR);
+        }
+        shape = shape.optimize();
+        return shape(shape).forDirectional(Direction.NORTH);
+    }, Direction.SOUTH);
+    public static final VoxelShaper SLOPE_TOP = shape(Shapes.empty()).build((voxelShape, direction) -> {
+        VoxelShape shape = Shapes.empty();
+        for (int i = 0; i < SLOPE_SUBDIVISIONS; i++) {
+            shape = Shapes.joinUnoptimized(shape, Shapes.box(0, 1d / SLOPE_SUBDIVISIONS * i, 0, 1, 1, 1d / SLOPE_SUBDIVISIONS * (i + 1)), BooleanOp.OR);
+        }
+        shape = shape.optimize();
+        return shape(shape).forDirectional(Direction.NORTH);
+    }, Direction.SOUTH);
 
     private static Builder shape(VoxelShape shape) {
         return new Builder(shape);

@@ -39,6 +39,9 @@ import com.copycatsplus.copycats.content.copycat.slab.CopycatMultiSlabModel;
 import com.copycatsplus.copycats.content.copycat.slab.CopycatSlabBlock;
 import com.copycatsplus.copycats.content.copycat.slice.CopycatSliceBlock;
 import com.copycatsplus.copycats.content.copycat.slice.CopycatSliceModel;
+import com.copycatsplus.copycats.content.copycat.slope.CopycatSlopeBlock;
+import com.copycatsplus.copycats.content.copycat.slope.CopycatSlopeEnhancedModel;
+import com.copycatsplus.copycats.content.copycat.slope.CopycatSlopeModel;
 import com.copycatsplus.copycats.content.copycat.stairs.CopycatStairsBlock;
 import com.copycatsplus.copycats.content.copycat.stairs.CopycatStairsEnhancedModel;
 import com.copycatsplus.copycats.content.copycat.stairs.CopycatStairsModel;
@@ -472,6 +475,15 @@ public class CCBlocks {
                     .onRegister(b -> CopycatWallBlock.wall = b)
                     .tag(BlockTags.WALLS)
                     .blockstate((c, p) -> getWrappedBlockState(c, p, "wrapped_copycat_wall"))
+                    .register();
+
+    public static final BlockEntry<CopycatSlopeBlock> COPYCAT_SLOPE =
+            REGISTRATE.block("copycat_slope", CopycatSlopeBlock::new)
+                    .transform(BuilderTransformers.copycat())
+                    .transform(FeatureToggle.register())
+                    .onRegister(CreateRegistrate.blockModel(() -> ToggleableCopycatModel.with(new CopycatSlopeModel(), new CopycatSlopeEnhancedModel())))
+                    .item()
+                    .transform(customItemModel("copycat_base", "slope"))
                     .register();
 
     public static @Nullable BlockEntry<CopycatTestBlock> COPYCAT_TEST_BLOCK;
