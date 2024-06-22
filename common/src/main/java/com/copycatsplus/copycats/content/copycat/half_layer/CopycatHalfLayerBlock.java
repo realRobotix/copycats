@@ -3,6 +3,7 @@ package com.copycatsplus.copycats.content.copycat.half_layer;
 import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.Copycats;
 import com.copycatsplus.copycats.content.copycat.base.multistate.CTWaterloggedMultiStateCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlockEntity;
 import com.copycatsplus.copycats.content.copycat.base.multistate.ScaledBlockAndTintGetter;
 import com.google.common.collect.ImmutableMap;
 import com.simibubi.create.AllBlocks;
@@ -251,9 +252,9 @@ public class CopycatHalfLayerBlock extends CTWaterloggedMultiStateCopycatBlock {
         return toState.is(this);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public @NotNull BlockState rotate(@NotNull BlockState state, Rotation rot) {
+        state = super.rotate(state, rot);
         Function<Axis, Axis> swap = axis -> axis == Axis.Z ? Axis.X : Axis.Z;
         return switch (rot) {
             case NONE -> state;
@@ -284,9 +285,27 @@ public class CopycatHalfLayerBlock extends CTWaterloggedMultiStateCopycatBlock {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public @NotNull BlockState mirror(BlockState state, Mirror mirrorIn) {
+    public void rotate(@NotNull BlockState state, @NotNull MultiStateCopycatBlockEntity be, Rotation rotation) {
+        Axis axis = state.getValue(AXIS);
+        if (rotation == Rotation.CLOCKWISE_90 && axis == Axis.X ||
+                rotation == Rotation.CLOCKWISE_180 ||
+                rotation == Rotation.COUNTERCLOCKWISE_90 && axis == Axis.Z) {
+            be.getMaterialItemStorage().remapStorage(s -> s.equals(POSITIVE_LAYERS.getName()) ? NEGATIVE_LAYERS.getName() : POSITIVE_LAYERS.getName());
+        }
+    }
+
+    @Override
+    public @NotNull BlockState mirror(@NotNull BlockState state, Mirror mirrorIn) {
+        state = super.mirror(state, mirrorIn);
         return state.rotate(mirrorIn.getRotation(Direction.get(AxisDirection.POSITIVE, state.getValue(AXIS))));
+    }
+
+    @Override
+    public void mirror(@NotNull BlockState state, @NotNull MultiStateCopycatBlockEntity be, Mirror mirror) {
+        Axis axis = state.getValue(AXIS);
+        if (mirror == Mirror.FRONT_BACK && axis == Axis.Z || mirror == Mirror.LEFT_RIGHT && axis == Axis.X) {
+            be.getMaterialItemStorage().remapStorage(s -> s.equals(POSITIVE_LAYERS.getName()) ? NEGATIVE_LAYERS.getName() : POSITIVE_LAYERS.getName());
+        }
     }
 
     @SuppressWarnings("deprecation")

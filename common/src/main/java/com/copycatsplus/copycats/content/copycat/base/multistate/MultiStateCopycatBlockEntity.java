@@ -18,6 +18,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -39,6 +42,23 @@ public abstract class MultiStateCopycatBlockEntity extends SmartBlockEntity impl
         } else {
             materialItemStorage = MaterialItemStorage.create(1, Set.of("block"));
         }
+    }
+
+    @Override
+    public void setLevel(@NotNull Level level) {
+        super.setLevel(level);
+    }
+
+    public void updateTransform() {
+        BlockStateTransform transform = getBlockState().getValue(MultiStateCopycatBlock.TRANSFORM);
+        if (transform != BlockStateTransform.ABCD) {
+            MultiStateCopycatBlock block = (MultiStateCopycatBlock) getBlockState().getBlock();
+            transform.undoTransform(
+                    r -> block.rotate(getBlockState(), this, r),
+                    m -> block.mirror(getBlockState(), this, m)
+            );
+        }
+        getLevel().setBlock(getBlockPos(), getBlockState().setValue(MultiStateCopycatBlock.TRANSFORM, BlockStateTransform.ABCD), 2 | 4 | 16 | 32);
     }
 
     public boolean cycleMaterial(String property) {

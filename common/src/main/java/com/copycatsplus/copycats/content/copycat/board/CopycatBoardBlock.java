@@ -3,6 +3,8 @@ package com.copycatsplus.copycats.content.copycat.board;
 import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.content.copycat.base.ICustomCTBlocking;
 import com.copycatsplus.copycats.content.copycat.base.multistate.CTWaterloggedMultiStateCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.multistate.MaterialItemStorage;
+import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlockEntity;
 import com.google.common.collect.ImmutableMap;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.foundation.utility.Iterate;
@@ -280,16 +282,42 @@ public class CopycatBoardBlock extends CTWaterloggedMultiStateCopycatBlock imple
         return getMaterial(level, pos, property).skipRendering(neighborState, dir.getOpposite());
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public @NotNull BlockState rotate(@NotNull BlockState pState, Rotation pRotation) {
+        pState = super.rotate(pState, pRotation);
         return mapDirections(pState, pRotation::rotate);
     }
 
-    @SuppressWarnings("deprecation")
+    @Override
+    public void rotate(@NotNull BlockState state, @NotNull MultiStateCopycatBlockEntity be, Rotation rotation) {
+        be.getMaterialItemStorage().remapStorage(key -> directionToProperty(rotation.rotate(propertyToDirection(key))));
+    }
+
+    private static Direction propertyToDirection(String property) {
+        return switch (property) {
+            case "up" -> Direction.UP;
+            case "down" -> Direction.DOWN;
+            case "north" -> Direction.NORTH;
+            case "south" -> Direction.SOUTH;
+            case "east" -> Direction.EAST;
+            case "west" -> Direction.WEST;
+            default -> throw new IllegalStateException("Unexpected value: " + property);
+        };
+    }
+
+    public static String directionToProperty(Direction direction) {
+        return direction.getName().toLowerCase();
+    }
+
     @Override
     public @NotNull BlockState mirror(@NotNull BlockState pState, Mirror pMirror) {
+        pState = super.mirror(pState, pMirror);
         return mapDirections(pState, pMirror::mirror);
+    }
+
+    @Override
+    public void mirror(@NotNull BlockState state, @NotNull MultiStateCopycatBlockEntity be, Mirror mirror) {
+        be.getMaterialItemStorage().remapStorage(key -> directionToProperty(mirror.mirror(propertyToDirection(key))));
     }
 
     private BlockState mapDirections(BlockState pState, Function<Direction, Direction> pDirectionalFunction) {

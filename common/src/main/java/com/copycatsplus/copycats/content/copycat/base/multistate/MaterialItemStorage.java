@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class MaterialItemStorage {
@@ -60,6 +61,12 @@ public class MaterialItemStorage {
 
     public boolean hasCustomMaterial(String property) {
         return !storage.get(property).material().is(AllBlocks.COPYCAT_BASE.get());
+    }
+
+    public void remapStorage(Function<String, String> keyMapper) {
+        Map<String, MaterialItem> newStorage = new HashMap<>();
+        storage.forEach((key, materialItem) -> newStorage.put(keyMapper.apply(key), materialItem));
+        storage = newStorage;
     }
 
     public CompoundTag serialize() {
