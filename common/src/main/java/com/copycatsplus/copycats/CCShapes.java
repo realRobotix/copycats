@@ -154,6 +154,14 @@ public class CCShapes {
         shape = shape.optimize();
         return shape(shape).forDirectional(Direction.NORTH);
     }, Direction.SOUTH);
+    public static final VoxelShaper SLOPE_LEFT = shape(Shapes.empty()).build((voxelShape, direction) -> {
+        VoxelShape shape = Shapes.empty();
+        for (int i = 0; i < SLOPE_SUBDIVISIONS; i++) {
+            shape = Shapes.joinUnoptimized(shape, Shapes.box(1 - 1d / SLOPE_SUBDIVISIONS * (i + 1), 0, 1d / SLOPE_SUBDIVISIONS * i, 1, 1, 1d / SLOPE_SUBDIVISIONS * (i + 1)), BooleanOp.OR);
+        }
+        shape = shape.optimize();
+        return shape(shape).forDirectional(Direction.SOUTH);
+    }, Direction.SOUTH);
 
     private static Builder shape(VoxelShape shape) {
         return new Builder(shape);

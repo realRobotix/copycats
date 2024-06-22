@@ -1,29 +1,15 @@
 package com.copycatsplus.copycats.content.copycat.slope;
 
-import com.copycatsplus.copycats.CCBlocks;
 import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.content.copycat.base.CTWaterloggedCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.ICustomCTBlocking;
 import com.copycatsplus.copycats.content.copycat.base.IStateType;
-import com.simibubi.create.content.equipment.extendoGrip.ExtendoGripItem;
-import com.simibubi.create.foundation.placement.IPlacementHelper;
-import com.simibubi.create.foundation.placement.PlacementHelpers;
-import com.simibubi.create.foundation.placement.PlacementOffset;
-import com.simibubi.create.foundation.placement.PoleHelper;
-import com.simibubi.create.infrastructure.config.AllConfigs;
-import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
@@ -34,17 +20,13 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.pathfinder.PathComputationType;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.function.Predicate;
+import java.util.Optional;
 
-public class CopycatSlopeBlock extends CTWaterloggedCopycatBlock implements IStateType {
+public class CopycatSlopeBlock extends CTWaterloggedCopycatBlock implements IStateType, ICustomCTBlocking {
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<Half> HALF = BlockStateProperties.HALF;
@@ -64,21 +46,20 @@ public class CopycatSlopeBlock extends CTWaterloggedCopycatBlock implements ISta
         Half half = state.getValue(HALF);
         BlockState toState = reader.getBlockState(toPos);
 
+        BlockPos diff = toPos.subtract(fromPos);
+        if (diff.equals(Vec3i.ZERO)) {
+            return false;
+        }
+        Direction connectFace = Direction.fromDelta(diff.getX(), diff.getY(), diff.getZ());
+        if (connectFace == null) {
+            return false;
+        }
+
         if (toState.is(this)) {
-            if (toState.getValue(FACING) == direction && toState.getValue(HALF)== half) return false;
-
-            BlockPos diff = toPos.subtract(fromPos);
-            if (diff.equals(Vec3i.ZERO)) {
-                return false;
-            }
-            Direction connectFace = Direction.fromDelta(diff.getX(), diff.getY(), diff.getZ());
-            if (connectFace == null) {
-                return true;
-            }
-
+            if (toState.getValue(FACING) == direction && toState.getValue(HALF) == half) return false;
             return !(direction == connectFace && connectFace == toState.getValue(FACING).getOpposite());
         } else {
-            return false;
+            return !(direction == connectFace || half == Half.TOP && connectFace == Direction.UP || half == Half.BOTTOM && connectFace == Direction.DOWN);
         }
     }
 
@@ -86,7 +67,6 @@ public class CopycatSlopeBlock extends CTWaterloggedCopycatBlock implements ISta
     public boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos,
                                             BlockState state) {
         BlockState toState = reader.getBlockState(toPos);
-        if (!toState.is(this)) return false;
         Direction facing = state.getValue(FACING);
         Half half = state.getValue(HALF);
 
@@ -96,7 +76,7 @@ public class CopycatSlopeBlock extends CTWaterloggedCopycatBlock implements ISta
         }
         Direction face = Direction.fromDelta(diff.getX(), diff.getY(), diff.getZ());
         if (face == null) {
-            return false;
+            return true;
         }
 
         if (toState.is(this)) {
@@ -109,8 +89,16 @@ public class CopycatSlopeBlock extends CTWaterloggedCopycatBlock implements ISta
                 return false;
             }
         } else {
-            return false;
+            return face == facing || half == Half.TOP && face == Direction.UP || half == Half.BOTTOM && face == Direction.DOWN;
         }
+    }
+
+    @Override
+    public Optional<Boolean> isCTBlocked(BlockAndTintGetter reader, BlockState state, BlockPos pos, BlockPos connectingPos, BlockPos blockingPos, Direction face) {
+        if (reader.getBlockState(blockingPos).is(this)) {
+            return Optional.of(false);
+        }
+        return Optional.empty();
     }
 
     @SuppressWarnings("deprecation")
