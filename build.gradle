@@ -102,6 +102,10 @@ allprojects {
         options.release.set(17)
     }
 
+    jar {
+        processResources.exclude("assets/copycats/models/block/copycat_base/README.md")
+    }
+
     tasks.named('processResources', ProcessResources).configure {
         duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
         // include packs
