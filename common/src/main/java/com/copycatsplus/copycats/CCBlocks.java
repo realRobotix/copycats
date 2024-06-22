@@ -1,5 +1,6 @@
 package com.copycatsplus.copycats;
 
+import com.copycatsplus.copycats.config.FeatureCategory;
 import com.copycatsplus.copycats.config.FeatureToggle;
 import com.copycatsplus.copycats.content.copycat.base.model.SimpleCopycatPart;
 import com.copycatsplus.copycats.content.copycat.base.model.ToggleableCopycatModel;
@@ -480,7 +481,7 @@ public class CCBlocks {
     public static final BlockEntry<CopycatSlopeBlock> COPYCAT_SLOPE =
             REGISTRATE.block("copycat_slope", CopycatSlopeBlock::new)
                     .transform(BuilderTransformers.copycat())
-                    .transform(FeatureToggle.register())
+                    .transform(FeatureToggle.register(FeatureCategory.SLOPES))
                     .onRegister(CreateRegistrate.blockModel(() -> ToggleableCopycatModel.with(new CopycatSlopeModel(), new CopycatSlopeEnhancedModel())))
                     .item()
                     .transform(customItemModel("copycat_base", "slope"))
