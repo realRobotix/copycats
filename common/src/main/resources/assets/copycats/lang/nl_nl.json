@@ -95,6 +95,7 @@
   "block.copycats.copycat_slice.tooltip.condition2": "Wanneer sluipend rechter-muisknop geklikt met lege hand",
   "block.copycats.copycat_slice.tooltip.condition3": "Wanneer gesleuteld terwijl sluipen",
   "block.copycats.copycat_slice.tooltip.summary": "_verandert_ elk _vol blok_ in decoratieve Lagen. Lagen kunnen gestapeld worden tot aan een vol blok hoogte.",
+  "block.copycats.copycat_slope": "Immitatiehelling",
   "block.copycats.copycat_stairs": "Imitatietrap",
   "block.copycats.copycat_stairs.tooltip.behaviour1": "Gebruikt het _vastgehouden item_ als het materiaal, indien mogelijk. _Klik opnieuw_ om de _oriëntatie_ te veranderen of om het _aan/uit_ te zetten. Gebruik een _Moersleutel_ om het materiaal te _resetten_.",
   "block.copycats.copycat_stairs.tooltip.behaviour2": "Schakelt _verbonden texturen_ op zijn _materiaal_.",
