@@ -95,6 +95,7 @@
   "block.copycats.copycat_slice.tooltip.condition2": "空手潜行右击时",
   "block.copycats.copycat_slice.tooltip.condition3": "潜行状态下使用扳手时",
   "block.copycats.copycat_slice.tooltip.summary": "将任意的_完整方块_转换为装饰切杆。切杆的截面可以加粗，直到完整方块大小。",
+  "block.copycats.copycat_slope": "伪装斜坡",
   "block.copycats.copycat_stairs": "伪装楼梯",
   "block.copycats.copycat_stairs.tooltip.behaviour1": "如果可能，将根据_手持物品_改变_材质_。_再次点击_以循环切换_方向_或_充能_状态。使用_扳手_重置材质。",
   "block.copycats.copycat_stairs.tooltip.behaviour2": "切换_材质_的_连接贴图_。",
