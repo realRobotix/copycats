@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 1.3.4 - 2024-06-19
 
-## Fixed
+### Fixed
 
 - Multistate copycats having much lower friction than normal
 

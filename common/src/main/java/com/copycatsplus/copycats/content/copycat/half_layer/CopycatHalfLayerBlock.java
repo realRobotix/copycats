@@ -2,9 +2,9 @@ package com.copycatsplus.copycats.content.copycat.half_layer;
 
 import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.Copycats;
-import com.copycatsplus.copycats.content.copycat.base.multistate.CTWaterloggedMultiStateCopycatBlock;
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlockEntity;
 import com.copycatsplus.copycats.content.copycat.base.multistate.ScaledBlockAndTintGetter;
+import com.copycatsplus.copycats.content.copycat.base.multistate.WaterloggedMultiStateCopycatBlock;
 import com.google.common.collect.ImmutableMap;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.foundation.utility.VoxelShaper;
@@ -44,7 +44,7 @@ import java.util.function.Function;
 import static net.minecraft.core.Direction.Axis;
 import static net.minecraft.core.Direction.AxisDirection;
 
-public class CopycatHalfLayerBlock extends CTWaterloggedMultiStateCopycatBlock {
+public class CopycatHalfLayerBlock extends WaterloggedMultiStateCopycatBlock {
 
 
     public static final EnumProperty<Axis> AXIS = BlockStateProperties.HORIZONTAL_AXIS;
@@ -349,6 +349,14 @@ public class CopycatHalfLayerBlock extends CTWaterloggedMultiStateCopycatBlock {
     public boolean shouldFaceAlwaysRender(BlockState state, Direction face) {
         if (face.getAxis().isVertical() && (state.getValue(HALF) == Half.TOP) == (face == Direction.DOWN)) {
             return state.getValue(POSITIVE_LAYERS) < 8 || state.getValue(NEGATIVE_LAYERS) < 8;
+        }
+        if (face.getAxis() == state.getValue(AXIS)) {
+            int negativeLayers = state.getValue(NEGATIVE_LAYERS);
+            int positiveLayers = state.getValue(POSITIVE_LAYERS);
+            if (face.getAxisDirection() == AxisDirection.NEGATIVE && negativeLayers < positiveLayers)
+                return true;
+            if (face.getAxisDirection() == AxisDirection.POSITIVE && positiveLayers < negativeLayers)
+                return true;
         }
         return super.shouldFaceAlwaysRender(state, face);
     }

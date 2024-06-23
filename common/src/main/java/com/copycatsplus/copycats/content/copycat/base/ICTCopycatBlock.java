@@ -19,11 +19,9 @@ import net.minecraft.world.phys.BlockHitResult;
 public interface ICTCopycatBlock extends IBE<CopycatBlockEntity> {
 
     default boolean allowCTAppearance(BlockState state, BlockAndTintGetter level, BlockPos pos, Direction side, BlockState queryState, BlockPos queryPos) {
-        CopycatBlockEntity be = getBlockEntity(level, pos);
+        CopycatBlockEntity be = getBlockEntity(level, queryPos);
         if (be instanceof CTCopycatBlockEntity ctbe) {
-            if (!ctbe.isCTEnabled()) {
-                return queryState.getBlock() instanceof ICTCopycatBlock;
-            }
+            return ctbe.isCTEnabled();
         }
         return true;
     }

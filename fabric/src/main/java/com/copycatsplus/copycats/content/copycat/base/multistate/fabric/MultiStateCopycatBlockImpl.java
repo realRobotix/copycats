@@ -84,6 +84,8 @@ public class MultiStateCopycatBlockImpl {
         } else {
             property = block.storageProperties().stream().findFirst().get();
         }
+        if (!block.allowCTAppearance(block, state, level, side, queryState, queryPos))
+            return state;
         if (block.isIgnoredConnectivitySide(property, level, state, side, pos, queryPos))
             return state;
 

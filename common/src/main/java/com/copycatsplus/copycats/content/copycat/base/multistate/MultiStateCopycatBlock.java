@@ -2,11 +2,13 @@ package com.copycatsplus.copycats.content.copycat.base.multistate;
 
 import com.copycatsplus.copycats.CCBlockEntityTypes;
 import com.copycatsplus.copycats.CCBlockStateProperties;
+import com.copycatsplus.copycats.content.copycat.base.CTCopycatBlockEntity;
 import com.copycatsplus.copycats.content.copycat.base.IStateType;
 import com.copycatsplus.copycats.content.copycat.base.StateType;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.decoration.copycat.CopycatBlock;
+import com.simibubi.create.content.decoration.copycat.CopycatBlockEntity;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.content.schematics.requirement.ISpecialBlockItemRequirement;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
@@ -154,8 +156,17 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
         });
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public @NotNull InteractionResult use(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
+        if (player.isShiftKeyDown() && player.getItemInHand(hand).equals(ItemStack.EMPTY)) {
+            String property = getProperty(state, level, pos, hit, true);
+            MultiStateCopycatBlockEntity be = getBlockEntity(level, pos);
+            be.setEnableCT(property, !be.getMaterialItemStorage().getMaterialItem(property).enableCT());
+            be.redraw();
+            return InteractionResult.SUCCESS;
+        }
+
         if (player == null || !player.mayBuild() && !player.isSpectator())
             return InteractionResult.PASS;
 
@@ -334,6 +345,21 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
                                     BlockState queryState, BlockPos queryPos) {
 
         return multiPlatformGetAppearance(this, state, level, pos, side, queryState, queryPos);
+    }
+
+    public boolean allowCTAppearance(MultiStateCopycatBlock block, BlockState state, BlockAndTintGetter level, Direction side,
+                                     BlockState queryState, BlockPos queryPos) {
+        String property;
+        if (level instanceof ScaledBlockAndTintGetter scaledLevel) {
+            BlockPos truePos = scaledLevel.getTruePos(queryPos);
+            Vec3i inner = scaledLevel.getInner(queryPos);
+            property = block.getPropertyFromRender(scaledLevel.getRenderingProperty(), state, scaledLevel, inner, truePos, side, queryState, queryPos);
+        } else {
+            property = block.storageProperties().stream().findFirst().get();
+        }
+        MultiStateCopycatBlockEntity be = getBlockEntity(level, queryPos);
+        if (be == null) return true;
+        return be.getMaterialItemStorage().getMaterialItem(property).enableCT();
     }
 
     public boolean isIgnoredConnectivitySide(String property, BlockAndTintGetter reader, BlockState state, Direction face,
