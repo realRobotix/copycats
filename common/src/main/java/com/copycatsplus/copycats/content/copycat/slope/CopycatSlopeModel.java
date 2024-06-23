@@ -55,7 +55,7 @@ public class CopycatSlopeModel implements SimpleCopycatPart {
         final double midLengthTop = halfLength - marginAdjTop;
         final double marginAdjExcessTop = marginAdjTop - Math.floor(marginAdjTop);
 
-        final double alignedLengthBottom = Math.floor(midLengthBottom + marginAdjExcessBottom) - marginAdjExcessBottom;
+        final double alignedLengthBottom = Math.abs(Math.floor(midLengthBottom + marginAdjExcessBottom) - marginAdjExcessBottom);
         final double alignedLengthTop = Math.floor(midLengthTop + marginAdjExcessTop) - marginAdjExcessTop;
 
         assemblePiece(context,
