@@ -2,6 +2,7 @@ package com.copycatsplus.copycats.content.copycat.base.model.fabric;
 
 import com.copycatsplus.copycats.content.copycat.base.model.SimpleCopycatPart;
 import com.copycatsplus.copycats.content.copycat.base.model.assembly.fabric.AssemblerImpl.CopycatRenderContextFabric;
+import com.simibubi.create.content.decoration.copycat.CopycatModel;
 import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MeshBuilder;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
@@ -17,7 +18,7 @@ import java.util.function.Supplier;
 
 import static com.copycatsplus.copycats.content.copycat.base.model.assembly.fabric.AssemblerImpl.assembleQuad;
 
-public class SimpleCopycatModel extends FilteredCopycatModel {
+public class SimpleCopycatModel extends CopycatModel {
 
     private final SimpleCopycatPart part;
 
@@ -27,7 +28,7 @@ public class SimpleCopycatModel extends FilteredCopycatModel {
     }
 
     @Override
-    protected void emitBlockQuadsFiltered(BlockAndTintGetter blockView, BlockState state, BlockPos pos, Supplier<RandomSource> randomSupplier, RenderContext renderContext, BlockState material, CullFaceRemovalData cullFaceRemovalData, OcclusionData occlusionData) {
+    protected void emitBlockQuadsInner(BlockAndTintGetter blockView, BlockState state, BlockPos pos, Supplier<RandomSource> randomSupplier, RenderContext renderContext, BlockState material, CullFaceRemovalData cullFaceRemovalData, OcclusionData occlusionData) {
         BakedModel model = getModelOf(material);
 
         // Use a mesh to defer quad emission since quads cannot be emitted inside a transform
