@@ -30,8 +30,8 @@ public class CopycatVerticalSlopeModel implements SimpleCopycatPart {
         int rot = (int) facing.toYRot();
         GlobalTransform transform = t -> t.rotateZ(-90).rotateY(rot);
         if (enhanced)
-            CopycatSlopeModel.assembleSlope(context, transform, 16, 0, 3);
+            CopycatSlopeModel.assembleSlope(context, transform, 16, 3);
         else
-            CopycatSlopeModel.assembleSlope(context, transform, 16, 0);
+            CopycatSlopeModel.assembleSlope(context, transform, 16);
     }
 }

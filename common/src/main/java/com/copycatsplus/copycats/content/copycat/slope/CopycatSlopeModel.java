@@ -27,102 +27,135 @@ public class CopycatSlopeModel implements SimpleCopycatPart {
         boolean flipY = half == Half.TOP;
         GlobalTransform transform = t -> t.flipY(flipY).rotateY(rot);
         if (enhanced)
-            assembleSlope(context, transform, 16, 0, 3);
+            assembleSlope(context, transform, 16, 3);
         else
-            assembleSlope(context, transform, 16, 0);
+            assembleSlope(context, transform, 16);
     }
 
-    public static void assembleSlope(CopycatRenderContext<?, ?> context, GlobalTransform transform, double maxHeight, double minHeight) {
+    public static void assembleSlope(CopycatRenderContext<?, ?> context, GlobalTransform transform, double maxHeight) {
         assemblePiece(context,
                 transform,
                 vec3(0, 0, 0),
                 aabb(16, 16, 16),
                 cull(NORTH),
-                updateUV(slope(Direction.UP, (a, b) -> map(0, 16, minHeight, maxHeight, b)))
+                updateUV(slope(Direction.UP, (a, b) -> map(0, 16, 0, maxHeight, b)))
         );
     }
 
-    public static void assembleSlope(CopycatRenderContext<?, ?> context, GlobalTransform transform, double maxHeight, double minHeight, double margin) {
-        final double angle = Math.atan2(maxHeight - minHeight, 16) / 2;
-        final double marginAdj = margin / Math.tan(angle);
-        final double midLength = Math.sqrt((maxHeight - minHeight) * (maxHeight - minHeight) + 16 * 16) - 2 * marginAdj;
-        final double marginAdjExcess = marginAdj - Math.floor(marginAdj);
-        final double alignedLength = ((int) Math.floor(midLength + 2 * marginAdjExcess)) % 2 == 0
-                ? Math.floor(midLength + 2 * marginAdjExcess) - 2 * marginAdjExcess
-                : Math.floor(midLength + 2 * marginAdjExcess) + 1 - 2 * marginAdjExcess;
+    public static void assembleSlope(CopycatRenderContext<?, ?> context, GlobalTransform transform, double maxHeight, double margin) {
+        final double angleBottom = Math.toDegrees(Math.atan2(maxHeight, 16));
+        final double marginAdjBottom = margin / Math.tan(Math.toRadians(angleBottom) / 2);
+        final double angleTop = Math.toDegrees(Math.atan2(16, maxHeight));
+        final double marginAdjTop = margin / Math.tan(Math.toRadians(angleTop) / 2);
+
+        final double halfLength = Math.sqrt(maxHeight * maxHeight + 16 * 16) / 2;
+
+        final double midLengthBottom = halfLength - marginAdjBottom;
+        final double marginAdjExcessBottom = marginAdjBottom - Math.floor(marginAdjBottom);
+        final double midLengthTop = halfLength - marginAdjTop;
+        final double marginAdjExcessTop = marginAdjTop - Math.floor(marginAdjTop);
+
+        final double alignedLengthBottom = Math.floor(midLengthBottom + marginAdjExcessBottom) - marginAdjExcessBottom;
+        final double alignedLengthTop = Math.floor(midLengthTop + marginAdjExcessTop) - marginAdjExcessTop;
 
         assemblePiece(context,
                 transform,
                 vec3(0, 0, 0),
-                aabb(16, 16, marginAdj),
+                aabb(16, 16, marginAdjBottom),
                 cull(UP | NORTH | SOUTH),
-                updateUV(slope(Direction.UP, (a, b) -> map(0, marginAdj, 0, margin, b)))
+                updateUV(slope(Direction.UP, (a, b) -> map(0, marginAdjBottom, 0, margin, b)))
         );
         assemblePiece(context,
                 transform,
-                vec3(0, 0, marginAdj),
-                aabb(16, 16, 16 - margin - marginAdj).move(0, 0, marginAdj),
+                vec3(0, 0, marginAdjBottom),
+                aabb(16, 16, 16 - margin - marginAdjBottom).move(0, 0, marginAdjBottom),
                 cull(UP | NORTH | SOUTH),
-                updateUV(slope(Direction.UP, (a, b) -> map(marginAdj, 16 - margin, margin, 16 - marginAdj, b)))
+                updateUV(slope(Direction.UP, (a, b) -> map(marginAdjBottom, 16 - margin, margin, maxHeight - marginAdjTop, b)))
         );
-        assemblePiece(context,
-                transform,
-                vec3(0, 0, 16 - margin),
-                aabb(16, 16, margin).move(0, 0, 16 - margin),
-                cull(UP | NORTH),
-                updateUV(slope(Direction.UP, (a, b) -> map(16 - margin, 16, 16 - marginAdj, 16, b)))
-        );
+        if (maxHeight == 16) {
+            assemblePiece(context,
+                    transform,
+                    vec3(0, 0, 16 - margin),
+                    aabb(16, 16, margin).move(0, 0, 16 - margin),
+                    cull(UP | NORTH),
+                    updateUV(slope(Direction.UP, (a, b) -> map(16 - margin, 16, maxHeight - marginAdjTop, maxHeight, b)))
+            );
+        } else {
+            assemblePiece(context,
+                    transform,
+                    vec3(0, 0, 16 - margin),
+                    aabb(16, maxHeight / 2, margin).move(0, 0, 16 - margin),
+                    cull(UP | NORTH)
+            );
+            assemblePiece(context,
+                    transform,
+                    vec3(0, 16 - maxHeight / 2, 16 - margin),
+                    aabb(16, maxHeight / 2, margin).move(0, 16 - maxHeight / 2, 16 - margin),
+                    cull(UP | DOWN | NORTH),
+                    scale(
+                            pivot(16, 16, 16),
+                            scale(1, 32 / maxHeight, 1)
+                    ),
+                    updateUV(slope(Direction.UP, (a, b) -> map(16 - margin, 16, 16 - marginAdjTop / maxHeight * 32, 16, b))),
+                    scale(
+                            pivot(16, 16, 16),
+                            scale(1, maxHeight / 32, 1)
+                    ),
+                    translate(0, -16 + maxHeight, 0)
+            );
+        }
         assemblePiece(context,
                 transform,
                 vec3(0, 0, 0),
-                aabb(16, 16, marginAdj),
+                aabb(16, 16, marginAdjBottom),
                 cull(DOWN | NORTH | SOUTH),
-                updateUV(slope(Direction.DOWN, (a, b) -> map(0, marginAdj, 0, margin, b))),
+                updateUV(slope(Direction.DOWN, (a, b) -> map(0, marginAdjBottom, 0, margin, b))),
                 translate(0, -16, 0),
                 rotate(
                         pivot(0, 0, 0),
-                        angle(-45, 0, 0)
+                        angle(-angleBottom, 0, 0)
                 )
         );
         assemblePiece(context,
                 transform,
-                vec3(0, 16 - margin, 16 - alignedLength / 2),
-                aabb(16, margin, alignedLength / 2).move(0, 16 - margin, marginAdj),
+                vec3(0, maxHeight - margin, 16 - alignedLengthBottom),
+                aabb(16, margin, alignedLengthBottom).move(0, 16 - margin, marginAdjBottom),
                 cull(DOWN | NORTH | SOUTH),
                 scale(
-                        pivot(16, 16, 16),
-                        scale(1, 1, midLength / alignedLength)
+                        pivot(16, maxHeight, 16),
+                        scale(1, 1, midLengthBottom / alignedLengthBottom)
                 ),
-                translate(0, 0, -marginAdj - midLength / 2),
+                translate(0, 0, -halfLength),
                 rotate(
-                        pivot(16, 16, 16),
-                        angle(-45, 0, 0)
+                        pivot(16, maxHeight, 16),
+                        angle(-angleBottom, 0, 0)
                 )
         );
         assemblePiece(context,
                 transform,
-                vec3(0, 16 - margin, 16 - alignedLength / 2),
-                aabb(16, margin, alignedLength / 2).move(0, 16 - margin, 16 - marginAdj - alignedLength / 2),
+                vec3(0, maxHeight - margin, 16 - alignedLengthTop),
+                aabb(16, margin, alignedLengthTop).move(0, 16 - margin, 16 - marginAdjTop - alignedLengthTop),
                 cull(DOWN | NORTH | SOUTH),
                 scale(
-                        pivot(16, 16, 16),
-                        scale(1, 1, midLength / alignedLength)
+                        pivot(16, maxHeight, 16),
+                        scale(1, 1, midLengthTop / alignedLengthTop)
                 ),
-                translate(0, 0, -marginAdj),
+                translate(0, 0, -marginAdjTop),
                 rotate(
-                        pivot(16, 16, 16),
-                        angle(-45, 0, 0)
+                        pivot(16, maxHeight, 16),
+                        angle(-angleBottom, 0, 0)
                 )
         );
         assemblePiece(context,
                 transform,
-                vec3(0, 0, 16 - marginAdj),
-                aabb(16, 16, marginAdj).move(0, 0, 16 - marginAdj),
+                vec3(0, 0, 16 - marginAdjTop),
+                aabb(16, 16, marginAdjTop).move(0, 0, 16 - marginAdjTop),
                 cull(DOWN | NORTH | SOUTH),
-                updateUV(slope(Direction.DOWN, (a, b) -> map(16 - marginAdj, 16, margin, 0, b))),
+                updateUV(slope(Direction.DOWN, (a, b) -> map(16 - marginAdjTop, 16, margin, 0, b))),
+                translate(0, -16 + maxHeight, 0),
                 rotate(
-                        pivot(16, 16, 16),
-                        angle(-45, 0, 0)
+                        pivot(16, maxHeight, 16),
+                        angle(-angleBottom, 0, 0)
                 )
         );
     }
