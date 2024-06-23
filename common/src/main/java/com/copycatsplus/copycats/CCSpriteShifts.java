@@ -10,6 +10,11 @@ import com.simibubi.create.foundation.block.render.SpriteShifter;
 public class CCSpriteShifts {
     public static final CTSpriteShiftEntry WRAPPED_ANDESITE_CASING = omni("wrapped_andesite_casing");
     public static final CTSpriteShiftEntry WRAPPED_BRASS_CASING = omni("wrapped_brass_casing");
+    public static final CTSpriteShiftEntry WRAPPED_COPPER_CASING = omni("wrapped_copper_casing");
+    public static final CTSpriteShiftEntry WRAPPED_RAILWAY_CASING = omni("wrapped_railway_casing");
+    public static final CTSpriteShiftEntry WRAPPED_RAILWAY_CASING_SIDE = omni("wrapped_railway_casing_side");
+    public static final CTSpriteShiftEntry WRAPPED_REFINED_RADIANCE_CASING = omni("wrapped_refined_radiance_casing");
+    public static final CTSpriteShiftEntry WRAPPED_SHADOW_STEEL_CASING = omni("wrapped_shadow_steel_casing");
 
     private static CTSpriteShiftEntry omni(String name) {
         return getCT(AllCTTypes.OMNIDIRECTIONAL, name);

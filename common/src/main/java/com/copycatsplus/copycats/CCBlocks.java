@@ -17,6 +17,8 @@ import com.copycatsplus.copycats.content.copycat.button.CopycatWoodenButtonBlock
 import com.copycatsplus.copycats.content.copycat.button.WrappedButton;
 import com.copycatsplus.copycats.content.copycat.bytes.CopycatByteBlock;
 import com.copycatsplus.copycats.content.copycat.bytes.CopycatMultiByteModel;
+import com.copycatsplus.copycats.content.copycat.casing.CopycatCasingBlock;
+import com.copycatsplus.copycats.content.copycat.casing.CopycatCasingModel;
 import com.copycatsplus.copycats.content.copycat.casing.WrappedCasingBlock;
 import com.copycatsplus.copycats.content.copycat.fence.CopycatFenceBlock;
 import com.copycatsplus.copycats.content.copycat.fence.CopycatFenceModel;
@@ -500,6 +502,33 @@ public class CCBlocks {
     public static final BlockEntry<WrappedCasingBlock> WRAPPED_BRASS_CASING = REGISTRATE.block("wrapped_brass_casing", WrappedCasingBlock::new)
             .transform(CCBuilderTransformers.wrappedCasing(CCSpriteShifts.WRAPPED_BRASS_CASING))
             .register();
+
+    public static final BlockEntry<WrappedCasingBlock> WRAPPED_COPPER_CASING = REGISTRATE.block("wrapped_copper_casing", WrappedCasingBlock::new)
+            .transform(CCBuilderTransformers.wrappedCasing(CCSpriteShifts.WRAPPED_COPPER_CASING))
+            .register();
+
+    public static final BlockEntry<WrappedCasingBlock> WRAPPED_RAILWAY_CASING = REGISTRATE.block("wrapped_railway_casing", WrappedCasingBlock::new)
+            .transform(CCBuilderTransformers.wrappedLayeredCasing(CCSpriteShifts.WRAPPED_RAILWAY_CASING_SIDE, CCSpriteShifts.WRAPPED_RAILWAY_CASING))
+            .register();
+
+    public static final BlockEntry<WrappedCasingBlock> WRAPPED_REFINED_RADIANCE_CASING = REGISTRATE.block("wrapped_refined_radiance_casing", WrappedCasingBlock::new)
+            .transform(CCBuilderTransformers.wrappedCasing(CCSpriteShifts.WRAPPED_REFINED_RADIANCE_CASING))
+            .register();
+
+    public static final BlockEntry<WrappedCasingBlock> WRAPPED_SHADOW_STEEL_CASING = REGISTRATE.block("wrapped_shadow_steel_casing", WrappedCasingBlock::new)
+            .transform(CCBuilderTransformers.wrappedCasing(CCSpriteShifts.WRAPPED_SHADOW_STEEL_CASING))
+            .register();
+
+    public static final BlockEntry<CopycatCasingBlock> COPYCAT_CASING =
+            REGISTRATE.block("copycat_casing", CopycatCasingBlock::new)
+                    .transform(CCBuilderTransformers.multiCopycat())
+                    .tag(AllTags.AllBlockTags.CASING.tag)
+                    .transform(FeatureToggle.register())
+                    .onRegister(blockModel(() -> model -> SimpleMultiStateCopycatPart.create(model, new CopycatCasingModel())))
+                    .item()
+                    .tag(AllTags.AllItemTags.CASING.tag)
+                    .transform(customItemModel("copycat_base", "casing"))
+                    .register();
 
     public static @Nullable BlockEntry<CopycatTestBlock> COPYCAT_TEST_BLOCK;
 
