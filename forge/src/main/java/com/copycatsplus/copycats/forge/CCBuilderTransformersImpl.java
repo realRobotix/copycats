@@ -1,12 +1,21 @@
 package com.copycatsplus.copycats.forge;
 
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.casing.WrappedCasingBlock;
+import com.simibubi.create.AllTags;
+import com.simibubi.create.content.decoration.encasing.EncasedCTBehaviour;
+import com.simibubi.create.foundation.block.connected.CTSpriteShiftEntry;
 import com.simibubi.create.foundation.data.SharedProperties;
 import com.simibubi.create.foundation.data.TagGen;
 import com.tterrag.registrate.builders.BlockBuilder;
 import com.tterrag.registrate.util.nullness.NonNullUnaryOperator;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.MapColor;
+
+import static com.simibubi.create.foundation.data.CreateRegistrate.casingConnectivity;
+import static com.simibubi.create.foundation.data.CreateRegistrate.connectedTextures;
+import static com.simibubi.create.foundation.data.TagGen.axeOrPickaxe;
 
 public class CCBuilderTransformersImpl {
 
@@ -37,5 +46,16 @@ public class CCBuilderTransformersImpl {
                 .addLayer(() -> RenderType::cutoutMipped)
                 .addLayer(() -> RenderType::translucent)
                 .color(() -> MultiStateCopycatBlock::wrappedColor);
+    }
+
+    public static <B extends WrappedCasingBlock, P> NonNullUnaryOperator<BlockBuilder<B, P>> wrappedCasing(CTSpriteShiftEntry spriteShift) {
+        return b -> b.initialProperties(SharedProperties::stone)
+                .properties(p -> p.mapColor(MapColor.PODZOL).sound(SoundType.WOOD).noOcclusion())
+                .transform(axeOrPickaxe())
+                .blockstate((c, p) -> p.simpleBlock(c.get()))
+                .addLayer(() -> RenderType::cutoutMipped)
+                .onRegister(connectedTextures(() -> new EncasedCTBehaviour(spriteShift)))
+                .onRegister(casingConnectivity((block, cc) -> cc.makeCasing(block, spriteShift)))
+                .tag(AllTags.AllBlockTags.CASING.tag);
     }
 }

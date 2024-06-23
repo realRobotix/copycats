@@ -25,6 +25,8 @@
     "copycats:copycat_vertical_slice",
     "copycats:copycat_vertical_step",
     "copycats:copycat_wall",
-    "copycats:copycat_slope"
+    "copycats:copycat_slope",
+    "copycats:wrapped_andesite_casing",
+    "copycats:wrapped_brass_casing"
   ]
 }

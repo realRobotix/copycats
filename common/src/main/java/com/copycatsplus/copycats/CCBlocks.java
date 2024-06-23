@@ -17,6 +17,7 @@ import com.copycatsplus.copycats.content.copycat.button.CopycatWoodenButtonBlock
 import com.copycatsplus.copycats.content.copycat.button.WrappedButton;
 import com.copycatsplus.copycats.content.copycat.bytes.CopycatByteBlock;
 import com.copycatsplus.copycats.content.copycat.bytes.CopycatMultiByteModel;
+import com.copycatsplus.copycats.content.copycat.casing.WrappedCasingBlock;
 import com.copycatsplus.copycats.content.copycat.fence.CopycatFenceBlock;
 import com.copycatsplus.copycats.content.copycat.fence.CopycatFenceModel;
 import com.copycatsplus.copycats.content.copycat.fence.WrappedFenceBlock;
@@ -63,30 +64,36 @@ import com.copycatsplus.copycats.content.copycat.wall.CopycatWallModel;
 import com.copycatsplus.copycats.content.copycat.wall.WrappedWallBlock;
 import com.copycatsplus.copycats.datagen.CCLootGen;
 import com.simibubi.create.AllTags;
+import com.simibubi.create.content.decoration.encasing.EncasedCTBehaviour;
 import com.simibubi.create.foundation.data.BuilderTransformers;
 import com.simibubi.create.foundation.data.CreateRegistrate;
+import com.simibubi.create.foundation.data.SharedProperties;
 import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.providers.DataGenContext;
 import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.entry.RegistryEntry;
 import dev.architectury.injectables.annotations.ExpectPlatform;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.PressurePlateBlock;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.WoodType;
+import net.minecraft.world.level.material.MapColor;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.simibubi.create.foundation.data.CreateRegistrate.blockModel;
+import static com.simibubi.create.foundation.data.CreateRegistrate.*;
 import static com.simibubi.create.foundation.data.ModelGen.customItemModel;
+import static com.simibubi.create.foundation.data.TagGen.axeOrPickaxe;
 
 @SuppressWarnings("unused")
 //noinspection unchecked
@@ -485,6 +492,14 @@ public class CCBlocks {
                     .item()
                     .transform(customItemModel("copycat_base", "slope"))
                     .register();
+
+    public static final BlockEntry<WrappedCasingBlock> WRAPPED_ANDESITE_CASING = REGISTRATE.block("wrapped_andesite_casing", WrappedCasingBlock::new)
+            .transform(CCBuilderTransformers.wrappedCasing(CCSpriteShifts.WRAPPED_ANDESITE_CASING))
+            .register();
+
+    public static final BlockEntry<WrappedCasingBlock> WRAPPED_BRASS_CASING = REGISTRATE.block("wrapped_brass_casing", WrappedCasingBlock::new)
+            .transform(CCBuilderTransformers.wrappedCasing(CCSpriteShifts.WRAPPED_BRASS_CASING))
+            .register();
 
     public static @Nullable BlockEntry<CopycatTestBlock> COPYCAT_TEST_BLOCK;
 
