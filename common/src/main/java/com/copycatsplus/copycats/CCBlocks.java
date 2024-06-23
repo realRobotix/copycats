@@ -42,6 +42,8 @@ import com.copycatsplus.copycats.content.copycat.slice.CopycatSliceBlock;
 import com.copycatsplus.copycats.content.copycat.slice.CopycatSliceModel;
 import com.copycatsplus.copycats.content.copycat.slope.CopycatSlopeBlock;
 import com.copycatsplus.copycats.content.copycat.slope.CopycatSlopeModel;
+import com.copycatsplus.copycats.content.copycat.slope_layer.CopycatSlopeLayerBlock;
+import com.copycatsplus.copycats.content.copycat.slope_layer.CopycatSlopeLayerModel;
 import com.copycatsplus.copycats.content.copycat.stairs.CopycatStairsBlock;
 import com.copycatsplus.copycats.content.copycat.stairs.CopycatStairsEnhancedModel;
 import com.copycatsplus.copycats.content.copycat.stairs.CopycatStairsModel;
@@ -495,6 +497,16 @@ public class CCBlocks {
                     .onRegister(CreateRegistrate.blockModel(() -> ToggleableCopycatModel.with(new CopycatVerticalSlopeModel(false), new CopycatVerticalSlopeModel(true))))
                     .item()
                     .transform(customItemModel("copycat_base", "vertical_slope"))
+                    .register();
+
+    public static final BlockEntry<CopycatSlopeLayerBlock> COPYCAT_SLOPE_LAYER =
+            REGISTRATE.block("copycat_slope_layer", CopycatSlopeLayerBlock::new)
+                    .transform(BuilderTransformers.copycat())
+                    .transform(FeatureToggle.register(FeatureCategory.SLOPES))
+                    .onRegister(CreateRegistrate.blockModel(() -> ToggleableCopycatModel.with(new CopycatSlopeLayerModel(false), new CopycatSlopeLayerModel(true))))
+                    .loot(CCLootGen.build(CCLootGen.lootForLayers()))
+                    .item()
+                    .transform(customItemModel("copycat_base", "slope_layer"))
                     .register();
 
     public static @Nullable BlockEntry<CopycatTestBlock> COPYCAT_TEST_BLOCK;
