@@ -64,7 +64,7 @@ public class CopycatCasingBlock extends MultiStateCopycatBlock {
 
     @Override
     public Set<String> storageProperties() {
-        return Set.of(Slot.OUTER.getSerializedName(), Slot.INNER.getSerializedName());
+        return Set.of(Slot.INNER.getSerializedName(), Slot.OUTER.getSerializedName());
     }
 
     @Override
@@ -209,6 +209,19 @@ public class CopycatCasingBlock extends MultiStateCopycatBlock {
     @Override
     public boolean canFaceBeOccluded(BlockState state, Direction face) {
         return true;
+    }
+
+    public boolean supportsExternalFaceHiding(BlockState state) {
+        return true;
+    }
+
+    public boolean hidesNeighborFace(BlockGetter level, BlockPos pos, BlockState state, BlockState neighborState,
+                                     Direction dir) {
+        if (state.is(this) == neighborState.is(this)) {
+            return getMaterial(level, pos).skipRendering(getMaterial(level, pos.relative(dir)), dir.getOpposite());
+        }
+
+        return false;
     }
 
     public static enum Slot implements StringRepresentable {
