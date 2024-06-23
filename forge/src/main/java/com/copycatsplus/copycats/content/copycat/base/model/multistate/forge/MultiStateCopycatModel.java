@@ -1,6 +1,8 @@
 package com.copycatsplus.copycats.content.copycat.base.model.multistate.forge;
 
+import com.copycatsplus.copycats.content.copycat.base.CTCopycatBlockEntity;
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlockEntity;
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateTextureAtlasSprite;
 import com.simibubi.create.foundation.model.BakedModelWrapperWithData;
 import com.simibubi.create.foundation.utility.Iterate;
@@ -15,6 +17,7 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
@@ -57,7 +60,12 @@ public abstract class MultiStateCopycatModel extends BakedModelWrapperWithData {
             Vec3i inner = copycatBlock.getVectorFromProperty(state, s.getKey());
             ScaledBlockAndTintGetterForge scaledWorld = new ScaledBlockAndTintGetterForge(s.getKey(), world, pos, inner, copycatBlock.vectorScale(state), p -> true);
             ScaledBlockAndTintGetterForge filteredWorld = new ScaledBlockAndTintGetterForge(s.getKey(), world, pos, inner, copycatBlock.vectorScale(state),
-                    targetPos -> copycatBlock.canConnectTexturesToward(s.getKey(), scaledWorld, pos, targetPos, state));
+                    targetPos -> {
+                        BlockEntity be = world.getBlockEntity(pos);
+                        if (be instanceof MultiStateCopycatBlockEntity mscbe)
+                            if (!mscbe.getMaterialItemStorage().getMaterialItem(s.getKey()).enableCT()) return false;
+                        return copycatBlock.canConnectTexturesToward(s.getKey(), scaledWorld, pos, targetPos, state);
+                    });
             return getModelOf(s.getValue()).getModelData(
                     filteredWorld,
                     pos, s.getValue(), ModelData.EMPTY);
