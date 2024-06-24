@@ -4,27 +4,23 @@ import com.copycatsplus.copycats.content.copycat.base.functional.IFunctionalCopy
 import com.jozufozu.flywheel.core.model.ModelUtil;
 import com.jozufozu.flywheel.core.model.ShadeSeparatedBufferedData;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.simibubi.create.foundation.render.SuperByteBuffer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
 
 public class FunctionalCopycatRenderHelperImpl {
 
-    public static SuperByteBuffer copycatRender(BakedModel model, IFunctionalCopycatBlockEntity be, PoseStack ms) {
+    public static ShadeSeparatedBufferedData getCopycatBuffer(BakedModel model, IFunctionalCopycatBlockEntity be, PoseStack ms) {
         ModelData renderData = model.getModelData(be.getLevel(), be.getBlockPos(), be.getBlockState(), be.getCopycatBlockEntity().getModelData());
         ModelData.Builder builder = ModelData.builder();
         copyModelData(renderData, builder);
         builder.with(ModelUtil.VIRTUAL_PROPERTY, true);
 
-        ShadeSeparatedBufferedData bufferedData = new BakedModelWithDataBuilder(model)
+        return new BakedModelWithDataBuilder(model)
                 .withReferenceState(be.getBlockState())
                 .withPoseStack(ms)
                 .withData(builder.build())
                 .build();
-        SuperByteBuffer sbb = new SuperByteBuffer(bufferedData);
-        bufferedData.release();
-        return sbb;
     }
 
     public static ModelData.Builder mergeData(ModelData data1, ModelData data2) {

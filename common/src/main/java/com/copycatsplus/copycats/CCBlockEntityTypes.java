@@ -3,10 +3,9 @@ package com.copycatsplus.copycats;
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlockEntity;
 import com.copycatsplus.copycats.content.copycat.ladder.CopycatLadderMultiStateBlockEntity;
 import com.copycatsplus.copycats.content.copycat.shaft.CopycatShaftBlockEntity;
+import com.copycatsplus.copycats.content.copycat.shaft.CopycatShaftInstance;
 import com.copycatsplus.copycats.content.copycat.shaft.CopycatShaftRenderer;
 import com.simibubi.create.content.decoration.copycat.CopycatBlockEntity;
-import com.simibubi.create.content.kinetics.simpleRelays.BracketedKineticBlockEntityInstance;
-import com.simibubi.create.content.kinetics.simpleRelays.BracketedKineticBlockEntityRenderer;
 import com.tterrag.registrate.builders.BlockEntityBuilder;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
 import dev.architectury.injectables.annotations.ExpectPlatform;
@@ -58,7 +57,7 @@ public class CCBlockEntityTypes {
 
     public static final BlockEntityEntry<? extends CopycatShaftBlockEntity> COPYCAT_SHAFT =
             REGISTRATE.blockEntity("copycat_shaft", getPlatformShaft())
-                    .instance(() -> BracketedKineticBlockEntityInstance::new, false)
+                    .instance(() -> CopycatShaftInstance::new, false)
                     .validBlocks(CCBlocks.COPYCAT_SHAFT)
                     .renderer(() -> CopycatShaftRenderer::new)
                     .register();
