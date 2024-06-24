@@ -87,7 +87,7 @@ public interface IFunctionalCopycatBlock extends IWrenchable {
             return null;
 
         Block block = bi.getBlock();
-        if (block instanceof CopycatBlock)
+        if (block instanceof CopycatBlock || block instanceof IFunctionalCopycatBlock)
             return null;
 
         BlockState appliedState = block.defaultBlockState();
