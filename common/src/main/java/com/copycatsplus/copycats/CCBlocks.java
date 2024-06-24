@@ -496,7 +496,7 @@ public class CCBlocks {
             .transform(BlockStressDefaults.setNoImpact())
             .onRegister(CreateRegistrate.blockModel(() -> model -> getShaftModel(model, SimpleCopycatPart.create(model, new CopycatShaftModel()))))
             .item()
-            .transform(customItemModel("copycat_base", "beam"))
+            .transform(customItemModel("copycat_base", "shaft"))
             .register();
 
     @ExpectPlatform
