@@ -2,7 +2,11 @@ package com.copycatsplus.copycats;
 
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlockEntity;
 import com.copycatsplus.copycats.content.copycat.ladder.CopycatLadderMultiStateBlockEntity;
+import com.copycatsplus.copycats.content.copycat.shaft.CopycatShaftBlockEntity;
+import com.copycatsplus.copycats.content.copycat.shaft.CopycatShaftRenderer;
 import com.simibubi.create.content.decoration.copycat.CopycatBlockEntity;
+import com.simibubi.create.content.kinetics.simpleRelays.BracketedKineticBlockEntityInstance;
+import com.simibubi.create.content.kinetics.simpleRelays.BracketedKineticBlockEntityRenderer;
 import com.tterrag.registrate.builders.BlockEntityBuilder;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
 import dev.architectury.injectables.annotations.ExpectPlatform;
@@ -52,6 +56,13 @@ public class CCBlockEntityTypes {
                     .validBlocks(/*CCBlocks.COPYCAT_LADDER*/)
                     .register();
 
+    public static final BlockEntityEntry<? extends CopycatShaftBlockEntity> COPYCAT_SHAFT =
+            REGISTRATE.blockEntity("copycat_shaft", getPlatformShaft())
+                    .instance(() -> BracketedKineticBlockEntityInstance::new, false)
+                    .validBlocks(CCBlocks.COPYCAT_SHAFT)
+                    .renderer(() -> CopycatShaftRenderer::new)
+                    .register();
+
     @ExpectPlatform
     public static BlockEntityBuilder.BlockEntityFactory<? extends MultiStateCopycatBlockEntity> getPlatformMultiState() {
         throw new AssertionError("This shouldn't appear");
@@ -59,6 +70,11 @@ public class CCBlockEntityTypes {
 
     @ExpectPlatform
     public static BlockEntityBuilder.BlockEntityFactory<? extends CopycatLadderMultiStateBlockEntity> getPlatformMultiStateLadder() {
+        throw new AssertionError("This shouldn't appear");
+    }
+
+    @ExpectPlatform
+    public static BlockEntityBuilder.BlockEntityFactory<? extends CopycatShaftBlockEntity> getPlatformShaft() {
         throw new AssertionError("This shouldn't appear");
     }
 

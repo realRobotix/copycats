@@ -35,6 +35,8 @@ import com.copycatsplus.copycats.content.copycat.ladder.WrappedLadderBlock;
 import com.copycatsplus.copycats.content.copycat.layer.CopycatLayerBlock;
 import com.copycatsplus.copycats.content.copycat.layer.CopycatLayerModel;
 import com.copycatsplus.copycats.content.copycat.pressure_plate.*;
+import com.copycatsplus.copycats.content.copycat.shaft.CopycatShaftBlock;
+import com.copycatsplus.copycats.content.copycat.shaft.CopycatShaftModel;
 import com.copycatsplus.copycats.content.copycat.slab.CopycatMultiSlabModel;
 import com.copycatsplus.copycats.content.copycat.slab.CopycatSlabBlock;
 import com.copycatsplus.copycats.content.copycat.slice.CopycatSliceBlock;
@@ -63,13 +65,14 @@ import com.copycatsplus.copycats.content.copycat.wall.CopycatWallModel;
 import com.copycatsplus.copycats.content.copycat.wall.WrappedWallBlock;
 import com.copycatsplus.copycats.datagen.CCLootGen;
 import com.simibubi.create.AllTags;
-import com.simibubi.create.foundation.data.BuilderTransformers;
-import com.simibubi.create.foundation.data.CreateRegistrate;
+import com.simibubi.create.content.kinetics.BlockStressDefaults;
+import com.simibubi.create.foundation.data.*;
 import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.providers.DataGenContext;
 import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.entry.RegistryEntry;
+import net.minecraft.client.resources.model.BakedModel;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.BlockTags;
@@ -82,6 +85,7 @@ import net.minecraft.world.level.block.state.properties.WoodType;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
+
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -485,6 +489,20 @@ public class CCBlocks {
                     .item()
                     .transform(customItemModel("copycat_base", "slope"))
                     .register();
+
+    public static final BlockEntry<CopycatShaftBlock> COPYCAT_SHAFT = REGISTRATE.block("copycat_shaft", CopycatShaftBlock::new)
+            .transform(CCBuilderTransformers.functionalCopycat())
+            .transform(FeatureToggle.register())
+            .transform(BlockStressDefaults.setNoImpact())
+            .onRegister(CreateRegistrate.blockModel(() -> model -> getShaftModel(model, SimpleCopycatPart.create(model, new CopycatShaftModel()))))
+            .item()
+            .transform(customItemModel("copycat_base", "beam"))
+            .register();
+
+    @ExpectPlatform
+    public static BakedModel getShaftModel(BakedModel original, BakedModel copycat) {
+        throw new AssertionError();
+    }
 
     public static @Nullable BlockEntry<CopycatTestBlock> COPYCAT_TEST_BLOCK;
 

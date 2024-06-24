@@ -3,7 +3,10 @@ package com.copycatsplus.copycats.datagen.recipes;
 import com.copycatsplus.copycats.CCBlocks;
 import com.copycatsplus.copycats.CCItems;
 import com.copycatsplus.copycats.CCTags;
+import com.copycatsplus.copycats.content.copycat.base.ICopycatWithWrappedBlock;
+import com.copycatsplus.copycats.content.copycat.base.functional.IFunctionalCopycatBlock;
 import com.copycatsplus.copycats.content.copycat.base.multistate.MultiStateCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.shaft.CopycatShaftBlock;
 import com.copycatsplus.copycats.datagen.recipes.gen.CopycatsRecipeProvider;
 import com.copycatsplus.copycats.datagen.recipes.gen.GeneratedRecipeBuilder;
 import com.copycatsplus.copycats.multiloader.Platform;
@@ -171,6 +174,8 @@ public class CCStandardRecipes extends CopycatsRecipeProvider {
 
     GeneratedRecipe COPYCAT_SLOPE = copycat(CCBlocks.COPYCAT_SLOPE, 2);
 
+    GeneratedRecipe COPYCAT_SHAFT = copycat(CCBlocks.COPYCAT_SHAFT, 2);
+
 
     String currentFolder = "";
 
@@ -199,6 +204,10 @@ public class CCStandardRecipes extends CopycatsRecipeProvider {
     GeneratedRecipeBuilder.GeneratedRecipe copycat(ItemProviderEntry<? extends ItemLike> result, int resultCount) {
         if (result.get() instanceof CopycatBlock copycat) {
             copycatsWithRecipes.add(copycat);
+        }
+
+        if (result.get() instanceof IFunctionalCopycatBlock) {
+            copycatsWithRecipes.add((Block) result.get());
         }
 
         if (result.get() instanceof MultiStateCopycatBlock copycat) {

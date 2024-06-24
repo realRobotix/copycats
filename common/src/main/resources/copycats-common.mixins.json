@@ -5,6 +5,7 @@
   "plugin": "com.copycatsplus.copycats.mixin.MixinPlugin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "CopycatBlockEntityAccessor",
     "compat.additionalplacements.ConfigCommonMixin",
     "compat.additionalplacements.PlacementBlockMixin",
     "compat.diagonalfences.FenceBlockMixin",
