@@ -1,4 +1,4 @@
-package com.copycatsplus.copycats.mixin;
+package com.copycatsplus.copycats.mixin.copycat.base;
 
 import com.simibubi.create.content.decoration.copycat.CopycatBlockEntity;
 import net.minecraft.nbt.CompoundTag;

@@ -1,7 +1,7 @@
 package com.copycatsplus.copycats.content.copycat.base.functional;
 
 import com.copycatsplus.copycats.content.copycat.base.CTCopycatBlockEntity;
-import com.copycatsplus.copycats.mixin.CopycatBlockEntityAccessor;
+import com.copycatsplus.copycats.mixin.copycat.base.CopycatBlockEntityAccessor;
 import com.simibubi.create.content.contraptions.ITransformableBlockEntity;
 import com.simibubi.create.content.contraptions.StructureTransform;
 import com.simibubi.create.content.decoration.copycat.CopycatBlockEntity;
