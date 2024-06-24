@@ -101,7 +101,7 @@
   "block.copycats.copycat_stairs.tooltip.behaviour2": "Active _les textures connectées_ sur son _matériau_.",
   "block.copycats.copycat_stairs.tooltip.condition1": "En cas de clic droit",
   "block.copycats.copycat_stairs.tooltip.condition2": "En cas de clic droit accroupi avec la main vide",
-  "block.copycats.copycat_stairs.tooltip.summary": "_Transforme_ n'importe quel _bloc plein_ en escaliers fonctionnels. Note : les textures connectées sont buguées.",
+  "block.copycats.copycat_stairs.tooltip.summary": "_Transforme_ n'importe quel _bloc plein_ en escaliers fonctionnels. Note : textures connectées dysfonctionnelles.",
   "block.copycats.copycat_stone_button": "Bouton en pierre imitateur",
   "block.copycats.copycat_stone_button.tooltip.behaviour1": "Applique _le bloc tenu_ comme _matériau_ si possible. _Cliquer à nouveau_ pour modifier l'état _d'orientation_ ou _d'alimentation_. Utiliser une _clé_ pour _réinitialiser_ le matériau.",
   "block.copycats.copycat_stone_button.tooltip.condition1": "En cas de clic droit",
