@@ -27,25 +27,25 @@ public class CopycatShaftBlock extends ShaftBlock implements IFunctionalCopycatB
 
     @Override
     public InteractionResult onSneakWrenched(BlockState state, UseOnContext context) {
-        InteractionResult result = super.onSneakWrenched(state, context);
+        InteractionResult result = IFunctionalCopycatBlock.super.onSneakWrenched(state, context);
         if (result.consumesAction()) {
             return result;
         }
-        return IFunctionalCopycatBlock.super.onSneakWrenched(state, context);
+        return super.onSneakWrenched(state, context);
     }
 
     @Override
     public InteractionResult onWrenched(BlockState state, UseOnContext context) {
-        InteractionResult result = super.onWrenched(state, context);
+        InteractionResult result = IFunctionalCopycatBlock.super.onWrenched(state, context);
         if (result.consumesAction()) {
             return result;
         }
-        return IFunctionalCopycatBlock.super.onWrenched(state, context);
+        return super.onWrenched(state, context);
     }
 
     @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult ray) {
-        InteractionResult result = super.use(state, world, pos, player, hand, ray);
+        InteractionResult result = IFunctionalCopycatBlock.super.use(state, world, pos, player, hand, ray);
         if (result.consumesAction()) {
             return result;
         }
@@ -59,7 +59,7 @@ public class CopycatShaftBlock extends ShaftBlock implements IFunctionalCopycatB
             }
         }
 
-        return IFunctionalCopycatBlock.super.use(state, world, pos, player, hand, ray);
+        return super.use(state, world, pos, player, hand, ray);
     }
 
     @Override
