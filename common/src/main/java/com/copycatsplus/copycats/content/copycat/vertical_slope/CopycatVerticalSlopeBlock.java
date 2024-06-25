@@ -30,7 +30,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -259,7 +258,7 @@ public class CopycatVerticalSlopeBlock extends CTWaterloggedCopycatBlock impleme
     private static class PlacementHelper extends PoleHelper<Direction> {
 
         private PlacementHelper() {
-            super(CCBlocks.COPYCAT_VERTICAL_STEP::has, $ -> Axis.Y, FACING);
+            super(CCBlocks.COPYCAT_VERTICAL_SLOPE::has, $ -> Axis.Y, FACING);
         }
 
         @Override

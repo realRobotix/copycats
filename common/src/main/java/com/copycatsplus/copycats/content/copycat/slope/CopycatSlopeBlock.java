@@ -1,15 +1,26 @@
 package com.copycatsplus.copycats.content.copycat.slope;
 
+import com.copycatsplus.copycats.CCBlocks;
 import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.content.copycat.base.CTWaterloggedCopycatBlock;
 import com.copycatsplus.copycats.content.copycat.base.ICustomCTBlocking;
 import com.copycatsplus.copycats.content.copycat.base.IStateType;
+import com.simibubi.create.foundation.placement.IPlacementHelper;
+import com.simibubi.create.foundation.placement.PlacementHelpers;
+import com.simibubi.create.foundation.placement.PoleHelper;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
@@ -20,16 +31,20 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
+import java.util.function.Predicate;
 
 public class CopycatSlopeBlock extends CTWaterloggedCopycatBlock implements IStateType, ICustomCTBlocking {
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<Half> HALF = BlockStateProperties.HALF;
+
+    private static final int placementHelperId = PlacementHelpers.register(new PlacementHelper());
 
     public CopycatSlopeBlock(Properties pProperties) {
         super(pProperties);
@@ -37,6 +52,23 @@ public class CopycatSlopeBlock extends CTWaterloggedCopycatBlock implements ISta
                 .setValue(FACING, Direction.NORTH)
                 .setValue(HALF, Half.BOTTOM)
         );
+    }
+
+    @Override
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand,
+                                 BlockHitResult ray) {
+
+        if (!player.isShiftKeyDown() && player.mayBuild()) {
+            ItemStack heldItem = player.getItemInHand(hand);
+            IPlacementHelper placementHelper = PlacementHelpers.get(placementHelperId);
+            if (placementHelper.matchesItem(heldItem)) {
+                placementHelper.getOffset(player, world, state, pos, ray)
+                        .placeInWorld(world, (BlockItem) heldItem.getItem(), player, hand, ray);
+                return InteractionResult.SUCCESS;
+            }
+        }
+
+        return super.use(state, world, pos, player, hand, ray);
     }
 
     @Override
@@ -179,5 +211,20 @@ public class CopycatSlopeBlock extends CTWaterloggedCopycatBlock implements ISta
     @Override
     public @NotNull BlockState mirror(@NotNull BlockState pState, @NotNull Mirror pMirror) {
         return pState.setValue(FACING, pMirror.mirror(pState.getValue(FACING)));
+    }
+
+    @MethodsReturnNonnullByDefault
+    private static class PlacementHelper extends PoleHelper<Direction> {
+
+        private PlacementHelper() {
+            super(CCBlocks.COPYCAT_SLOPE::has, state -> state.getValue(FACING).getClockWise().getAxis(), FACING);
+        }
+
+        @Override
+        public Predicate<ItemStack> getItemPredicate() {
+            return i -> i.getItem() instanceof BlockItem
+                    && (((BlockItem) i.getItem()).getBlock() instanceof CopycatSlopeBlock);
+        }
+
     }
 }
