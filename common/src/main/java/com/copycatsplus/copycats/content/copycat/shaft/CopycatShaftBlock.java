@@ -2,11 +2,13 @@ package com.copycatsplus.copycats.content.copycat.shaft;
 
 import com.copycatsplus.copycats.CCBlockEntityTypes;
 import com.copycatsplus.copycats.content.copycat.base.functional.IFunctionalCopycatBlock;
+import com.simibubi.create.content.decoration.bracket.BracketBlock;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.kinetics.simpleRelays.ShaftBlock;
 import com.simibubi.create.foundation.placement.IPlacementHelper;
 import com.simibubi.create.foundation.placement.PlacementHelpers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -18,6 +20,7 @@ import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.Nullable;
 
 public class CopycatShaftBlock extends ShaftBlock implements IFunctionalCopycatBlock {
 
@@ -60,6 +63,16 @@ public class CopycatShaftBlock extends ShaftBlock implements IFunctionalCopycatB
         }
 
         return super.use(state, world, pos, player, hand, ray);
+    }
+
+    @Nullable
+    @Override
+    public BlockState getAcceptedBlockState(Level pLevel, BlockPos pPos, ItemStack item, Direction face) {
+        if (item.getItem() instanceof BlockItem bi) {
+            if (bi.getBlock() instanceof BracketBlock) return null;
+        }
+
+        return IFunctionalCopycatBlock.super.getAcceptedBlockState(pLevel, pPos, item, face);
     }
 
     @Override
