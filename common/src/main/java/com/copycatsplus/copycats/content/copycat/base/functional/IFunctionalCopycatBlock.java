@@ -242,8 +242,7 @@ public interface IFunctionalCopycatBlock extends IWrenchable {
                             int pTintIndex) {
             return Minecraft.getInstance()
                     .getBlockColors()
-                    // we don't want colors to change based on biome because we are caching the render result
-                    .getColor(getMaterial(pLevel, pPos), pLevel, null, pTintIndex);
+                    .getColor(getMaterial(pLevel, pPos), pLevel, pPos, pTintIndex);
         }
     }
 }

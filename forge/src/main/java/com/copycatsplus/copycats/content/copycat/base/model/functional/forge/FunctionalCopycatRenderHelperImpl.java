@@ -1,6 +1,7 @@
 package com.copycatsplus.copycats.content.copycat.base.model.functional.forge;
 
 import com.copycatsplus.copycats.content.copycat.base.functional.IFunctionalCopycatBlockEntity;
+import com.copycatsplus.copycats.content.copycat.base.model.functional.WrappedRenderWorld;
 import com.jozufozu.flywheel.core.model.ModelUtil;
 import com.jozufozu.flywheel.core.model.ShadeSeparatedBufferedData;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -17,7 +18,7 @@ public class FunctionalCopycatRenderHelperImpl {
         builder.with(ModelUtil.VIRTUAL_PROPERTY, true);
 
         return new BakedModelWithDataBuilder(model)
-                .withRenderWorld(be.getLevel())
+                .withRenderWorld(new WrappedRenderWorld(be))
                 .withRenderPos(be.getBlockPos())
                 .withReferenceState(be.getBlockState())
                 .withPoseStack(ms)

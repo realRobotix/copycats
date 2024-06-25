@@ -1,11 +1,17 @@
 package com.copycatsplus.copycats.content.copycat.base.model.functional;
 
 
+import com.copycatsplus.copycats.content.copycat.base.functional.IFunctionalCopycatBlockEntity;
 import com.jozufozu.flywheel.core.virtual.VirtualEmptyBlockGetter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.SectionPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.*;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.DataLayer;
@@ -14,15 +20,18 @@ import net.minecraft.world.level.chunk.LightChunkGetter;
 import net.minecraft.world.level.lighting.LayerLightEventListener;
 import net.minecraft.world.level.lighting.LevelLightEngine;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class WrappedRenderWorld implements VirtualEmptyBlockGetter {
     protected final BlockAndTintGetter level;
+    protected final BlockPos targetPos;
     protected final LevelLightEngine lightEngine;
 
-    public WrappedRenderWorld(BlockAndTintGetter level) {
-        this.level = level;
+    public WrappedRenderWorld(IFunctionalCopycatBlockEntity be) {
+        this.level = be.getLevel();
+        this.targetPos = be.getBlockPos();
         lightEngine = new LevelLightEngine(new LightChunkGetter() {
             @Override
             @Nullable
@@ -88,16 +97,19 @@ public class WrappedRenderWorld implements VirtualEmptyBlockGetter {
     @Override
     @Nullable
     public BlockEntity getBlockEntity(@NotNull BlockPos pos) {
+        if (!pos.equals(targetPos)) return null;
         return level.getBlockEntity(pos);
     }
 
     @Override
     public @NotNull BlockState getBlockState(@NotNull BlockPos pos) {
+        if (!pos.equals(targetPos)) return Blocks.AIR.defaultBlockState();
         return level.getBlockState(pos);
     }
 
     @Override
     public @NotNull FluidState getFluidState(@NotNull BlockPos pos) {
+        if (!pos.equals(targetPos)) return Fluids.EMPTY.defaultFluidState();
         return level.getFluidState(pos);
     }
 
@@ -113,7 +125,7 @@ public class WrappedRenderWorld implements VirtualEmptyBlockGetter {
 
     @Override
     public float getShade(@NotNull Direction direction, boolean shaded) {
-        return level.getShade(direction, shaded);
+        return 1f;
     }
 
     @Override
@@ -123,21 +135,7 @@ public class WrappedRenderWorld implements VirtualEmptyBlockGetter {
 
     @Override
     public int getBlockTint(@NotNull BlockPos pos, @NotNull ColorResolver resolver) {
-        return level.getBlockTint(pos, resolver);
-    }
-
-    @Override
-    public int getBrightness(@NotNull LightLayer lightType, @NotNull BlockPos blockPos) {
-        return level.getBrightness(lightType, blockPos);
-    }
-
-    @Override
-    public int getRawBrightness(@NotNull BlockPos blockPos, int amount) {
-        return level.getRawBrightness(blockPos, amount);
-    }
-
-    @Override
-    public boolean canSeeSky(@NotNull BlockPos blockPos) {
-        return level.canSeeSky(blockPos);
+        Biome plainsBiome = Minecraft.getInstance().getConnection().registryAccess().registryOrThrow(Registries.BIOME).getOrThrow(Biomes.PLAINS);
+        return resolver.getColor(plainsBiome, pos.getX(), pos.getZ());
     }
 }

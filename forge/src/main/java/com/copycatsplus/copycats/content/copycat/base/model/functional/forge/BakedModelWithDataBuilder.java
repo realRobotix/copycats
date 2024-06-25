@@ -1,6 +1,5 @@
 package com.copycatsplus.copycats.content.copycat.base.model.functional.forge;
 
-import com.copycatsplus.copycats.content.copycat.base.model.functional.WrappedRenderWorld;
 import com.jozufozu.flywheel.core.model.BlockModel;
 import com.jozufozu.flywheel.core.model.Bufferable;
 import com.jozufozu.flywheel.core.model.ModelUtil;
@@ -11,19 +10,11 @@ import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
-import net.minecraft.world.level.ColorResolver;
-import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.lighting.LevelLightEngine;
-import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.client.model.data.ModelData;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public final class BakedModelWithDataBuilder implements Bufferable {
     private final BakedModel model;
@@ -43,7 +34,7 @@ public final class BakedModelWithDataBuilder implements Bufferable {
     }
 
     public BakedModelWithDataBuilder withRenderWorld(BlockAndTintGetter renderWorld) {
-        this.renderWorld = new WrappedRenderWorld(renderWorld);
+        this.renderWorld = renderWorld;
         return this;
     }
 
