@@ -9,6 +9,7 @@ import com.jozufozu.flywheel.api.MaterialManager;
 import com.simibubi.create.content.kinetics.base.flwdata.RotatingData;
 import com.simibubi.create.content.kinetics.simpleRelays.BracketedKineticBlockEntity;
 import com.simibubi.create.content.kinetics.simpleRelays.BracketedKineticBlockEntityInstance;
+import com.simibubi.create.foundation.render.AllMaterialSpecs;
 
 public class CopycatShaftInstance extends BracketedKineticBlockEntityInstance implements IFunctionalCopycatBlockInstance {
     protected KineticCopycatRenderData renderData;
@@ -34,7 +35,8 @@ public class CopycatShaftInstance extends BracketedKineticBlockEntityInstance im
 
     @Override
     public Material<RotatingData> getRotatingMaterial() {
-        return super.getRotatingMaterial();
+        return materialManager.defaultTransparent()
+                .material(AllMaterialSpecs.ROTATING);
     }
 
     @Override
