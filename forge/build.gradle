@@ -11,13 +11,9 @@ if (file("./../secrets.properties").exists()) {
 }
 
 loom {
-
-    accessWidenerPath = project(":common").loom.accessWidenerPath
     forge {
         mixinConfig "copycats-common.mixins.json"
         mixinConfig "copycats-forge.mixins.json"
-        convertAccessWideners = true
-        extraAccessWideners.add(loom.accessWidenerPath.get().asFile.name)
     }
 
     runs {

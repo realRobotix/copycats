@@ -16,6 +16,7 @@
     "copycat.base.CopycatBlockEntityMixin",
     "copycat.base.CopycatBlockMixin",
     "copycat.base.FilteredBlockAndTintGetterAccessor",
+    "copycat.base.multistate.AirCurrentMixin",
     "copycat.base.multistate.ContraptionMixin",
     "copycat.base.multistate.LevelChunkMixin",
     "copycat.button.ButtonBlockMixin",

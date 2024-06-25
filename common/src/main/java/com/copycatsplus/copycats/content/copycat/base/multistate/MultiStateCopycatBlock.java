@@ -359,7 +359,7 @@ public abstract class MultiStateCopycatBlock extends Block implements IBE<MultiS
         }
         MultiStateCopycatBlockEntity be = getBlockEntity(level, queryPos);
         if (be == null) return true;
-        return be.getMaterialItemStorage().getMaterialItem(property).enableCT();
+        return be.getMaterialItemStorage().getMaterialItem(property) == null || be.getMaterialItemStorage().getMaterialItem(property).enableCT();
     }
 
     public boolean isIgnoredConnectivitySide(String property, BlockAndTintGetter reader, BlockState state, Direction face,
