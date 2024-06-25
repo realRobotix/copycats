@@ -10,7 +10,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class CopycatShaftBlockEntity extends BracketedKineticBlockEntity implements IFunctionalCopycatBlockEntity {
+public abstract class CopycatShaftBlockEntity extends BracketedKineticBlockEntity implements IFunctionalCopycatBlockEntity {
 
     protected CopycatBlockEntity copycatBlockEntity;
 
