@@ -3,6 +3,7 @@ package com.copycatsplus.copycats.datagen;
 import com.copycatsplus.copycats.CCBlocks;
 import com.copycatsplus.copycats.Copycats;
 import com.copycatsplus.copycats.compat.Mods;
+import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.foundation.data.TagGen;
 import com.tterrag.registrate.providers.ProviderType;
@@ -22,7 +23,7 @@ public class CCTagGen {
         prov.tag(TagKey.create(BuiltInRegistries.BLOCK.key(), Mods.DIAGONAL_FENCES.rl("non_diagonal_fences")))
                 .add(CCBlocks.COPYCAT_FENCE.get())
                 .add(CCBlocks.WRAPPED_COPYCAT_FENCE.get());
-//        prov.tag(AllTags.AllBlockTags.COPYCAT_DENY.tag)
-//                .addTag(AllTags.AllBlockTags.TRACKS.tag);
+        prov.tag(AllTags.AllBlockTags.COPYCAT_DENY.tag)
+                .add(AllBlocks.METAL_BRACKET.get());
     }
 }
