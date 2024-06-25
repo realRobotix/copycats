@@ -3,7 +3,14 @@ package com.copycatsplus.copycats.content.copycat.base.model.functional;
 import com.copycatsplus.copycats.content.copycat.base.functional.IFunctionalCopycatBlockEntity;
 import com.jozufozu.flywheel.api.Instancer;
 import com.jozufozu.flywheel.api.Material;
+import com.jozufozu.flywheel.api.MaterialManager;
+import com.jozufozu.flywheel.backend.Backend;
+import com.jozufozu.flywheel.backend.RenderLayer;
+import com.jozufozu.flywheel.config.BackendType;
 import com.simibubi.create.content.kinetics.base.flwdata.RotatingData;
+import com.simibubi.create.foundation.render.AllMaterialSpecs;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
 
 import javax.annotation.Nullable;
 
@@ -12,11 +19,24 @@ public interface IFunctionalCopycatBlockInstance {
     @Nullable
     KineticCopycatRenderData getRenderData();
 
+    MaterialManager getMaterialManager();
+
     void setRenderData(KineticCopycatRenderData renderData);
 
     IFunctionalCopycatBlockEntity getBlockEntity();
 
-    Material<RotatingData> getRotatingMaterial();
+    default Material<RotatingData> getRotatingMaterial() {
+        RenderType type = ItemBlockRenderTypes.getChunkRenderType(getRenderData().material());
+        RenderLayer layer = RenderLayer.getLayer(type);
+        if (layer == null) layer = RenderLayer.TRANSPARENT;
+
+        // workaround for flywheel crash when transparent layer is used in batching backend
+        if (Backend.getBackendType() == BackendType.BATCHING && type == RenderType.translucent())
+            type = RenderType.cutoutMipped();
+
+        return getMaterialManager().state(layer, type)
+                .material(AllMaterialSpecs.ROTATING);
+    }
 
     default Instancer<RotatingData> getModel() {
         KineticCopycatRenderData renderData = KineticCopycatRenderData.of(getBlockEntity());
