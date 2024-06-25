@@ -19,24 +19,24 @@ import java.util.Set;
 public class FeatureToggle {
     public static final Set<ResourceLocation> TOGGLEABLE_FEATURES = new HashSet<>();
     public static final Map<ResourceLocation, ResourceLocation> DEPENDENT_FEATURES = new HashMap<>();
-    public static final Map<ResourceLocation, FeatureCategory> FEATURE_CATEGORIES = new HashMap<>();
+    public static final Map<ResourceLocation, Set<FeatureCategory>> FEATURE_CATEGORIES = new HashMap<>();
 
     public static void register(ResourceLocation key) {
         TOGGLEABLE_FEATURES.add(key);
     }
 
-    public static void register(ResourceLocation key, FeatureCategory category) {
+    public static void register(ResourceLocation key, FeatureCategory... categories) {
         register(key);
-        FEATURE_CATEGORIES.put(key, category);
+        FEATURE_CATEGORIES.put(key, Set.of(categories));
     }
 
     public static void registerDependent(ResourceLocation key, ResourceLocation dependency) {
         DEPENDENT_FEATURES.put(key, dependency);
     }
 
-    public static void registerDependent(ResourceLocation key, ResourceLocation dependency, FeatureCategory category) {
+    public static void registerDependent(ResourceLocation key, ResourceLocation dependency, FeatureCategory... categories) {
         registerDependent(key, dependency);
-        FEATURE_CATEGORIES.put(key, category);
+        FEATURE_CATEGORIES.put(key, Set.of(categories));
     }
 
     /**
@@ -52,9 +52,9 @@ public class FeatureToggle {
     /**
      * Register this object to be a feature that is toggleable by the user
      */
-    public static <R, T extends R, P, S extends Builder<R, T, P, S>> NonNullUnaryOperator<S> register(FeatureCategory category) {
+    public static <R, T extends R, P, S extends Builder<R, T, P, S>> NonNullUnaryOperator<S> register(FeatureCategory... categories) {
         return b -> {
-            register(new ResourceLocation(b.getOwner().getModid(), b.getName()), category);
+            register(new ResourceLocation(b.getOwner().getModid(), b.getName()), categories);
             return b;
         };
     }
@@ -74,9 +74,9 @@ public class FeatureToggle {
      * Register this object to be dependent on another feature.
      * This object cannot be toggled directly, and will only be enabled if the dependency is enabled.
      */
-    public static <R, T extends R, P, S extends Builder<R, T, P, S>> NonNullUnaryOperator<S> registerDependent(ResourceLocation dependency, FeatureCategory category) {
+    public static <R, T extends R, P, S extends Builder<R, T, P, S>> NonNullUnaryOperator<S> registerDependent(ResourceLocation dependency, FeatureCategory... categories) {
         return b -> {
-            registerDependent(new ResourceLocation(b.getOwner().getModid(), b.getName()), dependency, category);
+            registerDependent(new ResourceLocation(b.getOwner().getModid(), b.getName()), dependency, categories);
             return b;
         };
     }
@@ -96,9 +96,9 @@ public class FeatureToggle {
      * Register this object to be dependent on another feature.
      * This object cannot be toggled directly, and will only be enabled if the dependency is enabled.
      */
-    public static <R, T extends R, P, S extends Builder<R, T, P, S>> NonNullUnaryOperator<S> registerDependent(BlockEntry<?> dependency, FeatureCategory category) {
+    public static <R, T extends R, P, S extends Builder<R, T, P, S>> NonNullUnaryOperator<S> registerDependent(BlockEntry<?> dependency, FeatureCategory... categories) {
         return b -> {
-            registerDependent(new ResourceLocation(b.getOwner().getModid(), b.getName()), dependency.getId(), category);
+            registerDependent(new ResourceLocation(b.getOwner().getModid(), b.getName()), dependency.getId(), categories);
             return b;
         };
     }
@@ -120,7 +120,10 @@ public class FeatureToggle {
      */
     public static boolean isEnabled(ResourceLocation key) {
         if (FEATURE_CATEGORIES.containsKey(key)) {
-            if (!getCategories().isEnabled(FEATURE_CATEGORIES.get(key))) return false;
+            Set<FeatureCategory> categories = FEATURE_CATEGORIES.get(key);
+            for (FeatureCategory category : categories) {
+                if (!getCategories().isEnabled(category)) return false;
+            }
         }
         if (getToggles().hasToggle(key)) {
             return getToggles().isEnabled(key);

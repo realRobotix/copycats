@@ -4,7 +4,10 @@ import net.minecraft.util.StringRepresentable;
 import org.jetbrains.annotations.NotNull;
 
 public enum FeatureCategory implements StringRepresentable {
-    SLOPES("All copycats with a sloped surface");
+    SLOPES("All copycats with a sloped surface"),
+    MULTISTATES("All copycats that support multiple materials in a single block"),
+    STACKABLES("All copycats that can be resized by putting in more of the same copycat"),
+    REDSTONE("All copycats that can emit a redstone signal");
 
     private final String description;
 
