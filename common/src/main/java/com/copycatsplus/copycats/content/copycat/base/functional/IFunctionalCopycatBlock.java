@@ -251,11 +251,10 @@ public interface IFunctionalCopycatBlock extends IWrenchable {
         @Override
         public int getColor(BlockState pState, @Nullable BlockAndTintGetter pLevel, @Nullable BlockPos pPos,
                             int pTintIndex) {
-            if (pLevel == null || pPos == null)
-                return GrassColor.get(0.5D, 1.0D);
             return Minecraft.getInstance()
                     .getBlockColors()
-                    .getColor(getMaterial(pLevel, pPos), pLevel, pPos, pTintIndex);
+                    // we don't want colors to change based on biome because we are caching the render result
+                    .getColor(getMaterial(pLevel, pPos), pLevel, null, pTintIndex);
         }
     }
 }

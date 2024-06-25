@@ -17,6 +17,8 @@ public class FunctionalCopycatRenderHelperImpl {
         builder.with(ModelUtil.VIRTUAL_PROPERTY, true);
 
         return new BakedModelWithDataBuilder(model)
+                .withRenderWorld(be.getLevel())
+                .withRenderPos(be.getBlockPos())
                 .withReferenceState(be.getBlockState())
                 .withPoseStack(ms)
                 .withData(builder.build())
