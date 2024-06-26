@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 public class FunctionalCopycatRenderHelperImpl {
     public static ShadeSeparatedBufferedData getCopycatBuffer(BakedModel model, IFunctionalCopycatBlockEntity be, PoseStack ms) {
         return new BakedModelWithDataBuilder(model)
-                .withRenderWorld(new WrappedRenderWorldFabric(be))
+                .withRenderWorld(new WrappedRenderWorldFabric(be).setCTMode(true))
                 .withRenderPos(be.getBlockPos())
                 .withReferenceState(be.getBlockState())
                 .withPoseStack(ms)

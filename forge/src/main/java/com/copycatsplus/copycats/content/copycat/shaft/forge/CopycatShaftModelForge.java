@@ -26,6 +26,11 @@ public class CopycatShaftModelForge extends BracketedKineticBlockModel {
     }
 
     @Override
+    public boolean useAmbientOcclusion() {
+        return false;
+    }
+
+    @Override
     public @NotNull TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
         return copycat.getParticleIcon(data);
     }

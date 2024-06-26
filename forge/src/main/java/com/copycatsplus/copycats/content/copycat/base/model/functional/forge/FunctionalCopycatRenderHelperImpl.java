@@ -12,14 +12,14 @@ import net.minecraftforge.client.model.data.ModelProperty;
 public class FunctionalCopycatRenderHelperImpl {
 
     public static ShadeSeparatedBufferedData getCopycatBuffer(BakedModel model, IFunctionalCopycatBlockEntity be, PoseStack ms) {
-        WrappedRenderWorld renderWorld = new WrappedRenderWorld(be);
+        WrappedRenderWorld renderWorld = new WrappedRenderWorld(be).setCTMode(true);
         ModelData renderData = model.getModelData(renderWorld, be.getBlockPos(), be.getBlockState(), be.getCopycatBlockEntity().getModelData());
         ModelData.Builder builder = ModelData.builder();
         copyModelData(renderData, builder);
         builder.with(ModelUtil.VIRTUAL_PROPERTY, true);
 
         return new BakedModelWithDataBuilder(model)
-                .withRenderWorld(renderWorld)
+                .withRenderWorld(renderWorld.setCTMode(false))
                 .withRenderPos(be.getBlockPos())
                 .withReferenceState(be.getBlockState())
                 .withPoseStack(ms)

@@ -27,6 +27,11 @@ public class CopycatShaftModelFabric extends BracketedKineticBlockModel implemen
     }
 
     @Override
+    public boolean useAmbientOcclusion() {
+        return false;
+    }
+
+    @Override
     public TextureAtlasSprite getParticleIcon(Object data) {
         return ((CustomParticleIconModel) copycat).getParticleIcon(data);
     }

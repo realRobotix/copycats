@@ -1,7 +1,6 @@
 package com.copycatsplus.copycats.content.copycat.base.model.functional;
 
 
-import com.copycatsplus.copycats.content.copycat.base.functional.IFunctionalCopycatBlock;
 import com.copycatsplus.copycats.content.copycat.base.functional.IFunctionalCopycatBlockEntity;
 import com.jozufozu.flywheel.core.virtual.VirtualEmptyBlockGetter;
 import net.minecraft.client.Minecraft;
@@ -27,17 +26,15 @@ import org.jetbrains.annotations.Nullable;
 
 public class WrappedRenderWorld implements VirtualEmptyBlockGetter {
     protected final BlockAndTintGetter level;
-    protected final IFunctionalCopycatBlock block;
     protected final BlockPos targetPos;
     protected final LevelLightEngine lightEngine;
-    protected final BlockState state;
     protected final BlockState material;
+
+    protected boolean ctMode = false;
 
     public WrappedRenderWorld(IFunctionalCopycatBlockEntity be) {
         this.level = be.getLevel();
-        this.block = (IFunctionalCopycatBlock) be.getBlockState().getBlock();
         this.targetPos = be.getBlockPos();
-        this.state = be.getBlockState();
         this.material = be.getMaterial();
         lightEngine = new LevelLightEngine(new LightChunkGetter() {
             @Override
@@ -57,6 +54,11 @@ public class WrappedRenderWorld implements VirtualEmptyBlockGetter {
             @Override
             public @NotNull LayerLightEventListener getLayerListener(@NotNull LightLayer layer) {
                 return layer == LightLayer.BLOCK ? blockListener : skyListener;
+            }
+
+            @Override
+            public int getRawBrightness(BlockPos blockPos, int amount) {
+                return 15;
             }
         };
     }
@@ -101,6 +103,11 @@ public class WrappedRenderWorld implements VirtualEmptyBlockGetter {
         };
     }
 
+    public WrappedRenderWorld setCTMode(boolean ctMode) {
+        this.ctMode = ctMode;
+        return this;
+    }
+
     @Override
     @Nullable
     public BlockEntity getBlockEntity(@NotNull BlockPos pos) {
@@ -110,11 +117,7 @@ public class WrappedRenderWorld implements VirtualEmptyBlockGetter {
 
     @Override
     public @NotNull BlockState getBlockState(@NotNull BlockPos pos) {
-        if (!pos.equals(targetPos)) {
-            if (block.canConnectTexturesToward(level, targetPos, pos, state))
-                return material;
-            return Blocks.AIR.defaultBlockState();
-        }
+        if (!pos.equals(targetPos)) return ctMode ? material : Blocks.AIR.defaultBlockState();
         return level.getBlockState(pos);
     }
 
@@ -142,6 +145,16 @@ public class WrappedRenderWorld implements VirtualEmptyBlockGetter {
     @Override
     public @NotNull LevelLightEngine getLightEngine() {
         return lightEngine;
+    }
+
+    @Override
+    public int getBrightness(LightLayer lightType, BlockPos blockPos) {
+        return 15;
+    }
+
+    @Override
+    public int getRawBrightness(BlockPos blockPos, int amount) {
+        return 15;
     }
 
     @Override
