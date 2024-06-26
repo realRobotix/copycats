@@ -28,10 +28,12 @@ public class WrappedRenderWorld implements VirtualEmptyBlockGetter {
     protected final BlockAndTintGetter level;
     protected final BlockPos targetPos;
     protected final LevelLightEngine lightEngine;
+    protected final BlockState material;
 
     public WrappedRenderWorld(IFunctionalCopycatBlockEntity be) {
         this.level = be.getLevel();
         this.targetPos = be.getBlockPos();
+        this.material = be.getMaterial();
         lightEngine = new LevelLightEngine(new LightChunkGetter() {
             @Override
             @Nullable
@@ -103,7 +105,7 @@ public class WrappedRenderWorld implements VirtualEmptyBlockGetter {
 
     @Override
     public @NotNull BlockState getBlockState(@NotNull BlockPos pos) {
-        if (!pos.equals(targetPos)) return Blocks.AIR.defaultBlockState();
+        if (!pos.equals(targetPos)) return material;
         return level.getBlockState(pos);
     }
 

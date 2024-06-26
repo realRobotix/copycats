@@ -1,6 +1,7 @@
 package com.copycatsplus.copycats.content.copycat.shaft;
 
 import com.copycatsplus.copycats.CCBlockEntityTypes;
+import com.copycatsplus.copycats.content.copycat.base.ICustomCTBlocking;
 import com.copycatsplus.copycats.content.copycat.base.functional.IFunctionalCopycatBlock;
 import com.simibubi.create.content.decoration.bracket.BracketBlock;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
@@ -9,6 +10,7 @@ import com.simibubi.create.foundation.placement.IPlacementHelper;
 import com.simibubi.create.foundation.placement.PlacementHelpers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,9 +22,12 @@ import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class CopycatShaftBlock extends ShaftBlock implements IFunctionalCopycatBlock {
+import java.util.Optional;
+
+public class CopycatShaftBlock extends ShaftBlock implements IFunctionalCopycatBlock, ICustomCTBlocking {
 
     public CopycatShaftBlock(Properties properties) {
         super(properties);
@@ -88,7 +93,7 @@ public class CopycatShaftBlock extends ShaftBlock implements IFunctionalCopycatB
     }
 
     @Override
-    public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+    public void playerWillDestroy(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Player player) {
         super.playerWillDestroy(level, pos, state, player);
         IFunctionalCopycatBlock.super.playerWillDestroy(level, pos, state, player);
     }
@@ -96,5 +101,28 @@ public class CopycatShaftBlock extends ShaftBlock implements IFunctionalCopycatB
     @Override
     public BlockEntityType<? extends KineticBlockEntity> getBlockEntityType() {
         return CCBlockEntityTypes.COPYCAT_SHAFT.get();
+    }
+
+    @Override
+    public boolean isIgnoredConnectivitySide(BlockAndTintGetter reader, BlockState state, Direction face, BlockPos fromPos, BlockPos toPos) {
+        return true;
+    }
+
+    @Override
+    public boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos, BlockState state) {
+        Vec3i diff = toPos.subtract(fromPos);
+        Direction face = Direction.fromDelta(diff.getX(), diff.getY(), diff.getZ());
+        if (face == null) return false;
+        return face.getAxis() == state.getValue(AXIS);
+    }
+
+    @Override
+    public Optional<Boolean> blockCTTowards(BlockAndTintGetter reader, BlockState state, BlockPos pos, BlockPos ctPos, BlockPos connectingPos, Direction face) {
+        return Optional.of(false);
+    }
+
+    @Override
+    public Optional<Boolean> isCTBlocked(BlockAndTintGetter reader, BlockState state, BlockPos pos, BlockPos connectingPos, BlockPos blockingPos, Direction face) {
+        return Optional.of(false);
     }
 }

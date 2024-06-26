@@ -11,7 +11,6 @@
     "copycat.base.multistate.MultiStateCopycatBlockCombinerMixin"
   ],
   "client": [
-    "copycat.base.CopycatModelMixin",
     "featuretoggle.SubMenuConfigScreenMixin"
   ],
   "injectors": {

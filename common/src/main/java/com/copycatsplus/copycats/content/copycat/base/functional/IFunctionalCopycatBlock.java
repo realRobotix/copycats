@@ -1,8 +1,10 @@
 package com.copycatsplus.copycats.content.copycat.base.functional;
 
+import com.copycatsplus.copycats.content.copycat.base.ICustomCTBlocking;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.decoration.copycat.CopycatBlock;
+import com.simibubi.create.content.decoration.copycat.CopycatModel;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColor;
@@ -27,6 +29,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
  * Indicates that a block functions as a copycat but is not a subclass of {@link CopycatBlock}.
@@ -229,6 +232,24 @@ public interface IFunctionalCopycatBlock extends IWrenchable {
         if (reader.getBlockEntity(targetPos) instanceof IFunctionalCopycatBlockEntity cbe)
             return cbe.getMaterial();
         return Blocks.AIR.defaultBlockState();
+    }
+
+    default boolean isIgnoredConnectivitySide(BlockAndTintGetter reader, BlockState state, Direction face,
+                                              BlockPos fromPos, BlockPos toPos) {
+        return false;
+    }
+
+    default boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos,
+                                             BlockState state) {
+        return true;
+    }
+
+    default boolean canFaceBeOccluded(BlockState state, Direction face) {
+        return false;
+    }
+
+    default boolean shouldFaceAlwaysRender(BlockState state, Direction face) {
+        return false;
     }
 
     static BlockColor wrappedColor() {
