@@ -4,7 +4,8 @@ on:
     workflow_dispatch:
     push:
         branches:
-            - "**multiloader"
+            - "multiloader"
+            - "*/multiloader"
 
 permissions:
     contents: read
