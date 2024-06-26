@@ -1,13 +1,21 @@
 package com.copycatsplus.copycats.content.copycat.shaft;
 
 import com.copycatsplus.copycats.CCBlockEntityTypes;
+import com.copycatsplus.copycats.CCBlocks;
 import com.copycatsplus.copycats.content.copycat.base.ICustomCTBlocking;
 import com.copycatsplus.copycats.content.copycat.base.functional.IFunctionalCopycatBlock;
+import com.google.common.base.Predicates;
+import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.decoration.bracket.BracketBlock;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
+import com.simibubi.create.content.kinetics.simpleRelays.AbstractSimpleShaftBlock;
 import com.simibubi.create.content.kinetics.simpleRelays.ShaftBlock;
+import com.simibubi.create.content.kinetics.steamEngine.PoweredShaftBlock;
 import com.simibubi.create.foundation.placement.IPlacementHelper;
 import com.simibubi.create.foundation.placement.PlacementHelpers;
+import com.simibubi.create.foundation.placement.PlacementOffset;
+import com.simibubi.create.foundation.placement.PoleHelper;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -26,8 +34,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.function.Predicate;
 
 public class CopycatShaftBlock extends ShaftBlock implements IFunctionalCopycatBlock, ICustomCTBlocking {
+
+    public static final int placementHelperId = PlacementHelpers.register(new PlacementHelper());
 
     public CopycatShaftBlock(Properties properties) {
         super(properties);
@@ -124,5 +135,38 @@ public class CopycatShaftBlock extends ShaftBlock implements IFunctionalCopycatB
     @Override
     public Optional<Boolean> isCTBlocked(BlockAndTintGetter reader, BlockState state, BlockPos pos, BlockPos connectingPos, BlockPos blockingPos, Direction face) {
         return Optional.of(false);
+    }
+
+    @MethodsReturnNonnullByDefault
+    private static class PlacementHelper extends PoleHelper<Direction.Axis> {
+        // used for extending a shaft in its axis, like the piston poles. works with
+        // shafts and cogs
+
+        private PlacementHelper() {
+            super(state -> state.getBlock() instanceof AbstractSimpleShaftBlock
+                    || state.getBlock() instanceof PoweredShaftBlock, state -> state.getValue(AXIS), AXIS);
+        }
+
+        @Override
+        public Predicate<ItemStack> getItemPredicate() {
+            return i -> i.getItem() instanceof BlockItem
+                    && ((BlockItem) i.getItem()).getBlock() instanceof AbstractSimpleShaftBlock;
+        }
+
+        @Override
+        public Predicate<BlockState> getStatePredicate() {
+            return Predicates.or(AllBlocks.SHAFT::has, AllBlocks.POWERED_SHAFT::has, CCBlocks.COPYCAT_SHAFT::has);
+        }
+
+        @Override
+        public PlacementOffset getOffset(Player player, Level world, BlockState state, BlockPos pos,
+                                         BlockHitResult ray) {
+            PlacementOffset offset = super.getOffset(player, world, state, pos, ray);
+            if (offset.isSuccessful())
+                offset.withTransform(offset.getTransform()
+                        .andThen(s -> ShaftBlock.pickCorrectShaftType(s, world, offset.getBlockPos())));
+            return offset;
+        }
+
     }
 }
