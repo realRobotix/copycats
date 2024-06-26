@@ -1,6 +1,7 @@
 package com.copycatsplus.copycats.content.copycat.base.model.functional;
 
 import com.copycatsplus.copycats.content.copycat.base.functional.IFunctionalCopycatBlockEntity;
+import com.copycatsplus.copycats.utility.ChatUtils;
 import com.jozufozu.flywheel.api.Instancer;
 import com.jozufozu.flywheel.api.Material;
 import com.jozufozu.flywheel.api.MaterialManager;
@@ -31,8 +32,13 @@ public interface IFunctionalCopycatBlockInstance {
         if (layer == null) layer = RenderLayer.TRANSPARENT;
 
         // workaround for flywheel crash when transparent layer is used in batching backend
-        if (Backend.getBackendType() == BackendType.BATCHING && type == RenderType.translucent())
+        if (Backend.getBackendType() == BackendType.BATCHING && type == RenderType.translucent()) {
             type = RenderType.cutoutMipped();
+            ChatUtils.sendWarningOnce(
+                    "flywheel_batching_translucent",
+                    "Translucent textures may appear slightly broken when using the Flywheel batching backend. Please switch to the instancing backend instead."
+            );
+        }
 
         return getMaterialManager().state(layer, type)
                 .material(AllMaterialSpecs.ROTATING);
