@@ -1,6 +1,7 @@
 package com.copycatsplus.copycats.content.copycat.base.model.functional;
 
 
+import com.copycatsplus.copycats.content.copycat.base.functional.IFunctionalCopycatBlock;
 import com.copycatsplus.copycats.content.copycat.base.functional.IFunctionalCopycatBlockEntity;
 import com.jozufozu.flywheel.core.virtual.VirtualEmptyBlockGetter;
 import net.minecraft.client.Minecraft;
@@ -26,13 +27,17 @@ import org.jetbrains.annotations.Nullable;
 
 public class WrappedRenderWorld implements VirtualEmptyBlockGetter {
     protected final BlockAndTintGetter level;
+    protected final IFunctionalCopycatBlock block;
     protected final BlockPos targetPos;
     protected final LevelLightEngine lightEngine;
+    protected final BlockState state;
     protected final BlockState material;
 
     public WrappedRenderWorld(IFunctionalCopycatBlockEntity be) {
         this.level = be.getLevel();
+        this.block = (IFunctionalCopycatBlock) be.getBlockState().getBlock();
         this.targetPos = be.getBlockPos();
+        this.state = be.getBlockState();
         this.material = be.getMaterial();
         lightEngine = new LevelLightEngine(new LightChunkGetter() {
             @Override
@@ -105,7 +110,11 @@ public class WrappedRenderWorld implements VirtualEmptyBlockGetter {
 
     @Override
     public @NotNull BlockState getBlockState(@NotNull BlockPos pos) {
-        if (!pos.equals(targetPos)) return material;
+        if (!pos.equals(targetPos)) {
+            if (block.canConnectTexturesToward(level, targetPos, pos, state))
+                return material;
+            return Blocks.AIR.defaultBlockState();
+        }
         return level.getBlockState(pos);
     }
 
